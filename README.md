@@ -1,263 +1,184 @@
 # 🛡️ CyberSec Command Manager
 
-> Gestionnaire complet et intelligent des commandes cybersécurité avec recherche globale avancée, dashboard personnalisé et gestion multi-modules.
+> **Gestionnaire intelligent de commandes cybersécurité avec dashboard, recherche globale et base de données PostgreSQL.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Flask](https://img.shields.io/badge/Flask-3.0+-green.svg)](https://flask.palletsprojects.com/)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![PostgreSQL 15](https://img.shields.io/badge/PostgreSQL-15-darkblue.svg)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Supported-blue.svg)](https://www.docker.com/)
 
 ---
 
-## 📋 Table des matières
+## 📋 Vue d'ensemble
 
-- [Fonctionnalités](#-fonctionnalités)
-- [Installation](#-installation)
-- [Utilisation](#-utilisation)
-- [Structure du projet](#-structure-du-projet)
-- [Modules disponibles](#-modules-disponibles)
-- [API REST](#-api-rest)
-- [Configuration](#-configuration)
-- [Contribuer](#-contribuer)
-- [Licence](#-licence)
+**CyberSec Command Manager** est une application web moderne pour cataloguer, rechercher et gérer les commandes de cybersécurité, les certifications, les outils, les CVE et bien plus.
+
+### Parfait pour :
+- 📚 **Apprentissage cybersécurité** - Référence complète des commandes
+- 🎓 **Préparation certifications** - OSCP, CEH, CISSP, Security+
+- 🔧 **Opérations pentest** - Quick reference pendant les missions
+- 📖 **Documentation personnelle** - Notes synchronisées
+- 🏢 **Formation d'équipes** - Support pour les groupes de sécurité
 
 ---
 
 ## ✨ Fonctionnalités
 
 ### 🎯 Core Features
-- ✅ **Gestionnaire de commandes** - Cataloguez 50+ commandes cybersécurité
-- ✅ **Recherche globale avancée** - Cross-module search avec autocomplétion
-- ✅ **Dashboard intelligent** - Statistiques, raccourcis, commandes récentes
-- ✅ **Favoris personnalisés** - Sauvegardez vos commandes favorites
-- ✅ **Historique de recherche** - Tracez vos recherches
-- ✅ **Interface responsive** - Fonctionne sur desktop, tablette, mobile
+- ✅ **Gestionnaire de commandes** - Cataloguez et recherchez 50+ commandes
+- ✅ **Recherche globale** - Cross-module avec autocomplétion
+- ✅ **Dashboard intelligent** - Stats, raccourcis, commandes récentes
+- ✅ **Favoris personnalisés** - Sauvegardez vos commandes
+- ✅ **Interface responsive** - Desktop, tablette, mobile
+- ✅ **Design moderne** - Glassmorphisme, dark mode
 
 ### 📦 Modules
-- 📋 **Commandes** - Base de données de 50+ commandes avec doc
-- 📜 **Certifications** - OSCP, CEH, CISSP, GPEN avec progress tracking
-- 📚 **Cheat Sheets** - Guides rapides (Linux, Windows, Web, etc.)
+- 📋 **Commandes** - 50+ commandes cybersec avec documentation
+- 📜 **Certifications** - OSCP, CEH, CISSP, CompTIA Security+
+- 📚 **Cheat Sheets** - Guides rapides (Linux, Web, Networks)
 - 📝 **Notes** - Documentation personnelle synchronisée
-- 🔧 **Outils** - Nmap, Metasploit, Burp Suite, etc. avec ressources
-- 🔒 **Vulnérabilités** - CVE avec commandes de test et mitigations
+- 🔧 **Outils** - Nmap, Metasploit, Burp Suite, etc.
+- 🔒 **Vulnérabilités** - Base de CVE avec mitigations
 
-### 🚀 Avancé
-- 🔍 Recherche temps réel avec suggestions
-- 📊 Statistiques détaillées par catégorie/plateforme
-- ⭐ Système de badges et réalisations
-- 💾 Export/Import données
-- 📱 Interface dark mode optimisée
-- 🔗 Liens directs vers documentation officielle
+### 🗄️ Backend
+- 🐘 **PostgreSQL 15** - Base de données robuste
+- 🐍 **Flask** - Framework web léger et rapide
+- 🐳 **Docker Compose** - Déploiement facile
+- 📊 **SQLAlchemy ORM** - Modèles BD élégants
+- 🔌 **API REST** - Endpoints JSON pour toutes les opérations
 
 ---
 
-## 🛠️ Installation
+## 🚀 Démarrage rapide
 
 ### Prérequis
-- Python 3.8+
-- pip (Python package manager)
-- Git (optionnel)
+- **Docker** & **Docker Compose** ([installer](https://docs.docker.com/get-docker/))
+- **Git** (optionnel)
 
-### Étapes d'installation
+### Installation (5 minutes)
 
-#### 1️⃣ Cloner le repository
-git clone https://github.com/ton-username/cybersec-command-manager.git
-cd cybersec-command-manager
+#### 1. Cloner/télécharger le projet
+git clone https://github.com/ton-username/cyber-tool2.git
+cd cyber-tool2
+#### 2. Configuration
+Fichier .env est déjà configuré, tu peux le modifier si nécessaire
+cat .env
 
-text
 
-#### 2️⃣ Créer un environnement virtuel
-Linux/macOS
-python3 -m venv venv
-source venv/bin/activate
+#### 3. Lancer l'application
+docker-compose up --build
+#### 4. Accéder à l'app
+- 🌐 **Application** : http://localhost:5000
+- 🗃️ **PgAdmin** (gérer DB) : http://localhost:5050
+  - Email: `admin@cybersec.local`
+  - Password: `admin`
 
-Windows
-python -m venv venv
-venv\Scripts\activate
+**C'est tout ! L'app démarre avec toutes les données importées automatiquement.** ✨
 
-text
+---
+### Avec Docker Compose
+Démarrer
+docker-compose up -d
 
-#### 3️⃣ Installer les dépendances
-pip install -r requirements.txt
+Voir les logs
+docker-compose logs -f
 
-text
+Terminal Flask
+docker-compose exec web bash
 
-#### 4️⃣ Lancer l'application
-python app.py
+Terminal PostgreSQL
+docker-compose exec db psql -U postgres -d cybersec_manager
 
-text
+Arrêter
+docker-compose down
 
-#### 5️⃣ Accéder à l'application
-Ouvrez votre navigateur et allez à :
-http://localhost:5000
+Supprimer tout (données incluses)
+docker-compose down -v
 
 text
 
 ---
 
-## 📖 Utilisation
+## 📊 Structure du projet
 
-### Démarrage rapide
-
-#### Ajouter une commande
-1. Cliquez sur **"📋 Commandes"** dans la navigation
-2. Cliquez sur **"➕ Ajouter une commande"**
-3. Remplissez les champs :
-   - **Nom** : `nmap`
-   - **Description** : Scanner de ports
-   - **Catégorie** : Reconnaissance
-   - **Plateforme** : Linux/Windows
-   - **Arguments** : `-sV, -sC, -A`
-   - **Exemple** : `nmap -sV 192.168.1.1`
-   - **Ressources** : Lien vers la documentation
-4. Cliquez **"💾 Ajouter"**
-
-#### Rechercher une commande
-1. Utilisez la **barre de recherche globale** en haut
-2. Ou filtrez sur la page des commandes :
-   - Par **catégorie**
-   - Par **plateforme** (Linux/Windows)
-   - Par **niveau** (Débutant/Intermédiaire/Avancé)
-3. Cliquez sur un **tag** pour rechercher directement
-
-#### Gérer les favoris
-1. Cliquez sur l'**étoile ☆** sur une commande
-2. Elle devient **⭐** (favori)
-3. Filtrez les favoris avec le bouton **"⭐ Favoris"**
-
-#### Copier une commande
-1. Cliquez sur le bouton **"📋 Copier"** dans une carte
-2. La commande est automatiquement copiée
-3. Notification **"✅ Copié!"** confirme l'action
-
-### Navigation principale
-
-| Page | URL | Description |
-|------|-----|-------------|
-| 🏠 Accueil | `/` | Dashboard avec statistiques |
-| 📋 Commandes | `/commandes` | Gestionnaire de commandes |
-| 📜 Certifications | `/certifications` | Base certifications (OSCP, CEH, etc.) |
-| 📚 Cheat Sheets | `/cheatsheets` | Guides rapides par thème |
-| 📝 Notes | `/notes` | Documentation personnelle |
-| 🔧 Outils | `/tools` | Base d'outils cybersécurité |
-| 🔒 CVE | `/vulnerabilities` | Vulnérabilités avec commandes |
-| 📊 Stats | `/stats` | Statistiques détaillées |
-
----
-
-## 📁 Structure du projet
-
-cybersec-command-manager/
-├── app.py # Application Flask principale
+cyber-tool2/
+├── app/
+│ ├── app.py # Application Flask
+│ ├── models.py # Modèles SQLAlchemy
+│ ├── migrate_json_to_db.py # Import JSON → PostgreSQL
+│ ├── templates/ # Templates Jinja2
+│ ├── static/ # CSS, JS, images
+│ └── data/ # Fichiers JSON (données)
+├── Dockerfile # Configuration Docker
+├── docker-compose.yml # Orchestration Docker+PostgreSQL
 ├── requirements.txt # Dépendances Python
-├── README.md # Ce fichier
-│
-├── templates/ # Templates Jinja2 (HTML)
-│ ├── base.html # Template de base
-│ ├── dashboard.html # Dashboard accueil
-│ ├── index.html # Gestionnaire de commandes
-│ ├── certifications.html # Module certifications
-│ ├── cheatsheets.html # Module cheat sheets
-│ ├── notes.html # Module notes
-│ ├── tools.html # Module outils
-│ ├── vulnerabilities.html # Module vulnérabilités
-│ ├── stats.html # Statistiques
-│ ├── add_command.html # Formulaire ajout commande
-│ └── edit_command.html # Formulaire édition commande
-│
-├── static/ # Fichiers statiques
-│ ├── css/
-│ │ └── style.css # Styles CSS (2000+ lignes)
-│ ├── js/
-│ │ └── main.js # Scripts JavaScript
-│ └── images/ # Images/icônes
-│
-├── data/ # Base de données (JSON)
-│ ├── commands.json # 50+ commandes
-│ ├── certifications.json # 4+ certifications
-│ ├── cheatsheets.json # 5+ cheat sheets
-│ ├── notes.json # Notes utilisateur
-│ ├── tools.json # 5+ outils
-│ ├── vulnerabilities.json # 3+ CVE
-│ ├── favorites.json # Favoris utilisateur
-│ ├── history.json # Historique recherche
-│ └── badges.json # Badges réalisations
-│
-└── docs/ # Documentation
-├── API.md # Documentation API REST
-├── INSTALLATION.md # Guide installation détaillé
-└── CONTRIBUTING.md # Guide contribution
+├── .env # Variables d'environnement
+└── README.md # Ce fichier
 
 text
 
 ---
 
-## 🎯 Modules disponibles
+## 🗂️ Modules disponibles
 
-### 📋 Module Commandes
-Gère une base de données de commandes cybersécurité.
+### 📋 Commandes
+**Route** : `/commandes`
+
+Gère une base de données complète de commandes cybersécurité.
 
 **Champs** :
-- `nom` : Nom de la commande
-- `description` : Description courte
-- `categorie` : Catégorie (Gestion fichiers, Réseau, etc.)
-- `plateforme` : Linux, Windows, Linux/Windows
-- `arguments_options` : Options disponibles
-- `exemple` : Exemple d'utilisation
-- `usage` : Quand l'utiliser
-- `tags` : Tags pour recherche
-- `niveau` : Débutant/Intermédiaire/Avancé
-- `ressources` : Lien documentation officielle
+- Nom et description
+- Catégorie (Reconnaissance, Exploitation, etc.)
+- Plateforme (Linux, Windows)
+- Arguments et options
+- Exemple d'utilisation
+- Use case (quand l'utiliser)
+- Tags (recherche)
+- Niveau (Débutant/Intermédiaire/Avancé)
+- Lien documentation officielle
 
-**Exemple** :
-{
-"nom": "nmap",
-"description": "Scanner de ports et découverte réseau",
-"categorie": "Reconnaissance",
-"plateforme": "Linux/Windows",
-"arguments_options": "-sT (TCP), -sS (SYN), -sV (versions)",
-"exemple": "nmap -sV 192.168.1.1",
-"usage": "Scanner les ports actifs",
-"tags": "scan, reconnaissance, pentest",
-"niveau": "Intermédiaire",
-"ressources": "https://nmap.org/book/man.html"
-}
+**Actions** :
+- ✅ Recherche par nom/description/tags
+- ✅ Filtrer par catégorie/plateforme/niveau
+- ✅ Copier la commande en 1 clic
+- ✅ Ajouter/modifier/supprimer
+- ✅ Ajouter aux favoris
 
-text
+### 📜 Certifications
+**Route** : `/certifications`
 
-### 📜 Module Certifications
-Gère les certifications cybersécurité avec suivi de progression.
+Base des certifications cybersécurité principales.
 
-**Certifications incluses** :
-- 🏆 OSCP (Offensive Security Certified Professional)
-- 🎓 CEH (Certified Ethical Hacker)
-- 🔐 CISSP (Certified Information Systems Security Professional)
-- 🔧 GPEN (GIAC Certified Penetration Tester)
+**Incluses** :
+- 🏆 OSCP (Offensive Security)
+- 🎓 CEH (EC-Council)
+- 🔐 CISSP (ISC2)
+- 📚 CompTIA Security+
 
-### 📚 Module Cheat Sheets
+### 📚 Cheat Sheets
+**Route** : `/cheatsheets`
+
 Guides rapides par thème avec commandes clés.
 
-**Cheat Sheets inclus** :
-- Linux Privilege Escalation
-- Windows Privilege Escalation
-- Web Penetration Testing
-- Bash Scripting Essentials
-- Network Reconnaissance
+### 📝 Notes
+**Route** : `/notes`
 
-### 📝 Module Notes
-Documentation personnelle avec historique de modification.
+Documentation personnelle synchronisée avec la DB.
 
-### 🔧 Module Outils
-Base d'outils avec installation et lien vers documentation.
+### 🔧 Outils
+**Route** : `/tools`
 
-**Outils inclus** :
-- Nmap
-- Metasploit
-- Burp Suite
-- Wireshark
-- Volatility
+Base d'outils avec installation et documentation.
 
-### 🔒 Module Vulnérabilités
+### 🔒 Vulnérabilités
+**Route** : `/vulnerabilities`
+
 CVE avec sévérité, commandes de test et mitigations.
+
+### 📊 Statistiques
+**Route** : `/stats`
+
+Vue d'ensemble : commandes par catégorie, plateforme, etc.
 
 ---
 
@@ -270,17 +191,6 @@ GET /api/commands
 
 text
 
-**Réponse** :
-[
-{
-"nom": "nmap",
-"description": "Scanner de ports",
-...
-}
-]
-
-text
-
 #### Ajouter une commande
 POST /api/commands
 Content-Type: application/json
@@ -289,7 +199,7 @@ Content-Type: application/json
 "nom": "nmap",
 "description": "Scanner de ports",
 "categorie": "Reconnaissance",
-"plateforme": "Linux/Windows",
+"plateforme": "Linux",
 "arguments_options": "-sV, -sC",
 "exemple": "nmap -sV 192.168.1.1",
 "usage": "Scanner ports actifs",
@@ -299,18 +209,8 @@ Content-Type: application/json
 
 text
 
-#### Modifier une commande
-PUT /api/commands/0
-Content-Type: application/json
-
-{
-"description": "Nouveau descriptif"
-}
-
-text
-
 #### Supprimer une commande
-DELETE /api/commands/0
+DELETE /api/commands/1
 
 text
 
@@ -321,200 +221,205 @@ GET /api/search/global?q=nmap
 
 text
 
-**Réponse** :
-{
-"commands": [{...}],
-"cheatsheets": [{...}],
-"tools": [{...}],
-"vulnerabilities": [{...}],
-"certifications": [{...}],
-"notes": [{...}]
-}
+Retourne résultats des 6 modules.
+
+---
+
+## 🗄️ Base de données
+
+### Architecture
+- **PostgreSQL 15** pour production
+- **SQLite** possible localement
+- **Migrations automatiques** au démarrage
+
+### Tables principales
+- `commands` - Commandes cybersec
+- `certifications` - Certifications
+- `cheatsheets` - Guides rapides
+- `tools` - Outils
+- `vulnerabilities` - CVE
+- `notes` - Notes personnelles
+- `favorites` - Favoris utilisateur
+- `search_history` - Historique recherche
+
+### Accéder à la DB
+
+#### Via PgAdmin (GUI)
+1. Ouvre http://localhost:5050
+2. Ajoute un serveur :
+   - Host: `db`
+   - Username: `postgres`
+   - Password: `secure_password` (du `.env`)
+
+#### Via terminal
+docker-compose exec db psql -U postgres -d cybersec_manager
 
 text
 
-#### Suggestions recherche
-GET /api/search/suggestions
+Puis des commandes SQL :
+-- Voir les tables
+\dt
 
-text
+-- Compter les commandes
+SELECT COUNT(*) FROM commands;
 
-#### Ajouter à l'historique
-POST /api/search/add-history
-Content-Type: application/json
-
-{
-"search": "nmap",
-"type": "global"
-}
-
-text
-
-### Endpoints Favoris
-
-#### Lister favoris
-GET /api/favorites
-
-text
-
-#### Ajouter aux favoris
-POST /api/favorites/0
-
-text
-
-#### Retirer des favoris
-DELETE /api/favorites/0
+-- Lister les commandes
+SELECT nom, categorie FROM commands LIMIT 10;
 
 text
 
 ---
 
-## ⚙️ Configuration
+## 🔧 Configuration
 
-### Variables d'environnement
+### Fichier `.env`
+PostgreSQL
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=secure_password
+POSTGRES_DB=cybersec_manager
 
-Créez un fichier `.env` :
-
-FLASK_ENV=development
-FLASK_DEBUG=True
-SECRET_KEY=votre-cle-secrete-ici
-DEBUG=True
-HOST=0.0.0.0
-PORT=5000
-
-text
-
-### Configuration Flask
-
-Modifiez `app.py` :
-
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-key')
-app.config['DEBUG'] = os.getenv('DEBUG', True)
+Flask
+FLASK_ENV=production
+FLASK_DEBUG=0
+SECRET_KEY=your-secret-key-change-me
 
 text
 
+### Modifier la configuration
+1. Édite `.env`
+2. Relance : `docker-compose restart`
+
 ---
 
-## 📊 Importer un gros dataset
+## 📥 Importer des données
 
-### Via CSV
-
-1. Créez un fichier `data/import_commands.py` :
-
-import csv
-import json
-
-def import_csv(csv_file, json_file):
-data = []
-with open(csv_file, 'r', encoding='utf-8') as f:
-reader = csv.DictReader(f)
-for row in reader:
-data.append(row)
-
-text
-with open(json_file, 'w', encoding='utf-8') as f:
-    json.dump(data, f, ensure_ascii=False, indent=2)
-
-print(f"✅ {len(data)} items importés!")
-import_csv('commandes.csv', 'data/commands.json')
+### Format CSV
+nom,description,categorie,plateforme,arguments_options,exemple,usage,tags,niveau
+nmap,Scanner de ports,Reconnaissance,Linux,-sV -sC -A,nmap -sV 192.168.1.1,Scanner les ports,scan;reconnaissance,Intermédiaire
 
 text
 
-2. Lancez le script :
-python data/import_commands.py
+### Import automatique
+Les fichiers dans `data/` sont importés automatiquement au démarrage.
+
+---
+
+## 🐛 Troubleshooting
+
+### "Connection refused" PostgreSQL
+Vérifier que le container PostgreSQL est actif
+docker-compose ps
+
+Relancer
+docker-compose restart db
+
+text
+
+### "Port already in use"
+Port 5000 occupé
+Modifier docker-compose.yml : "5001:5000" au lieu de "5000:5000"
+text
+
+### "ModuleNotFoundError"
+Réinstaller les dépendances
+docker-compose exec web pip install -r requirements.txt
+
+text
+
+### Réinitialiser la base de données
+ATTENTION : supprime toutes les données !
+docker-compose down -v
+docker-compose up --build
 
 text
 
 ---
 
-## 🤝 Contribuer
+## 🚀 Déploiement Production
 
-Les contributions sont bienvenues ! 
+### Sur un serveur
 
-### Process
+#### Option 1 : Docker (recommandé)
+Sur le serveur
+git clone <ton-repo>
+cd cyber-tool2
 
-1. Fork le repository
-2. Créez une branche : `git checkout -b feature/votre-feature`
-3. Commitez : `git commit -m 'Ajout feature'`
-4. Push : `git push origin feature/votre-feature`
-5. Ouvrez une Pull Request
+Modifier .env (sécurité)
+nano .env
 
-### Guidelines
+Lancer
+docker-compose -f docker-compose.yml up -d
 
-- Suivez le style de code existant
-- Testez vos modifications
-- Documentez les nouvelles features
-- Mettez à jour le README si nécessaire
+text
 
----
+#### Option 2 : Heroku/Railway
+1. Push sur GitHub
+2. Connecte à Heroku/Railway
+3. Ajoute les variables d'environnement
+4. Deploy !
 
-## 📝 Licence
-
-Ce projet est sous licence **MIT** - voir le fichier [LICENSE](LICENSE) pour les détails.
-
----
-
-## 🎓 Cas d'usage
-
-- 📚 **Apprentissage cybersécurité** - Référence des commandes avec exemples
-- 🎯 **Préparation certifications** - Suivi de progression OSCP, CEH, etc.
-- 🔧 **Pentest** - Quick reference pour opérations terrain
-- 📖 **Documentation** - Notes personnelles et procédures
-- 🏢 **Formation** - Support pour équipes de sécurité
-
----
-
-## 🐛 Signaler un bug
-
-Créez une issue GitHub avec :
-- Description du bug
-- Pas pour reproduire
-- Résultat attendu vs réel
-- Version Python et OS
-
----
-
-## 💬 Support
-
-- 📧 Email : [contact@example.com]
-- 🐙 GitHub Issues : [https://github.com/...](https://github.com/...)
-- 💬 Discussions : [GitHub Discussions]
-
----
-
-## 🚀 Roadmap
-
-- [ ] Migration vers SQLite pour scalabilité
-- [ ] Système d'authentification multi-utilisateurs
-- [ ] Partage de collections entre utilisateurs
-- [ ] API publique avec authentification
-- [ ] Application mobile (React Native)
-- [ ] Synchronisation cloud
-- [ ] Chat intégré pour collaboration
-- [ ] Intégration Slack/Discord
+### Considérations sécurité
+- ✅ Change `SECRET_KEY` en `.env`
+- ✅ Change `POSTGRES_PASSWORD`
+- ✅ Change `PGADMIN_DEFAULT_PASSWORD`
+- ✅ Active HTTPS
+- ✅ Restriction d'accès PgAdmin
 
 ---
 
 ## 📚 Ressources
 
 - [Flask Documentation](https://flask.palletsprojects.com/)
+- [SQLAlchemy ORM](https://docs.sqlalchemy.org/)
+- [PostgreSQL Docs](https://www.postgresql.org/docs/)
+- [Docker Compose](https://docs.docker.com/compose/)
 - [OWASP Testing Guide](https://owasp.org/www-project-web-security-testing-guide/)
 - [Nmap Book](https://nmap.org/book/)
-- [Metasploit Docs](https://docs.rapid7.com/metasploit/)
 
 ---
 
-## 👨‍💻 Auteur
+## 🤝 Contribution
 
-**Maxime Pélissier**
-- 📍 Grenoble, France
-- 🎓 Master Cybersécurité
-- 🔐 Passionné par la sécurité
+Les contributions sont bienvenues ! 
+
+### Process
+1. Fork le repository
+2. Crée une branche : `git checkout -b feature/ma-feature`
+3. Commit : `git commit -m 'Ajout feature'`
+4. Push : `git push origin feature/ma-feature`
+5. Ouvre une Pull Request
 
 ---
 
-## ⭐ Si tu aimes ce projet, n'oublie pas la star !
+## 📝 Licence
 
-⭐ ← Clique ici pour star le repo
+Ce projet est sous licence **MIT** - voir [LICENSE](LICENSE) pour plus de détails.
+
+---
+
+## 👨‍💻 À propos
+
+Développé comme référence complète pour apprendre et pratiquer la cybersécurité.
+
+**Idéal pour** :
+- Étudiants en cybersécurité
+- Candidats certifications (OSCP, CEH, etc.)
+- Pentesters cherchant une quick reference
+- Équipes de sécurité
+
+---
+
+## 📞 Support
+
+- 📧 Questions ? Ouvre une issue
+- 🐛 Bug trouvé ? Signale-le
+- 💡 Suggestion ? Pull request bienvenue
+
+---
+
+## 🌟 If you find this useful, please star ⭐
+
+⭐ ← Click here to star the repo
 
 text
 
