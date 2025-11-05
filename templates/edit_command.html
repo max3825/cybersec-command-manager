@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2>✏️ Éditer la commande</h2>
+        <form id="editForm">
+            <div class="form-group">
+                <label for="nom">Nom de la commande *</label>
+                <input type="text" id="nom" value="{{ command.nom }}" required class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description *</label>
+                <input type="text" id="description" value="{{ command.description }}" required class="form-input">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="categorie">Catégorie *</label>
+                    <input type="text" id="categorie" value="{{ command.categorie }}" required list="cats" class="form-input">
+                    <datalist id="cats">
+                        {% for cat in categories %}<option value="{{ cat }}">{% endfor %}
+                    </datalist>
+                </div>
+
+                <div class="form-group">
+                    <label for="plateforme">Plateforme *</label>
+                    <select id="plateforme" required class="form-input">
+                        <option value="Linux" {% if command.plateforme == 'Linux' %}selected{% endif %}>🐧 Linux</option>
+                        <option value="Windows" {% if command.plateforme == 'Windows' %}selected{% endif %}>🪟 Windows</option>
+                        <option value="Linux/Windows" {% if command.plateforme == 'Linux/Windows' %}selected{% endif %}>🔄 Linux/Windows</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="niveau">Niveau *</label>
+                    <select id="niveau" required class="form-input">
+                        <option value="Débutant" {% if command.get('niveau', 'Débutant') == 'Débutant' %}selected{% endif %}>📚 Débutant</option>
+                        <option value="Intermédiaire" {% if command.get('niveau', 'Débutant') == 'Intermédiaire' %}selected{% endif %}>⚡ Intermédiaire</option>
+                        <option value="Avancé" {% if command.get('niveau', 'Débutant') == 'Avancé' %}selected{% endif %}>🔥 Avancé</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="groupe">Groupe *</label>
+                    <input type="text" id="groupe" value="{{ command.get('groupe', '') }}" required class="form-input">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="arguments_options">Arguments/Options *</label>
+                <textarea id="arguments_options" required class="form-input" rows="3">{{ command.arguments_options }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="exemple">Exemple d'utilisation *</label>
+                <input type="text" id="exemple" value="{{ command.exemple }}" required class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label for="usage">Usage / Cas d'emploi *</label>
+                <textarea id="usage" required class="form-input" rows="3">{{ command.usage }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="tags">Tags *</label>
+                <input type="text" id="tags" value="{{ command.tags }}" required class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notes optionnelles</label>
+                <textarea id="notes" class="form-input" rows="2">{{ command.get('notes', '') }}</textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 Enregistrer les modifications</button>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">❌ Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('editForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = {
+        nom: document.getElementById('nom').value,
+        description: document.getElementById('description').value,
+        categorie: document.getElementById('categorie').value,
+        plateforme: document.getElementById('plateforme').value,
+        niveau: document.getElementById('niveau').value,
+        groupe: document.getElementById('groupe').value,
+        arguments_options: document.getElementById('arguments_options').value,
+        exemple: document.getElementById('exemple').value,
+        usage: document.getElementById('usage').value,
+        tags: document.getElementById('tags').value,
+        notes: document.getElementById('notes').value || ''
+    };
+    fetch('/api/commands/{{ cmd_id }}', {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.message) {
+            alert('✅ ' + d.message);
+            window.location = '/';
+        } else if (d.error) {
+            alert('❌ Erreur: ' + d.error);
+        }
+    })
+    .catch(e => {
+        console.error(e);
+        alert('❌ Erreur lors de la mise à jour');
+    });
+});
+</script>
+{% endblock %}

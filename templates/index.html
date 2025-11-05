@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Statistiques Dashboard -->
+    <div class="stats-dashboard">
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+                <h3>{{ stats.total }}</h3>
+                <p>Commandes totales</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🐧</div>
+            <div class="stat-content">
+                <h3>{{ stats.linux }}</h3>
+                <p>Linux</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🪟</div>
+            <div class="stat-content">
+                <h3>{{ stats.windows }}</h3>
+                <p>Windows</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🏷️</div>
+            <div class="stat-content">
+                <h3>{{ stats.categories }}</h3>
+                <p>Catégories</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barre de recherche avancée -->
+    <div class="search-section">
+        <h2>🔍 Recherche Avancée</h2>
+        <div class="search-controls">
+            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher par nom, description, tags...">
+
+            <select id="categoryFilter" class="filter-select">
+                <option value="">📁 Toutes les catégories</option>
+                {% for category in categories %}
+                <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+
+            <select id="platformFilter" class="filter-select">
+                <option value="">🖥️ Toutes les plateformes</option>
+                {% for platform in platforms %}
+                <option value="{{ platform }}">{{ platform }}</option>
+                {% endfor %}
+            </select>
+
+            <select id="levelFilter" class="filter-select">
+                <option value="">📚 Tous les niveaux</option>
+                <option value="Débutant">Débutant</option>
+                <option value="Intermédiaire">Intermédiaire</option>
+                <option value="Avancé">Avancé</option>
+            </select>
+
+            <button id="clearFilters" class="btn btn-secondary">🔄 Réinitialiser</button>
+            <button id="toggleFavorites" class="btn btn-favorite">⭐ Favoris</button>
+        </div>
+        <div id="resultCount" class="result-count"></div>
+    </div>
+
+    <!-- Vue de commandes -->
+    <div id="viewToggle" class="view-toggle">
+        <button class="view-btn active" onclick="switchView('grid')">⊞ Grille</button>
+        <button class="view-btn" onclick="switchView('list')">≡ Liste</button>
+    </div>
+
+    <!-- Grid de commandes -->
+    <div class="commands-grid" id="commandsGrid">
+        {% for cmd in commands %}
+        <div class="command-card" data-id="{{ loop.index0 }}" data-category="{{ cmd.categorie }}" data-platform="{{ cmd.plateforme }}" data-level="{{ cmd.get('niveau', 'Débutant') }}">
+            <div class="command-header">
+                <div>
+                    <h3 class="command-name">{{ cmd.nom }}</h3>
+                    <div class="command-meta">
+                        <span class="platform-badge platform-{{ cmd.plateforme.lower().replace('/', '-') }}">
+                            {{ cmd.plateforme }}
+                        </span>
+                        <span class="level-badge level-{{ cmd.get('niveau', 'Débutant').lower() }}">
+                            {{ cmd.get('niveau', 'Débutant') }}
+                        </span>
+                    </div>
+                </div>
+                <button class="favorite-btn" onclick="toggleFavorite({{ loop.index0 }}, this)" {% if loop.index0 in favorites %}data-favorited="true"{% endif %}>
+                    {% if loop.index0 in favorites %}⭐{% else %}☆{% endif %}
+                </button>
+            </div>
+
+            <div class="command-category">
+                <span class="category-icon">📁</span>
+                {{ cmd.categorie }}
+            </div>
+
+            <p class="command-description">{{ cmd.description }}</p>
+
+            <div class="command-section">
+                <strong>⚙️ Arguments/Options:</strong>
+                <code class="command-code">{{ cmd.arguments_options }}</code>
+            </div>
+
+            <div class="command-section">
+                <strong>💡 Exemple:</strong>
+                <div class="command-example">
+                    <code>{{ cmd.exemple }}</code>
+                    <button class="copy-btn" onclick="copyToClipboard('{{ cmd.exemple }}', this)" title="Copier">📋</button>
+                </div>
+            </div>
+
+            <div class="command-section">
+                <strong>📌 Usage:</strong>
+                <p class="command-usage">{{ cmd.usage }}</p>
+            </div>
+
+            <div class="command-tags">
+                {% for tag in cmd.tags.split(', ') %}
+                <span class="tag" onclick="searchByTag(this)">{{ tag }}</span>
+                {% endfor %}
+            </div>
+
+            {% if cmd.get('ressources') %}
+            <div class="command-resources">
+                <strong>📖 Documentation:</strong>
+                <a href="{{ cmd.ressources }}" target="_blank" class="btn btn-docs">Lire la doc →</a>
+            </div>
+            {% endif %}
+
+            <div class="command-actions">
+                <a href="{{ url_for('edit_form', cmd_id=loop.index0) }}" class="btn btn-edit">✏️ Éditer</a>
+                <button onclick="deleteCommand({{ loop.index0 }})" class="btn btn-delete">🗑️ Supprimer</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div id="noResults" class="no-results" style="display: none;">
+        <p>😢 Aucune commande trouvée avec ces critères.</p>
+    </div>
+</div>
+
+<style>
+.command-resources {
+    margin: 15px 0;
+    padding: 12px;
+    background: rgba(33, 150, 243, 0.1);
+    border-left: 3px solid #2196f3;
+    border-radius: 4px;
+}
+
+.command-resources strong {
+    color: #2196f3;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.btn-docs {
+    background: rgba(33, 150, 243, 0.2) !important;
+    color: #2196f3 !important;
+    border: 1px solid #2196f3 !important;
+    padding: 8px 14px !important;
+    font-size: 0.9rem !important;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-docs:hover {
+    background: rgba(33, 150, 243, 0.3) !important;
+    transform: translateX(3px) !important;
+}
+</style>
+
+<script>
+let showingOnlyFavorites = false;
+
+function filterCommands() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const category = document.getElementById('categoryFilter').value;
+    const platform = document.getElementById('platformFilter').value;
+    const level = document.getElementById('levelFilter').value;
+    const cards = document.querySelectorAll('.command-card');
+    let visible = 0;
+
+    cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const cat = card.getAttribute('data-category');
+        const plat = card.getAttribute('data-platform');
+        const lv = card.getAttribute('data-level');
+        const id = parseInt(card.getAttribute('data-id'));
+
+        let match = (!search || text.includes(search)) &&
+                    (!category || cat === category) &&
+                    (!platform || plat === platform) &&
+                    (!level || lv === level);
+
+        if (showingOnlyFavorites) {
+            const isFav = document.querySelector(`.favorite-btn[data-cmd-id="${id}"][data-favorited="true"]`) !== null;
+            match = match && isFav;
+        }
+
+        if (match) {
+            card.style.display = 'block';
+            visible++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    document.getElementById('resultCount').textContent = `✨ ${visible} commande(s) trouvée(s)`;
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+}
+
+function searchByTag(tagElement) {
+    document.getElementById('searchInput').value = tagElement.textContent;
+    filterCommands();
+    document.getElementById('searchInput').focus();
+}
+
+function copyToClipboard(text, button) {
+    navigator.clipboard.writeText(text).then(() => {
+        const orig = button.textContent;
+        button.textContent = '✅ Copié!';
+        setTimeout(() => { button.textContent = orig; }, 2000);
+    }).catch(() => alert('Erreur de copie'));
+}
+
+function deleteCommand(id) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) {
+        fetch(`/api/commands/${id}`, {method: 'DELETE'})
+        .then(r => r.json())
+        .then(d => {alert(d.message); location.reload();})
+        .catch(e => alert('Erreur'));
+    }
+}
+
+function toggleFavorite(id, btn) {
+    const isFav = btn.getAttribute('data-favorited') === 'true';
+    const endpoint = isFav ? 'DELETE' : 'POST';
+
+    fetch(`/api/favorites/${id}`, {method: endpoint})
+    .then(r => r.json())
+    .then(d => {
+        if (endpoint === 'POST') {
+            btn.textContent = '⭐';
+            btn.setAttribute('data-favorited', 'true');
+        } else {
+            btn.textContent = '☆';
+            btn.removeAttribute('data-favorited');
+        }
+        filterCommands();
+    });
+}
+
+function switchView(view) {
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    const grid = document.getElementById('commandsGrid');
+    grid.classList.toggle('list-view', view === 'list');
+}
+
+document.getElementById('searchInput').addEventListener('input', filterCommands);
+document.getElementById('categoryFilter').addEventListener('change', filterCommands);
+document.getElementById('platformFilter').addEventListener('change', filterCommands);
+document.getElementById('levelFilter').addEventListener('change', filterCommands);
+
+document.getElementById('clearFilters').addEventListener('click', () => {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('categoryFilter').value = '';
+    document.getElementById('platformFilter').value = '';
+    document.getElementById('levelFilter').value = '';
+    showingOnlyFavorites = false;
+    document.getElementById('toggleFavorites').classList.remove('active');
+    filterCommands();
+});
+
+document.getElementById('toggleFavorites').addEventListener('click', (e) => {
+    showingOnlyFavorites = !showingOnlyFavorites;
+    e.target.classList.toggle('active');
+    filterCommands();
+});
+
+filterCommands();
+</script>
+{% endblock %}

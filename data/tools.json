@@ -1,0 +1,91 @@
+[
+  {
+    "id": 1,
+    "nom": "Nmap",
+    "description": "Scanner de ports et découverte réseau réseau",
+    "categorie": "Reconnaissance",
+    "type": "Scanner",
+    "plateforme": ["Linux", "Windows", "macOS"],
+    "prix": "Gratuit",
+    "installation": "apt install nmap / brew install nmap",
+    "commandes_courantes": [
+      "nmap -sV -sC targetIP",
+      "nmap -A -T4 targetIP",
+      "nmap -p- targetIP"
+    ],
+    "alternatives": ["Zmap", "Masscan"],
+    "documentation": "https://nmap.org/book/man.html",
+    "niveau": "Intermédiaire"
+  },
+  {
+    "id": 2,
+    "nom": "Burp Suite",
+    "description": "Suite complète de test de sécurité web",
+    "categorie": "Web Security",
+    "type": "Framework",
+    "plateforme": ["Linux", "Windows", "macOS"],
+    "prix": "Gratuit (Community) / Payant (Professional)",
+    "installation": "Télécharger depuis https://portswigger.net/burp/communitydownload",
+    "commandes_courantes": [
+      "java -jar burpsuite.jar",
+      "Proxy configuration",
+      "Scanner analysis"
+    ],
+    "alternatives": ["OWASP ZAP", "Acunetix"],
+    "documentation": "https://portswigger.net/burp/documentation",
+    "niveau": "Avancé"
+  },
+  {
+    "id": 3,
+    "nom": "Metasploit",
+    "description": "Framework de test de pénétration complet",
+    "categorie": "Exploitation",
+    "type": "Framework",
+    "plateforme": ["Linux", "Windows"],
+    "prix": "Gratuit (Open Source) / Payant (Pro)",
+    "installation": "apt install metasploit-framework",
+    "commandes_courantes": [
+      "msfconsole",
+      "use exploit/...",
+      "set payload windows/meterpreter/reverse_tcp"
+    ],
+    "alternatives": ["Canvas", "Cobalt Strike"],
+    "documentation": "https://docs.rapid7.com/metasploit/",
+    "niveau": "Avancé"
+  },
+  {
+    "id": 4,
+    "nom": "Wireshark",
+    "description": "Analyseur de trafic réseau graphique",
+    "categorie": "Network Analysis",
+    "type": "Analyseur",
+    "plateforme": ["Linux", "Windows", "macOS"],
+    "prix": "Gratuit",
+    "installation": "apt install wireshark / brew install wireshark",
+    "commandes_courantes": [
+      "wireshark",
+      "tshark -i eth0 -w capture.pcap",
+      "wireshark -r capture.pcap"
+    ],
+    "alternatives": ["tcpdump", "NetworkMiner"],
+    "documentation": "https://www.wireshark.org/docs/",
+    "niveau": "Intermédiaire"
+  },
+  {
+    "id": 5,
+    "nom": "Volatility",
+    "description": "Framework d'analyse mémoire forensique",
+    "categorie": "Forensics",
+    "type": "Framework",
+    "plateforme": ["Linux", "Windows"],
+    "prix": "Gratuit",
+    "installation": "pip install volatility3",
+    "commandes_courantes": [
+      "vol.py -f memory.dmp windows.pslist",
+      "vol.py -f memory.dmp windows.malfind"
+    ],
+    "alternatives": ["LLDB", "GDB"],
+    "documentation": "https://volatilityfoundation.org/",
+    "niveau": "Avancé"
+  }
+]

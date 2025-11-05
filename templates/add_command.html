@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2>➕ Ajouter une nouvelle commande</h2>
+        <form id="addForm">
+            <div class="form-group">
+                <label for="nom">Nom de la commande *</label>
+                <input type="text" id="nom" required class="form-input" placeholder="Ex: nmap">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description *</label>
+                <input type="text" id="description" required class="form-input" placeholder="Description courte et claire">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="categorie">Catégorie *</label>
+                    <input type="text" id="categorie" required list="cats" class="form-input" placeholder="Ex: Réseau">
+                    <datalist id="cats">
+                        <option value="Gestion de fichiers">
+                        <option value="Analyse de texte">
+                        <option value="Monitoring">
+                        <option value="Réseau">
+                        <option value="Forensic">
+                        <option value="Reconnaissance">
+                        <option value="Processus">
+                        <option value="Services">
+                        <option value="Audit">
+                        <option value="Système">
+                        <option value="Sécurité">
+                        <option value="Pentest">
+                    </datalist>
+                </div>
+
+                <div class="form-group">
+                    <label for="plateforme">Plateforme *</label>
+                    <select id="plateforme" required class="form-input">
+                        <option value="">Sélectionner...</option>
+                        <option value="Linux">🐧 Linux</option>
+                        <option value="Windows">🪟 Windows</option>
+                        <option value="Linux/Windows">🔄 Linux/Windows</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="niveau">Niveau *</label>
+                    <select id="niveau" required class="form-input">
+                        <option value="">Sélectionner...</option>
+                        <option value="Débutant">📚 Débutant</option>
+                        <option value="Intermédiaire">⚡ Intermédiaire</option>
+                        <option value="Avancé">🔥 Avancé</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="groupe">Groupe *</label>
+                    <input type="text" id="groupe" required list="groupes" class="form-input" placeholder="Ex: Réseau">
+                    <datalist id="groupes">
+                        <option value="Linux Administration">
+                        <option value="Windows Administration">
+                        <option value="Network Analysis">
+                        <option value="Security Tools">
+                        <option value="Forensics">
+                    </datalist>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="arguments_options">Arguments/Options *</label>
+                <textarea id="arguments_options" required class="form-input" rows="3" placeholder="Ex: -sT (TCP), -sS (SYN), -sV (versions)"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="exemple">Exemple d'utilisation *</label>
+                <input type="text" id="exemple" required class="form-input" placeholder="Ex: nmap -sV -A 192.168.1.1">
+            </div>
+
+            <div class="form-group">
+                <label for="usage">Usage / Cas d'emploi *</label>
+                <textarea id="usage" required class="form-input" rows="3" placeholder="Quand et pourquoi utiliser cette commande"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="tags">Tags (séparés par des virgules) *</label>
+                <input type="text" id="tags" required class="form-input" placeholder="Ex: scan, reconnaissance, ports">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notes optionnelles</label>
+                <textarea id="notes" class="form-input" rows="2" placeholder="Informations supplémentaires..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 Ajouter la commande</button>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">❌ Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('addForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = {
+        nom: document.getElementById('nom').value,
+        description: document.getElementById('description').value,
+        categorie: document.getElementById('categorie').value,
+        plateforme: document.getElementById('plateforme').value,
+        niveau: document.getElementById('niveau').value,
+        groupe: document.getElementById('groupe').value,
+        arguments_options: document.getElementById('arguments_options').value,
+        exemple: document.getElementById('exemple').value,
+        usage: document.getElementById('usage').value,
+        tags: document.getElementById('tags').value,
+        notes: document.getElementById('notes').value || ''
+    };
+    fetch('/api/commands', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.message) {
+            alert('✅ ' + d.message);
+            window.location = '/';
+        } else if (d.error) {
+            alert('❌ Erreur: ' + d.error);
+        }
+    })
+    .catch(e => {
+        console.error(e);
+        alert('❌ Erreur lors de l\'ajout');
+    });
+});
+</script>
+{% endblock %}

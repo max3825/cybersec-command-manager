@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1,
+    "titre": "Privilege Escalation Linux",
+    "description": "Guide complet de l'escalade de privilèges sous Linux",
+    "categorie": "Linux",
+    "niveau": "Avancé",
+    "contenu": "# Privilege Escalation Linux\n\n## 1. Information Gathering\nuname -a\nid\nsudo -l\ncat /etc/sudoers\nfind / -perm -4000 -ls 2>/dev/null\n\n## 2. SUID Binaries\nfind / -type f -perm -u=s 2>/dev/null\nstrings /usr/bin/something\nstrace -e trace=execve /usr/bin/something\n\n## 3. Kernel Exploits\nuname -r\ncat /proc/version\n\n## 4. Sudo Exploitation\nsudo -l\nsudo -u user command\n\n## 5. NOPASSWD Exploitation\ngrep -r NOPASSWD /etc/sudoers\n\n## 6. Path Exploitation\necho $PATH\nls -la /usr/local/bin\n\n## 7. Weak File Permissions\nfind / -type f -perm 0777 2>/dev/null\nfind / -type d -perm 0777 2>/dev/null\n\n## 8. Cron Jobs\ncat /etc/crontab\nls -la /etc/cron.d/\nls -la /etc/cron.daily/",
+    "commandes": ["sudo", "find", "chmod", "cat", "strings", "strace"],
+    "ressources": ["https://github.com/swisskyrepo/PayloadsAllTheThings", "https://gtfobins.github.io/"],
+    "date_creation": "2025-11-05"
+  },
+  {
+    "id": 2,
+    "titre": "Web Penetration Testing",
+    "description": "Cheat sheet pour les tests de pénétration web",
+    "categorie": "Web",
+    "niveau": "Intermédiaire",
+    "contenu": "# Web Penetration Testing\n\n## OWASP Top 10 Reconnaissance\n\n### 1. Reconnaissance\nwhois domain.com\nnmap -sV -sC domain.com\nwhatweb domain.com\ngoogle dorking: site:domain.com\n\n### 2. Scanning\nnikto -h domain.com\nburpsuite\nzaproxy\nnessus\n\n### 3. SQL Injection\nsqlmap -u \"http://site.com/page?id=1\" --dbs\nsqlmap -u \"http://site.com/page?id=1\" --dump\n' OR '1'='1\nadmin' OR '1'='1' --\n\n### 4. XSS Testing\n<script>alert('XSS')</script>\n<img src=x onerror=alert('XSS')>\n\n### 5. CSRF Testing\n<img src=\"http://site.com/action?param=value\">\n\n### 6. Directory Enumeration\ndirbuster\ngobuster dir -u http://site.com -w wordlist.txt\nffuf -u http://site.com/FUZZ -w wordlist.txt\n\n### 7. Parameter Fuzzing\nburpsuite intruder\nsqlmap -u \"http://site.com/page?id=1\" -p id\n\n### 8. Authentication Bypass\ndefault credentials\nby passing login\ntoken manipulation",
+    "commandes": ["nikto", "burpsuite", "sqlmap", "nmap", "whawhatseb", "dirb"],
+    "ressources": ["https://owasp.org/www-project-web-security-testing-guide/", "https://owasp.org/www-project-top-ten/"],
+    "date_creation": "2025-11-05"
+  },
+  {
+    "id": 3,
+    "titre": "Bash Scripting Essentials",
+    "description": "Commandes bash essentielles pour l'automatisation",
+    "categorie": "Scripting",
+    "niveau": "Débutant",
+    "contenu": "# Bash Scripting\n\n## Variables\nVAR=\"value\"\necho $VAR\nreadonly VAR\nunset VAR\n\n## Paramètres\n$0 - nom du script\n$1, $2, etc - arguments\n$# - nombre d'arguments\n$@ - tous les arguments\n$? - code de retour\n\n## Boucles For\nfor i in {1..10}; do echo $i; done\nfor file in *.txt; do cat $file; done\nfor ((i=0; i<10; i++)); do echo $i; done\n\n## Boucles While\nwhile [ condition ]; do command; done\nwhile read line; do echo $line; done < file.txt\n\n## Conditions\nif [ $var -eq 5 ]; then\n  echo \"Equal\"\nfi\n\n[ $a -lt $b ] - moins que\n[ $a -gt $b ] - plus que\n[ $a -eq $b ] - égal\n[ $a -ne $b ] - différent\n[ -f file ] - fichier existe\n[ -d dir ] - répertoire existe\n\n## Fonctions\nfunction_name() {\n  echo \"Hello\"\n  return 0\n}\n\nfunction my_func() {\n  local var=\"local value\"\n  return $1\n}\n\n## Substitution de Commande\nresult=$(command)\nresult=`command`\n\n## Pipes et Redirections\ncommand1 | command2\ncommand > file\ncommand >> file\ncommand < file\ncommand 2>&1",
+    "commandes": ["bash", "sed", "awk", "grep", "cut", "tr", "sort"],
+    "ressources": ["https://www.gnu.org/software/bash/manual/", "https://www.shellscript.sh/"],
+    "date_creation": "2025-11-05"
+  },
+  {
+    "id": 4,
+    "titre": "Windows Privilege Escalation",
+    "description": "Techniques d'escalade de privilèges sous Windows",
+    "categorie": "Windows",
+    "niveau": "Avancé",
+    "contenu": "# Windows Privilege Escalation\n\n## Information Gathering\nwhoami\nwhoami /priv\nwhoami /groups\nsysteminfo\nnetsh wlan show profile\nipconfig /all\nroute print\n\n## Unquoted Service Paths\nwmic service list brief\nwmic service list brief | findstr \"Running\"\nGet-WmiObject win32_service | Select-Object Name,PathName | Where-Object {$_.PathName -notlike '\"*'}\n\n## Weak Folder Permissions\nicacls C:\\Program Files\\*\n\n## Registry Modification\nreg query HKLM\\System\\CurrentControlSet\\Services\nreg add HKCU\\Software\\Microsoft\\Windows\\Run /v malware /d C:\\path\\malware.exe\n\n## UAC Bypass\nBypassUAC.exe\nWINDIR% \\System32\\wusa.exe /extract:C:\\temp /quiet\n\n## Token Impersonation\nIncognito.exe list_tokens -u\nincognito.exe delegate_tokens\n\n## Scheduled Tasks\ntasklist /V\ntasksched.msc\nschtasks /query /fo LIST /v\n\n## DLL Hijacking\nProcess Monitor (procmon.exe)\nFind DLL's in user writable directories\n\n## Kernel Exploits\nwmic os get version\nwmic os get buildnumber",
+    "commandes": ["whoami", "systeminfo", "icacls", "reg", "wmic", "tasklist"],
+    "ressources": ["https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Windows%20-%20Privilege%20Escalation", "https://github.com/gtworek/Priv2Admin"],
+    "date_creation": "2025-11-05"
+  },
+  {
+    "id": 5,
+    "titre": "Network Reconnaissance",
+    "description": "Techniques de reconnaissance réseau",
+    "categorie": "Réseau",
+    "niveau": "Intermédiaire",
+    "contenu": "# Network Reconnaissance\n\n## Ping Sweep\nfor i in {1..254}; do ping -c 1 192.168.1.$i | grep \"bytes from\" & done\nnmap -sn 192.168.1.0/24\n\n## DNS Enumeration\nnslookup domain.com\nnslookup -query=MX domain.com\nnslookup -query=NS domain.com\ndig domain.com\ndig domain.com ANY\ndig domain.com @ns.domain.com\n\n## Zone Transfer\nnslookup -ls -d domain.com ns.domain.com\ndig domain.com @ns.domain.com AXFR\ndig domain.com +long +noall +answer\n\n## Whois\nwhois domain.com\nwhois IP\n\n## Port Scanning\nnmap -p- target\nnmap -sT target\nnmap -sS target\nnmap -sU target\nnmap -sV target\n\n## Service Detection\nbannergrabing\nnetcat -v target port\ntelnet target port\n\n## Traceroute\ntraceroute domain.com\ntracert domain.com (Windows)\nmtr domain.com\n\n## Reverse DNS Lookup\nnslookup IP\ndig -x IP\n\n## Network Mapping\nnmap -A target\nnmap -O target\nnmap --script discovery target",
+    "commandes": ["nmap", "dig", "nslookup", "whois", "traceroute", "ping"],
+    "ressources": ["https://nmap.org/book/", "https://www.dns-sd.org/"],
+    "date_creation": "2025-11-05"
+  }
+]
