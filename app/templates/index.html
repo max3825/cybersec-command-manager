@@ -3,33 +3,36 @@
 {% block content %}
 <div class="container">
     <!-- Statistiques Dashboard -->
-    <div class="stats-dashboard">
-        <div class="stat-card">
-            <div class="stat-icon">📊</div>
-            <div class="stat-content">
-                <h3>{{ stats.total }}</h3>
-                <p>Commandes totales</p>
+    <div class="stats-overview">
+        <h2>📊 Vue d'ensemble</h2>
+        <div class="stats-cards">
+            <div class="stat-mini-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-info">
+                    <p class="stat-value">{{ stats.total }}</p>
+                    <p class="stat-label">Commandes</p>
+                </div>
             </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">🐧</div>
-            <div class="stat-content">
-                <h3>{{ stats.linux }}</h3>
-                <p>Linux</p>
+            <div class="stat-mini-card">
+                <div class="stat-icon">🐧</div>
+                <div class="stat-info">
+                    <p class="stat-value">{{ stats.linux }}</p>
+                    <p class="stat-label">Linux</p>
+                </div>
             </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">🪟</div>
-            <div class="stat-content">
-                <h3>{{ stats.windows }}</h3>
-                <p>Windows</p>
+            <div class="stat-mini-card">
+                <div class="stat-icon">🪟</div>
+                <div class="stat-info">
+                    <p class="stat-value">{{ stats.windows }}</p>
+                    <p class="stat-label">Windows</p>
+                </div>
             </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon">🏷️</div>
-            <div class="stat-content">
-                <h3>{{ stats.categories }}</h3>
-                <p>Catégories</p>
+            <div class="stat-mini-card">
+                <div class="stat-icon">🏷️</div>
+                <div class="stat-info">
+                    <p class="stat-value">{{ stats.categories }}</p>
+                    <p class="stat-label">Catégories</p>
+                </div>
             </div>
         </div>
     </div>
@@ -81,15 +84,11 @@
                 <div>
                     <h3 class="command-name">{{ cmd.nom }}</h3>
                     <div class="command-meta">
-                        <span class="platform-badge platform-{{ cmd.plateforme.lower().replace('/', '-') }}">
-                            {{ cmd.plateforme }}
-                        </span>
-                        <span class="level-badge level-{{ cmd.get('niveau', 'Débutant').lower() }}">
-                            {{ cmd.get('niveau', 'Débutant') }}
-                        </span>
+                        <span class="platform-badge">{{ cmd.plateforme }}</span>
+                        <span class="level-badge level-{{ cmd.get('niveau', 'Débutant').lower() }}">{{ cmd.get('niveau', 'Débutant') }}</span>
                     </div>
                 </div>
-                <button class="favorite-btn" onclick="toggleFavorite({{ loop.index0 }}, this)" {% if loop.index0 in favorites %}data-favorited="true"{% endif %}>
+                <button class="favorite-btn" onclick="toggleFavorite({{ loop.index0 }}, this)" data-cmd-id="{{ loop.index0 }}" {% if loop.index0 in favorites %}data-favorited="true"{% endif %}>
                     {% if loop.index0 in favorites %}⭐{% else %}☆{% endif %}
                 </button>
             </div>
@@ -145,39 +144,6 @@
     </div>
 </div>
 
-<style>
-.command-resources {
-    margin: 15px 0;
-    padding: 12px;
-    background: rgba(33, 150, 243, 0.1);
-    border-left: 3px solid #2196f3;
-    border-radius: 4px;
-}
-
-.command-resources strong {
-    color: #2196f3;
-    display: block;
-    margin-bottom: 8px;
-}
-
-.btn-docs {
-    background: rgba(33, 150, 243, 0.2) !important;
-    color: #2196f3 !important;
-    border: 1px solid #2196f3 !important;
-    padding: 8px 14px !important;
-    font-size: 0.9rem !important;
-    text-decoration: none;
-    display: inline-block;
-    border-radius: 6px !important;
-    transition: all 0.3s ease !important;
-}
-
-.btn-docs:hover {
-    background: rgba(33, 150, 243, 0.3) !important;
-    transform: translateX(3px) !important;
-}
-</style>
-
 <script>
 let showingOnlyFavorites = false;
 
@@ -202,7 +168,7 @@ function filterCommands() {
                     (!level || lv === level);
 
         if (showingOnlyFavorites) {
-            const isFav = document.querySelector(`.favorite-btn[data-cmd-id="${id}"][data-favorited="true"]`) !== null;
+            const isFav = document.querySelector(`[data-cmd-id="${id}"][data-favorited="true"]`) !== null;
             match = match && isFav;
         }
 

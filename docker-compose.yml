@@ -1,0 +1,77 @@
+services:
+  # Service PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: cybersec-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-cybersec_manager}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - cybersec-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Service Flask App
+  web:
+    build: .
+    container_name: cybersec-app
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-secure_password}@db:5432/${POSTGRES_DB:-cybersec_manager}
+      FLASK_ENV: ${FLASK_ENV:-production}
+      FLASK_DEBUG: ${FLASK_DEBUG:-0}
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - cybersec-network
+    command: >
+      sh -c "
+        echo '⏳ Waiting for database to be ready...' &&
+        sleep 10 &&
+        echo '📊 Creating database tables...' &&
+        python -c 'from app import app, db; app.app_context().push(); db.create_all(); print(\"✅ Database tables created\")' &&
+        echo '📥 Migrating JSON data to PostgreSQL...' &&
+        python migrate_json_to_db.py &&
+        echo '🚀 Starting Flask application...' &&
+        python app.py
+      "
+
+  # Service PgAdmin (Interface web pour gérer la DB)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: cybersec-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@cybersec.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - cybersec-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  cybersec-network:
+    driver: bridge
