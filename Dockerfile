@@ -15,11 +15,11 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copier requirements et installer
-COPY requirements.txt .
+COPY app/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier le code
-COPY . .
+# Copier TOUT le dossier app/
+COPY app/ /app/
 
 # Exposer le port
 EXPOSE 5000

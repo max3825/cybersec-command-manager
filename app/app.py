@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for
 from models import db, Command, Certification, CheatSheet, Tool, Vulnerability, Note, Favorite, SearchHistory
 from dotenv import load_dotenv
 import os
+import json
+
 
 load_dotenv()
 
@@ -99,7 +101,7 @@ def dashboard():
         cat = cmd['categorie']
         categories[cat] = categories.get(cat, 0) + 1
 
-    return render_template('templates/dashboard.html',
+    return render_template('dashboard.html',
                            stats=stats,
                            recent_commands=recent_commands,
                            cert_progress=cert_progress,
@@ -123,7 +125,7 @@ def index():
         'categories': len(categories)
     }
 
-    return render_template('templates/index.html',
+    return render_template('index.html',
                            commands=commands,
                            categories=categories,
                            platforms=platforms,
@@ -178,7 +180,7 @@ def delete_command(cmd_id):
 @app.route('/certifications')
 def certifications():
     certs = load_data('certifications')
-    return render_template('templates/certifications.html', certifications=certs)
+    return render_template('certifications.html', certifications=certs)
 
 
 @app.route('/api/certifications', methods=['GET'])
@@ -210,7 +212,7 @@ def delete_certification(cert_id):
 @app.route('/cheatsheets')
 def cheatsheets():
     sheets = load_data('cheatsheets')
-    return render_template('templates/cheatsheets.html', cheatsheets=sheets)
+    return render_template('cheatsheets.html', cheatsheets=sheets)
 
 
 @app.route('/api/cheatsheets', methods=['GET'])
@@ -242,7 +244,7 @@ def delete_cheatsheet(sheet_id):
 @app.route('/notes')
 def notes():
     notes_list = load_data('notes')
-    return render_template('templates/notes.html', notes=notes_list)
+    return render_template('notes.html', notes=notes_list)
 
 
 @app.route('/api/notes', methods=['GET'])
@@ -287,7 +289,7 @@ def delete_note(note_id):
 @app.route('/tools')
 def tools():
     tools_list = load_data('tools')
-    return render_template('templates/tools.html', tools=tools_list)
+    return render_template('tools.html', tools=tools_list)
 
 
 @app.route('/api/tools', methods=['GET'])
@@ -319,7 +321,7 @@ def delete_tool(tool_id):
 @app.route('/vulnerabilities')
 def vulnerabilities():
     vulns = load_data('vulnerabilities')
-    return render_template('templates/vulnerabilities.html', vulnerabilities=vulns)
+    return render_template('vulnerabilities.html', vulnerabilities=vulns)
 
 
 @app.route('/api/vulnerabilities', methods=['GET'])
@@ -565,7 +567,7 @@ def add_form():
     commands = load_data('commands')
     categories = sorted(list(set(cmd['categorie'] for cmd in commands)))
     platforms = sorted(list(set(cmd['plateforme'] for cmd in commands)))
-    return render_template('templates/add_command.html', categories=categories, platforms=platforms)
+    return render_template('add_command.html', categories=categories, platforms=platforms)
 
 
 @app.route('/edit/<int:cmd_id>')
@@ -574,7 +576,7 @@ def edit_form(cmd_id):
     if 0 <= cmd_id < len(commands):
         categories = sorted(list(set(cmd['categorie'] for cmd in commands)))
         platforms = sorted(list(set(cmd['plateforme'] for cmd in commands)))
-        return render_template('templates/edit_command.html',
+        return render_template('edit_command.html',
                                command=commands[cmd_id],
                                cmd_id=cmd_id,
                                categories=categories,
@@ -608,7 +610,7 @@ def stats():
         'platforms': platforms
     }
 
-    return render_template('templates/stats.html', stats=stats_data)
+    return render_template('stats.html', stats=stats_data)
 
 
 # ============ ROUTES EXPORT ============
@@ -645,4 +647,4 @@ if __name__ == '__main__':
         if not os.path.exists(DATA_FILES[data_type]):
             save_data(data_type, [])
 
-    app.run(debug=True, host='0.0.0.0', port=5008)
+    app.run(debug=True, host='0.0.0.0', port=5000)

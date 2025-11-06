@@ -1,18 +1,18 @@
 services:
-  # Service PostgreSQL
+  # PostgreSQL Database
   db:
     image: postgres:15-alpine
     container_name: cybersec-db
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password}
-      POSTGRES_DB: ${POSTGRES_DB:-cybersec_manager}
+      POSTGRES_HOST_AUTH_METHOD: trust  # ⬅️ AJOUTE CETTE LIGNE
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secure_password
+      POSTGRES_DB: cybersec_manager
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - cybersec-network
     healthcheck:
@@ -21,7 +21,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # Service Flask App
+  # Flask Application
   web:
     build: .
     container_name: cybersec-app
@@ -29,37 +29,38 @@ services:
     ports:
       - "5000:5000"
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-secure_password}@db:5432/${POSTGRES_DB:-cybersec_manager}
-      FLASK_ENV: ${FLASK_ENV:-production}
-      FLASK_DEBUG: ${FLASK_DEBUG:-0}
-      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+      DATABASE_URL: postgresql://postgres:secure_password@db:5432/cybersec_manager
+      FLASK_ENV: development
+      FLASK_DEBUG: 1
+      SECRET_KEY: your-secret-key-change-me
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - ./data:/app/data
+      - ./app:/app              # ⬅️ Ceci permet le "hot reload" du code Python/app
       - ./logs:/app/logs
     networks:
       - cybersec-network
     command: >
       sh -c "
-        echo '⏳ Waiting for database to be ready...' &&
+        echo '⏳ Waiting 10 seconds for database...' &&
         sleep 10 &&
-        echo '📊 Creating database tables...' &&
-        python -c 'from app import app, db; app.app_context().push(); db.create_all(); print(\"✅ Database tables created\")' &&
-        echo '📥 Migrating JSON data to PostgreSQL...' &&
+        echo '📊 Creating tables...' &&
+        python -c 'from app import app, db; app.app_context().push(); db.create_all()' &&
+        echo '📥 Importing data...' &&
         python migrate_json_to_db.py &&
-        echo '🚀 Starting Flask application...' &&
+        echo '🚀 Starting app...' &&
         python app.py
       "
 
-  # Service PgAdmin (Interface web pour gérer la DB)
+
+  # PgAdmin (Database Management UI)
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: cybersec-pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@cybersec.local
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
