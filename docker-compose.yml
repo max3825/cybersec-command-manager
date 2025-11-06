@@ -5,7 +5,6 @@ services:
     container_name: cybersec-db
     restart: always
     environment:
-      POSTGRES_HOST_AUTH_METHOD: trust  # ⬅️ AJOUTE CETTE LIGNE
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: secure_password
       POSTGRES_DB: cybersec_manager
@@ -37,22 +36,21 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./app:/app              # ⬅️ Ceci permet le "hot reload" du code Python/app
+      - ./app:/app
       - ./logs:/app/logs
     networks:
       - cybersec-network
     command: >
       sh -c "
-        echo '⏳ Waiting 10 seconds for database...' &&
-        sleep 10 &&
-        echo '📊 Creating tables...' &&
-        python -c 'from app import app, db; app.app_context().push(); db.create_all()' &&
-        echo '📥 Importing data...' &&
-        python migrate_json_to_db.py &&
-        echo '🚀 Starting app...' &&
+        echo '⏳ Attente de la base de données...' &&
+        sleep 5 &&
+        echo '📊 Création des tables...' &&
+        python -c 'from app import app, db; app.app_context().push(); db.create_all(); print(\"✅ Tables créées\")' &&
+        echo '📥 Import des données JSON...' &&
+        python migrate_json_to_db.py || echo '⚠️ Import échoué ou déjà fait' &&
+        echo '🚀 Démarrage de l application...' &&
         python app.py
       "
-
 
   # PgAdmin (Database Management UI)
   pgadmin:

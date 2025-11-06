@@ -1,74 +1,36 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
-from models import db, Command, Certification, CheatSheet, Tool, Vulnerability, Note, Favorite, SearchHistory
+from models import db, Command, Certification, CheatSheet, Tool, Vulnerability, Note, Favorite, SearchHistory, Badge
+from datetime import datetime
 from dotenv import load_dotenv
 import os
-import json
-
 
 load_dotenv()
-
 app = Flask(__name__)
 
-# Configuration depuis variables d'environnement
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    'DATABASE_URL',
-    'postgresql://postgres:password@localhost:5432/cybersec_manager'
-)
+# Configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://postgres:password@localhost:5432/cybersec_manager')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
 
 db.init_app(app)
 
-# Créer tables au démarrage si elles n'existent pas
 with app.app_context():
     db.create_all()
     print("✅ Database tables initialized")
-
-# ... reste du code identique
-
-# Fichiers de données
-DATA_FILES = {
-    'commands': 'data/commands.json',
-    'certifications': 'data/certifications.json',
-    'cheatsheets': 'data/cheatsheets.json',
-    'notes': 'data/notes.json',
-    'tools': 'data/tools.json',
-    'vulnerabilities': 'data/vulnerabilities.json',
-    'favorites': 'data/favorites.json',
-    'history': 'data/history.json',
-    'badges': 'data/badges.json',
-}
-
-
-def load_data(data_type):
-    """Charge les données d'un type spécifique"""
-    if os.path.exists(DATA_FILES[data_type]):
-        with open(DATA_FILES[data_type], 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return []
-
-
-def save_data(data_type, data):
-    """Sauvegarde les données d'un type spécifique"""
-    os.makedirs('data', exist_ok=True)
-    with open(DATA_FILES[data_type], 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
 
 # ============ ROUTE DASHBOARD ============
 @app.route('/')
 def dashboard():
     """Enhanced dashboard homepage"""
-    commands = load_data('commands')
-    certifications = load_data('certifications')
-    cheatsheets = load_data('cheatsheets')
-    tools = load_data('tools')
-    vulnerabilities = load_data('vulnerabilities')
-    favorites = load_data('favorites')
-    history = load_data('history')
-    badges = load_data('badges')
+    commands = Command.query.all()
+    certifications = Certification.query.all()
+    cheatsheets = CheatSheet.query.all()
+    tools = Tool.query.all()
+    vulnerabilities = Vulnerability.query.all()
+    notes = Note.query.all()
+    favorites = Favorite.query.all()
+    badges = Badge.query.all()
 
-    # Stats
     stats = {
         'total_commands': len(commands),
         'total_certs': len(certifications),
@@ -76,29 +38,29 @@ def dashboard():
         'total_tools': len(tools),
         'total_vulns': len(vulnerabilities),
         'total_favorites': len(favorites),
-        'total_history': len(history),
+        'total_history': SearchHistory.query.count(),
         'total_badges': len(badges)
     }
 
     # Recent commands (dernières 5)
-    recent_commands = commands[-5:] if commands else []
+    recent_commands = Command.query.order_by(Command.date_ajout.desc()).limit(5).all()
 
     # Certifications progress
     cert_progress = []
-    for idx, cert in enumerate(certifications[:3]):
+    for cert in certifications[:3]:
         cert_progress.append({
-            'id': idx,
-            'nom': cert['nom'],
-            'organisme': cert['organisme'],
-            'niveau': cert['niveau'],
-            'prix': cert['prix_usd'],
+            'id': cert.id,
+            'nom': cert.nom,
+            'organisme': cert.organisme,
+            'niveau': cert.niveau,
+            'prix': cert.prix_usd,
             'progress': 35
         })
 
     # Categories breakdown
     categories = {}
     for cmd in commands:
-        cat = cmd['categorie']
+        cat = cmd.categorie
         categories[cat] = categories.get(cat, 0) + 1
 
     return render_template('dashboard.html',
@@ -109,24 +71,26 @@ def dashboard():
                            favorites_count=len(favorites),
                            badges=badges)
 
-
 # ============ ROUTES COMMANDES ============
 @app.route('/commandes')
 def index():
-    commands = load_data('commands')
-    categories = sorted(list(set(cmd['categorie'] for cmd in commands)))
-    platforms = sorted(list(set(cmd['plateforme'] for cmd in commands)))
-    favorites = load_data('favorites')
+    commands = Command.query.all()
+    # Convertir en dictionnaires
+    commands_dict = [cmd.to_dict() for cmd in commands]
+    
+    categories = sorted({cmd.categorie for cmd in commands})
+    platforms = sorted({cmd.plateforme for cmd in commands})
+    favorites = [f.command_id for f in Favorite.query.all()]
 
     stats = {
         'total': len(commands),
-        'linux': sum(1 for cmd in commands if 'Linux' in cmd['plateforme']),
-        'windows': sum(1 for cmd in commands if 'Windows' in cmd['plateforme']),
+        'linux': sum(1 for cmd in commands if 'Linux' in cmd.plateforme),
+        'windows': sum(1 for cmd in commands if 'Windows' in cmd.plateforme),
         'categories': len(categories)
     }
 
     return render_template('index.html',
-                           commands=commands,
+                           commands=commands_dict,  # ⬅️ Dictionnaires au lieu d'objets
                            categories=categories,
                            platforms=platforms,
                            favorites=favorites,
@@ -135,8 +99,8 @@ def index():
 
 @app.route('/api/commands', methods=['GET'])
 def get_commands():
-    return jsonify(load_data('commands'))
-
+    commands = Command.query.all()
+    return jsonify([cmd.to_dict() for cmd in commands])
 
 @app.route('/api/commands', methods=['POST'])
 def add_command():
@@ -147,206 +111,309 @@ def add_command():
         if field not in data:
             return jsonify({'error': f'Champ manquant: {field}'}), 400
 
-    data['date_ajout'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    commands = load_data('commands')
-    commands.append(data)
-    save_data('commands', commands)
-    return jsonify({'message': 'Commande ajoutée', 'id': len(commands) - 1}), 201
-
+    cmd = Command(
+        nom=data['nom'],
+        description=data['description'],
+        categorie=data['categorie'],
+        plateforme=data['plateforme'],
+        arguments_options=data['arguments_options'],
+        exemple=data['exemple'],
+        usage=data['usage'],
+        tags=data['tags'],
+        niveau=data.get('niveau', 'Débutant'),
+        ressources=data.get('ressources', '')
+    )
+    db.session.add(cmd)
+    db.session.commit()
+    return jsonify({'message': 'Commande ajoutée', 'id': cmd.id}), 201
 
 @app.route('/api/commands/<int:cmd_id>', methods=['PUT'])
 def update_command(cmd_id):
+    cmd = Command.query.get(cmd_id)
+    if not cmd:
+        return jsonify({'error': 'Non trouvé'}), 404
+    
     data = request.get_json()
-    commands = load_data('commands')
-    if 0 <= cmd_id < len(commands):
-        data['date_modification'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        commands[cmd_id].update(data)
-        save_data('commands', commands)
-        return jsonify({'message': 'Mise à jour réussie'})
-    return jsonify({'error': 'Non trouvé'}), 404
-
+    for key, value in data.items():
+        if hasattr(cmd, key):
+            setattr(cmd, key, value)
+    
+    cmd.date_modification = datetime.utcnow()
+    db.session.commit()
+    return jsonify({'message': 'Mise à jour réussie'})
 
 @app.route('/api/commands/<int:cmd_id>', methods=['DELETE'])
 def delete_command(cmd_id):
-    commands = load_data('commands')
-    if 0 <= cmd_id < len(commands):
-        commands.pop(cmd_id)
-        save_data('commands', commands)
-        return jsonify({'message': 'Suppression réussie'})
-    return jsonify({'error': 'Non trouvé'}), 404
-
+    cmd = Command.query.get(cmd_id)
+    if not cmd:
+        return jsonify({'error': 'Non trouvé'}), 404
+    
+    db.session.delete(cmd)
+    db.session.commit()
+    return jsonify({'message': 'Suppression réussie'})
 
 # ============ ROUTES CERTIFICATIONS ============
 @app.route('/certifications')
 def certifications():
-    certs = load_data('certifications')
-    return render_template('certifications.html', certifications=certs)
+    certs = Certification.query.all()
+    # Convertir en dictionnaires
+    certs_data = [cert.to_dict() for cert in certs]
+    return render_template('certifications.html', certifications=certs_data)
+
+# ============ ROUTES CERTIFICATIONS (ÉDITION) ============
+@app.route('/certifications/<int:cert_id>', methods=['GET'])
+def edit_certification_form(cert_id):
+    cert = Certification.query.get(cert_id)
+    if not cert:
+        return redirect(url_for('certifications'))
+    
+    return render_template('edit_certification.html', certification=cert.to_dict(), cert_id=cert_id)
+
+@app.route('/api/certifications/<int:cert_id>', methods=['PUT'])
+def update_certification(cert_id):
+    cert = Certification.query.get(cert_id)
+    if not cert:
+        return jsonify({'error': 'Non trouvé'}), 404
+    
+    data = request.get_json()
+    for key, value in data.items():
+        if hasattr(cert, key):
+            setattr(cert, key, value)
+    
+    db.session.commit()
+    return jsonify({'message': 'Certification mise à jour'})
 
 
 @app.route('/api/certifications', methods=['GET'])
 def get_certifications():
-    return jsonify(load_data('certifications'))
-
+    certs = Certification.query.all()
+    return jsonify([cert.to_dict() for cert in certs])
 
 @app.route('/api/certifications', methods=['POST'])
 def add_certification():
     data = request.get_json()
-    certs = load_data('certifications')
-    data['date_ajout'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    certs.append(data)
-    save_data('certifications', certs)
-    return jsonify({'message': 'Certification ajoutée'}), 201
-
+    cert = Certification(**data)
+    db.session.add(cert)
+    db.session.commit()
+    return jsonify({'message': 'Certification ajoutée', 'id': cert.id}), 201
 
 @app.route('/api/certifications/<int:cert_id>', methods=['DELETE'])
 def delete_certification(cert_id):
-    certs = load_data('certifications')
-    if 0 <= cert_id < len(certs):
-        certs.pop(cert_id)
-        save_data('certifications', certs)
-        return jsonify({'message': 'Certification supprimée'})
-    return jsonify({'error': 'Non trouvé'}), 404
-
+    cert = Certification.query.get(cert_id)
+    if not cert:
+        return jsonify({'error': 'Non trouvé'}), 404
+    
+    db.session.delete(cert)
+    db.session.commit()
+    return jsonify({'message': 'Certification supprimée'})
 
 # ============ ROUTES CHEAT SHEETS ============
 @app.route('/cheatsheets')
 def cheatsheets():
-    sheets = load_data('cheatsheets')
-    return render_template('cheatsheets.html', cheatsheets=sheets)
+    sheets = CheatSheet.query.all()
+    sheets_data = [sheet.to_dict() for sheet in sheets]
+    return render_template('cheatsheets.html', cheatsheets=sheets_data)
+
+# ============ ROUTES CHEATSHEETS (ÉDITION) ============
+@app.route('/cheatsheets/<int:sheet_id>', methods=['GET'])
+def edit_cheatsheet_form(sheet_id):
+    sheet = CheatSheet.query.get(sheet_id)
+    if not sheet:
+        return redirect(url_for('cheatsheets'))
+    
+    return render_template('edit_cheatsheet.html', cheatsheet=sheet.to_dict(), sheet_id=sheet_id)
+
+@app.route('/api/cheatsheets/<int:sheet_id>', methods=['PUT'])
+def update_cheatsheet(sheet_id):
+    sheet = CheatSheet.query.get(sheet_id)
+    if not sheet:
+        return jsonify({'error': 'Non trouvé'}), 404
+    
+    data = request.get_json()
+    for key, value in data.items():
+        if hasattr(sheet, key):
+            setattr(sheet, key, value)
+    
+    db.session.commit()
+    return jsonify({'message': 'Cheat sheet mis à jour'})
+
 
 
 @app.route('/api/cheatsheets', methods=['GET'])
 def get_cheatsheets():
-    return jsonify(load_data('cheatsheets'))
-
+    sheets = CheatSheet.query.all()
+    return jsonify([sheet.to_dict() for sheet in sheets])
 
 @app.route('/api/cheatsheets', methods=['POST'])
 def add_cheatsheet():
     data = request.get_json()
-    sheets = load_data('cheatsheets')
-    data['date_ajout'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    sheets.append(data)
-    save_data('cheatsheets', sheets)
-    return jsonify({'message': 'Cheat sheet ajoutée'}), 201
-
+    sheet = CheatSheet(**data)
+    db.session.add(sheet)
+    db.session.commit()
+    return jsonify({'message': 'Cheat sheet ajoutée', 'id': sheet.id}), 201
 
 @app.route('/api/cheatsheets/<int:sheet_id>', methods=['DELETE'])
 def delete_cheatsheet(sheet_id):
-    sheets = load_data('cheatsheets')
-    if 0 <= sheet_id < len(sheets):
-        sheets.pop(sheet_id)
-        save_data('cheatsheets', sheets)
-        return jsonify({'message': 'Cheat sheet supprimée'})
-    return jsonify({'error': 'Non trouvé'}), 404
-
+    sheet = CheatSheet.query.get(sheet_id)
+    if not sheet:
+        return jsonify({'error': 'Non trouvé'}), 404
+    
+    db.session.delete(sheet)
+    db.session.commit()
+    return jsonify({'message': 'Cheat sheet supprimée'})
 
 # ============ ROUTES NOTES/DOCUMENTATION ============
 @app.route('/notes')
 def notes():
-    notes_list = load_data('notes')
+    notes_list = Note.query.all()
     return render_template('notes.html', notes=notes_list)
-
 
 @app.route('/api/notes', methods=['GET'])
 def get_notes():
-    return jsonify(load_data('notes'))
-
+    notes_list = Note.query.all()
+    return jsonify([note.to_dict() for note in notes_list])
 
 @app.route('/api/notes', methods=['POST'])
 def add_note():
     data = request.get_json()
-    notes_list = load_data('notes')
-    data['date_creation'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    data['date_modification'] = data['date_creation']
-    notes_list.append(data)
-    save_data('notes', notes_list)
-    return jsonify({'message': 'Note créée', 'id': len(notes_list) - 1}), 201
-
+    note = Note(**data)
+    db.session.add(note)
+    db.session.commit()
+    return jsonify({'message': 'Note créée', 'id': note.id}), 201
 
 @app.route('/api/notes/<int:note_id>', methods=['PUT'])
 def update_note(note_id):
+    note = Note.query.get(note_id)
+    if not note:
+        return jsonify({'error': 'Non trouvé'}), 404
+    
     data = request.get_json()
-    notes_list = load_data('notes')
-    if 0 <= note_id < len(notes_list):
-        data['date_modification'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        notes_list[note_id].update(data)
-        save_data('notes', notes_list)
-        return jsonify({'message': 'Note mise à jour'})
-    return jsonify({'error': 'Non trouvé'}), 404
-
+    for key, value in data.items():
+        if hasattr(note, key):
+            setattr(note, key, value)
+    
+    note.date_modification = datetime.utcnow()
+    db.session.commit()
+    return jsonify({'message': 'Note mise à jour'})
 
 @app.route('/api/notes/<int:note_id>', methods=['DELETE'])
 def delete_note(note_id):
-    notes_list = load_data('notes')
-    if 0 <= note_id < len(notes_list):
-        notes_list.pop(note_id)
-        save_data('notes', notes_list)
-        return jsonify({'message': 'Note supprimée'})
-    return jsonify({'error': 'Non trouvé'}), 404
-
+    note = Note.query.get(note_id)
+    if not note:
+        return jsonify({'error': 'Non trouvé'}), 404
+    
+    db.session.delete(note)
+    db.session.commit()
+    return jsonify({'message': 'Note supprimée'})
 
 # ============ ROUTES OUTILS ============
 @app.route('/tools')
 def tools():
-    tools_list = load_data('tools')
-    return render_template('tools.html', tools=tools_list)
+    tools_list = Tool.query.all()
+    tools_data = [tool.to_dict() for tool in tools_list]
+    return render_template('tools.html', tools=tools_data)
+
+# ============ ROUTES TOOLS (ÉDITION) ============
+@app.route('/tools/<int:tool_id>', methods=['GET'])
+def edit_tool_form(tool_id):
+    tool = Tool.query.get(tool_id)
+    if not tool:
+        return redirect(url_for('tools'))
+    
+    return render_template('edit_tool.html', tool=tool.to_dict(), tool_id=tool_id)
+
+@app.route('/api/tools/<int:tool_id>', methods=['PUT'])
+def update_tool(tool_id):
+    tool = Tool.query.get(tool_id)
+    if not tool:
+        return jsonify({'error': 'Non trouvé'}), 404
+    
+    data = request.get_json()
+    for key, value in data.items():
+        if hasattr(tool, key):
+            setattr(tool, key, value)
+    
+    db.session.commit()
+    return jsonify({'message': 'Outil mis à jour'})
 
 
 @app.route('/api/tools', methods=['GET'])
 def get_tools():
-    return jsonify(load_data('tools'))
-
+    tools_list = Tool.query.all()
+    return jsonify([tool.to_dict() for tool in tools_list])
 
 @app.route('/api/tools', methods=['POST'])
 def add_tool():
     data = request.get_json()
-    tools_list = load_data('tools')
-    data['date_ajout'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    tools_list.append(data)
-    save_data('tools', tools_list)
-    return jsonify({'message': 'Outil ajouté'}), 201
-
+    tool = Tool(**data)
+    db.session.add(tool)
+    db.session.commit()
+    return jsonify({'message': 'Outil ajouté', 'id': tool.id}), 201
 
 @app.route('/api/tools/<int:tool_id>', methods=['DELETE'])
 def delete_tool(tool_id):
-    tools_list = load_data('tools')
-    if 0 <= tool_id < len(tools_list):
-        tools_list.pop(tool_id)
-        save_data('tools', tools_list)
-        return jsonify({'message': 'Outil supprimé'})
-    return jsonify({'error': 'Non trouvé'}), 404
-
+    tool = Tool.query.get(tool_id)
+    if not tool:
+        return jsonify({'error': 'Non trouvé'}), 404
+    
+    db.session.delete(tool)
+    db.session.commit()
+    return jsonify({'message': 'Outil supprimé'})
 
 # ============ ROUTES VULNÉRABILITÉS ============
 @app.route('/vulnerabilities')
 def vulnerabilities():
-    vulns = load_data('vulnerabilities')
-    return render_template('vulnerabilities.html', vulnerabilities=vulns)
+    vulns = Vulnerability.query.all()
+    vulns_data = [vuln.to_dict() for vuln in vulns]
+    return render_template('vulnerabilities.html', vulnerabilities=vulns_data)
 
 
 @app.route('/api/vulnerabilities', methods=['GET'])
 def get_vulnerabilities():
-    return jsonify(load_data('vulnerabilities'))
-
+    vulns = Vulnerability.query.all()
+    return jsonify([vuln.to_dict() for vuln in vulns])
 
 @app.route('/api/vulnerabilities', methods=['POST'])
 def add_vulnerability():
     data = request.get_json()
-    vulns = load_data('vulnerabilities')
-    data['date_ajout'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    vulns.append(data)
-    save_data('vulnerabilities', vulns)
-    return jsonify({'message': 'Vulnérabilité ajoutée'}), 201
-
+    vuln = Vulnerability(**data)
+    db.session.add(vuln)
+    db.session.commit()
+    return jsonify({'message': 'Vulnérabilité ajoutée', 'id': vuln.id}), 201
 
 @app.route('/api/vulnerabilities/<int:vuln_id>', methods=['DELETE'])
 def delete_vulnerability(vuln_id):
-    vulns = load_data('vulnerabilities')
-    if 0 <= vuln_id < len(vulns):
-        vulns.pop(vuln_id)
-        save_data('vulnerabilities', vulns)
-        return jsonify({'message': 'Vulnérabilité supprimée'})
-    return jsonify({'error': 'Non trouvé'}), 404
+    vuln = Vulnerability.query.get(vuln_id)
+    if not vuln:
+        return jsonify({'error': 'Non trouvé'}), 404
+    
+    db.session.delete(vuln)
+    db.session.commit()
+    return jsonify({'message': 'Vulnérabilité supprimée'})
+
+# ============ ROUTES VULNÉRABILITÉS (ÉDITION) ============
+@app.route('/vulnerabilities/<int:vuln_id>', methods=['GET'])
+def edit_vulnerability_form(vuln_id):
+    vuln = Vulnerability.query.get(vuln_id)
+    if not vuln:
+        return redirect(url_for('vulnerabilities'))
+    
+    return render_template('edit_vulnerability.html', vulnerability=vuln.to_dict(), vuln_id=vuln_id)
+
+@app.route('/api/vulnerabilities/<int:vuln_id>', methods=['PUT'])
+def update_vulnerability(vuln_id):
+    vuln = Vulnerability.query.get(vuln_id)
+    if not vuln:
+        return jsonify({'error': 'Non trouvé'}), 404
+    
+    data = request.get_json()
+    for key, value in data.items():
+        if hasattr(vuln, key):
+            setattr(vuln, key, value)
+    
+    vuln.date_ajout = datetime.utcnow()
+    db.session.commit()
+    return jsonify({'message': 'Vulnérabilité mise à jour'})
 
 
 # ============ ROUTES SEARCH GLOBALE ============
@@ -368,237 +435,258 @@ def search_global():
     }
 
     # Search commands
-    commands = load_data('commands')
-    for idx, cmd in enumerate(commands):
-        if query in cmd['nom'].lower() or query in cmd['description'].lower() or query in cmd.get('tags', '').lower():
-            results['commands'].append({
-                'id': idx,
-                'nom': cmd['nom'],
-                'description': cmd['description'],
-                'type': 'command'
-            })
+    commands = Command.query.filter(
+        (Command.nom.ilike(f'%{query}%')) |
+        (Command.description.ilike(f'%{query}%')) |
+        (Command.tags.ilike(f'%{query}%'))
+    ).all()
+    for cmd in commands:
+        results['commands'].append({
+            'id': cmd.id,
+            'nom': cmd.nom,
+            'description': cmd.description,
+            'type': 'command'
+        })
 
     # Search cheatsheets
-    cheatsheets = load_data('cheatsheets')
-    for idx, sheet in enumerate(cheatsheets):
-        if query in sheet['titre'].lower() or query in sheet['description'].lower():
-            results['cheatsheets'].append({
-                'id': idx,
-                'titre': sheet['titre'],
-                'description': sheet['description'],
-                'type': 'cheatsheet'
-            })
+    sheets = CheatSheet.query.filter(
+        (CheatSheet.titre.ilike(f'%{query}%')) |
+        (CheatSheet.description.ilike(f'%{query}%'))
+    ).all()
+    for sheet in sheets:
+        results['cheatsheets'].append({
+            'id': sheet.id,
+            'titre': sheet.titre,
+            'description': sheet.description,
+            'type': 'cheatsheet'
+        })
 
     # Search tools
-    tools_list = load_data('tools')
-    for idx, tool in enumerate(tools_list):
-        if query in tool['nom'].lower() or query in tool['description'].lower():
-            results['tools'].append({
-                'id': idx,
-                'nom': tool['nom'],
-                'description': tool['description'],
-                'type': 'tool'
-            })
+    tools_list = Tool.query.filter(
+        (Tool.nom.ilike(f'%{query}%')) |
+        (Tool.description.ilike(f'%{query}%'))
+    ).all()
+    for tool in tools_list:
+        results['tools'].append({
+            'id': tool.id,
+            'nom': tool.nom,
+            'description': tool.description,
+            'type': 'tool'
+        })
 
     # Search vulnerabilities
-    vulns = load_data('vulnerabilities')
-    for idx, vuln in enumerate(vulns):
-        if query in vuln['cve'].lower() or query in vuln['titre'].lower():
-            results['vulnerabilities'].append({
-                'id': idx,
-                'cve': vuln['cve'],
-                'titre': vuln['titre'],
-                'type': 'vulnerability'
-            })
+    vulns = Vulnerability.query.filter(
+        (Vulnerability.cve.ilike(f'%{query}%')) |
+        (Vulnerability.titre.ilike(f'%{query}%'))
+    ).all()
+    for vuln in vulns:
+        results['vulnerabilities'].append({
+            'id': vuln.id,
+            'cve': vuln.cve,
+            'titre': vuln.titre,
+            'type': 'vulnerability'
+        })
 
     # Search certifications
-    certs = load_data('certifications')
-    for idx, cert in enumerate(certs):
-        if query in cert['nom'].lower() or query in cert['description'].lower():
-            results['certifications'].append({
-                'id': idx,
-                'nom': cert['nom'],
-                'description': cert['description'],
-                'type': 'certification'
-            })
+    certs = Certification.query.filter(
+        (Certification.nom.ilike(f'%{query}%')) |
+        (Certification.description.ilike(f'%{query}%'))
+    ).all()
+    for cert in certs:
+        results['certifications'].append({
+            'id': cert.id,
+            'nom': cert.nom,
+            'description': cert.description,
+            'type': 'certification'
+        })
 
     # Search notes
-    notes_list = load_data('notes')
-    for idx, note in enumerate(notes_list):
-        if query in note['titre'].lower() or query in note['contenu'].lower():
-            results['notes'].append({
-                'id': idx,
-                'titre': note['titre'],
-                'contenu': note['contenu'][:100],
-                'type': 'note'
-            })
+    notes_list = Note.query.filter(
+        (Note.titre.ilike(f'%{query}%')) |
+        (Note.contenu.ilike(f'%{query}%'))
+    ).all()
+    for note in notes_list:
+        results['notes'].append({
+            'id': note.id,
+            'titre': note.titre,
+            'contenu': note.contenu[:100],
+            'type': 'note'
+        })
 
     return jsonify(results)
-
 
 @app.route('/api/search/suggestions', methods=['GET'])
 def search_suggestions():
     """Get suggestions based on recent searches"""
-    history = load_data('history')
+    history = SearchHistory.query.order_by(SearchHistory.date.desc()).limit(20).all()
     suggestions = []
 
-    # Get unique searches from history (last 20)
     seen = set()
-    for entry in reversed(history[-20:]):
-        search_term = entry.get('search', '')
+    for entry in history:
+        search_term = entry.search_term
         if search_term and search_term not in seen:
             suggestions.append(search_term)
             seen.add(search_term)
 
     return jsonify(suggestions[:10])
 
-
 @app.route('/api/search/add-history', methods=['POST'])
 def add_search_history():
     """Add search to history"""
     data = request.get_json()
-    history = load_data('history')
-
-    history.append({
-        'search': data.get('search'),
-        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'type': data.get('type', 'general')
-    })
-
-    # Keep only last 100 searches
-    if len(history) > 100:
-        history = history[-100:]
-
-    save_data('history', history)
+    
+    hist = SearchHistory(
+        search_term=data.get('search'),
+        type=data.get('type', 'general')
+    )
+    db.session.add(hist)
+    db.session.commit()
+    
     return jsonify({'message': 'Search added to history'}), 201
-
 
 # ============ ROUTES HISTORIQUE ============
 @app.route('/api/history', methods=['GET'])
 def get_history():
-    return jsonify(load_data('history'))
-
+    history = SearchHistory.query.order_by(SearchHistory.date.desc()).all()
+    return jsonify([h.to_dict() for h in history])
 
 @app.route('/api/history/add', methods=['POST'])
 def add_to_history():
     data = request.get_json()
-    history = load_data('history')
-    data['timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    history.append(data)
-    # Garder seulement les 100 derniers
-    if len(history) > 100:
-        history = history[-100:]
-    save_data('history', history)
+    hist = SearchHistory(**data)
+    db.session.add(hist)
+    db.session.commit()
     return jsonify({'message': 'Ajouté à l\'historique'}), 201
-
 
 # ============ ROUTES FAVORIS ============
 @app.route('/api/favorites', methods=['GET'])
 def get_favorites():
-    return jsonify(load_data('favorites'))
-
+    favorites = Favorite.query.all()
+    return jsonify([fav.to_dict() for fav in favorites])
 
 @app.route('/api/favorites', methods=['POST'])
 def add_favorite():
     data = request.get_json()
-    favorites = load_data('favorites')
-    if data not in favorites:
-        favorites.append(data)
-        save_data('favorites', favorites)
+    command_id = data.get('command_id')
+    
+    # Vérifier si déjà en favori
+    existing = Favorite.query.filter_by(command_id=command_id).first()
+    if existing:
+        return jsonify({'message': 'Déjà en favoris'}), 200
+    
+    fav = Favorite(command_id=command_id)
+    db.session.add(fav)
+    db.session.commit()
     return jsonify({'message': 'Ajouté aux favoris'}), 201
-
 
 @app.route('/api/favorites/<int:cmd_id>', methods=['POST'])
 def favorite_command(cmd_id):
     """Add command to favorites"""
-    favorites = load_data('favorites')
-    if cmd_id not in favorites:
-        favorites.append(cmd_id)
-        save_data('favorites', favorites)
+    existing = Favorite.query.filter_by(command_id=cmd_id).first()
+    if existing:
+        return jsonify({'message': 'Déjà en favoris'}), 200
+    
+    fav = Favorite(command_id=cmd_id)
+    db.session.add(fav)
+    db.session.commit()
     return jsonify({'message': 'Ajouté aux favoris'})
-
 
 @app.route('/api/favorites/<int:cmd_id>', methods=['DELETE'])
 def unfavorite_command(cmd_id):
     """Remove command from favorites"""
-    favorites = load_data('favorites')
-    if cmd_id in favorites:
-        favorites.remove(cmd_id)
-        save_data('favorites', favorites)
+    fav = Favorite.query.filter_by(command_id=cmd_id).first()
+    if fav:
+        db.session.delete(fav)
+        db.session.commit()
     return jsonify({'message': 'Retiré des favoris'})
-
 
 # ============ ROUTES BADGES/GAMIFICATION ============
 @app.route('/api/badges', methods=['GET'])
 def get_badges():
-    return jsonify(load_data('badges'))
-
+    badges = Badge.query.all()
+    return jsonify([badge.to_dict() for badge in badges])
 
 @app.route('/api/badges/check', methods=['POST'])
 def check_badges():
     """Vérifie et attribue les badges basés sur les activités"""
-    history = load_data('history')
-    badges = load_data('badges')
+    history_count = SearchHistory.query.count()
+    badges = Badge.query.all()
+    existing_badge_ids = {b.badge_id for b in badges}
 
     # Logique des badges
     badge_rules = [
-        {'id': 'first_copy', 'condition': len(history) >= 1, 'title': '🚀 Premier pas'},
-        {'id': 'copy_10', 'condition': len(history) >= 10, 'title': '⚡ 10 copies'},
-        {'id': 'copy_100', 'condition': len(history) >= 100, 'title': '🔥 100 copies'},
+        {'id': 'first_copy', 'condition': history_count >= 1, 'title': '🚀 Premier pas', 'description': 'Première commande copiée'},
+        {'id': 'copy_10', 'condition': history_count >= 10, 'title': '⚡ 10 copies', 'description': '10 commandes copiées'},
+        {'id': 'copy_100', 'condition': history_count >= 100, 'title': '🔥 100 copies', 'description': '100 commandes copiées'},
     ]
 
     earned_badges = []
     for rule in badge_rules:
-        if rule['condition'] and rule['id'] not in [b.get('id') for b in badges]:
-            badges.append({
-                'id': rule['id'],
-                'title': rule['title'],
-                'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            })
+        if rule['condition'] and rule['id'] not in existing_badge_ids:
+            badge = Badge(
+                badge_id=rule['id'],
+                title=rule['title'],
+                description=rule['description'],
+                icon=rule['title'].split()[0]
+            )
+            db.session.add(badge)
             earned_badges.append(rule['title'])
 
-    save_data('badges', badges)
-    return jsonify({'earned': earned_badges, 'badges': badges})
-
+    db.session.commit()
+    
+    all_badges = Badge.query.all()
+    return jsonify({'earned': earned_badges, 'badges': [b.to_dict() for b in all_badges]})
 
 # ============ ROUTES FORMULAIRES ============
 @app.route('/add')
 def add_form():
-    commands = load_data('commands')
-    categories = sorted(list(set(cmd['categorie'] for cmd in commands)))
-    platforms = sorted(list(set(cmd['plateforme'] for cmd in commands)))
-    return render_template('add_command.html', categories=categories, platforms=platforms)
+    commands = Command.query.all()
+    categories = sorted({cmd.categorie for cmd in commands})
+    platforms = sorted({cmd.plateforme for cmd in commands})
+    return render_template('add_command.html', 
+                           categories=categories, 
+                           platforms=platforms)
 
 
 @app.route('/edit/<int:cmd_id>')
 def edit_form(cmd_id):
-    commands = load_data('commands')
-    if 0 <= cmd_id < len(commands):
-        categories = sorted(list(set(cmd['categorie'] for cmd in commands)))
-        platforms = sorted(list(set(cmd['plateforme'] for cmd in commands)))
-        return render_template('edit_command.html',
-                               command=commands[cmd_id],
-                               cmd_id=cmd_id,
-                               categories=categories,
-                               platforms=platforms)
-    return redirect(url_for('dashboard'))
+    # Récupérer la commande depuis la DB
+    cmd = Command.query.get(cmd_id)
+    
+    # Si pas trouvée, rediriger
+    if not cmd:
+        return redirect(url_for('dashboard'))
+    
+    # Récupérer toutes les commandes pour les catégories/platforms
+    commands = Command.query.all()
+    categories = sorted({c.categorie for c in commands})
+    platforms = sorted({c.plateforme for c in commands})
+    
+    # Convertir en dict pour le template
+    command_dict = cmd.to_dict()
+    
+    return render_template('edit_command.html',
+                           command=command_dict,  # ⬅️ Dict au lieu d'objet
+                           cmd_id=cmd_id,
+                           categories=categories,
+                           platforms=platforms)
 
 
 # ============ ROUTES STATS ============
 @app.route('/stats')
 def stats():
-    commands = load_data('commands')
-    certifications = load_data('certifications')
-    tools_list = load_data('tools')
-    vulnerabilities = load_data('vulnerabilities')
-    history = load_data('history')
+    commands = Command.query.all()
+    certifications = Certification.query.all()
+    tools_list = Tool.query.all()
+    vulnerabilities = Vulnerability.query.all()
+    history = SearchHistory.query.all()
 
     categories = {}
     platforms = {}
 
     for cmd in commands:
-        categories[cmd['categorie']] = categories.get(cmd['categorie'], 0) + 1
-        platforms[cmd['plateforme']] = platforms.get(cmd['plateforme'], 0) + 1
+        categories[cmd.categorie] = categories.get(cmd.categorie, 0) + 1
+        platforms[cmd.plateforme] = platforms.get(cmd.plateforme, 0) + 1
 
     stats_data = {
         'total_commands': len(commands),
@@ -612,39 +700,37 @@ def stats():
 
     return render_template('stats.html', stats=stats_data)
 
-
 # ============ ROUTES EXPORT ============
 @app.route('/api/export/<export_type>', methods=['GET'])
 def export_data(export_type):
     if export_type == 'all':
         data = {
-            'commands': load_data('commands'),
-            'certifications': load_data('certifications'),
-            'tools': load_data('tools'),
-            'vulnerabilities': load_data('vulnerabilities'),
+            'commands': [c.to_dict() for c in Command.query.all()],
+            'certifications': [c.to_dict() for c in Certification.query.all()],
+            'tools': [t.to_dict() for t in Tool.query.all()],
+            'vulnerabilities': [v.to_dict() for v in Vulnerability.query.all()],
         }
+    elif export_type == 'commands':
+        data = [c.to_dict() for c in Command.query.all()]
+    elif export_type == 'certifications':
+        data = [c.to_dict() for c in Certification.query.all()]
+    elif export_type == 'tools':
+        data = [t.to_dict() for t in Tool.query.all()]
+    elif export_type == 'vulnerabilities':
+        data = [v.to_dict() for v in Vulnerability.query.all()]
     else:
-        data = load_data(export_type + 's')
+        return jsonify({'error': 'Type non reconnu'}), 400
 
     return jsonify(data)
-
 
 # ============ ERROR HANDLERS ============
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404
 
-
 @app.errorhandler(500)
 def server_error(error):
     return render_template('500.html'), 500
 
-
 if __name__ == '__main__':
-    # Créer les fichiers de données vides s'ils n'existent pas
-    for data_type in DATA_FILES:
-        os.makedirs('data', exist_ok=True)
-        if not os.path.exists(DATA_FILES[data_type]):
-            save_data(data_type, [])
-
     app.run(debug=True, host='0.0.0.0', port=5000)

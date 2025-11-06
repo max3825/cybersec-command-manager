@@ -27,33 +27,35 @@
 
     <div class="sheets-grid" id="sheetsGrid">
         {% for sheet in cheatsheets %}
-        <div class="sheet-card" data-category="{{ sheet.categorie }}" data-level="{{ sheet.niveau }}">
+        <div class="sheet-card" data-id="{{ sheet['id'] }}" data-category="{{ sheet['categorie'] }}" data-level="{{ sheet['niveau'] }}">
             <div class="sheet-header">
-                <h3>{{ sheet.titre }}</h3>
-                <span class="sheet-level level-{{ sheet.niveau.lower() }}">{{ sheet.niveau }}</span>
+                <h3>{{ sheet['titre'] }}</h3>
+                <span class="sheet-level level-{{ sheet['niveau'].lower() }}">{{ sheet['niveau'] }}</span>
             </div>
 
-            <p class="sheet-description">{{ sheet.description }}</p>
+            <p class="sheet-description">{{ sheet['description'] }}</p>
 
             <div class="sheet-meta">
-                <span class="sheet-category">{{ sheet.categorie }}</span>
-                <span class="sheet-commands">{{ sheet.commandes|length }} commandes</span>
+                <span class="sheet-category">{{ sheet['categorie'] }}</span>
+                <span class="sheet-commands">{{ sheet['commandes']|length }} commandes</span>
             </div>
 
             <div class="sheet-commands">
                 <strong>🛠️ Commandes clés:</strong>
                 <div class="tags">
-                    {% for cmd in sheet.commandes[:5] %}
+                    {% for cmd in sheet['commandes'][:5] %}
                     <span class="tag">{{ cmd }}</span>
                     {% endfor %}
                 </div>
             </div>
 
             <div class="sheet-actions">
-                <button onclick="viewSheet({{ loop.index0 }})" class="btn btn-primary">👁️ Voir</button>
-                <button onclick="exportSheet({{ loop.index0 }})" class="btn btn-secondary">📥 Exporter</button>
-                <button onclick="deleteSheet({{ loop.index0 }})" class="btn btn-delete">🗑️ Supprimer</button>
-            </div>
+    <a href="{{ url_for('edit_cheatsheet_form', sheet_id=sheet['id']) }}" class="btn btn-primary">✏️ Éditer</a>
+    <button onclick="viewSheet({{ sheet['id'] }})" class="btn btn-secondary">👁️ Voir</button>
+    <button onclick="exportSheet({{ sheet['id'] }})" class="btn btn-secondary">📥 Exporter</button>
+    <button onclick="deleteSheet({{ sheet['id'] }})" class="btn btn-delete">🗑️ Supprimer</button>
+</div>
+
         </div>
         {% endfor %}
     </div>
@@ -106,7 +108,7 @@
                 </div>
                 <div class="form-group">
                     <label>Contenu (Markdown) *</label>
-                    <textarea id="sheetContenu" required class="form-input" rows="8" placeholder="# Title\n\n## Section\ncommande"></textarea>
+                    <textarea id="sheetContenu" required class="form-input" rows="8" placeholder="# Title&#10;&#10;## Section&#10;commande"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Commandes (séparées par virgule)</label>
@@ -355,6 +357,8 @@
     font-size: 0.9rem;
     line-height: 1.6;
     border-left: 4px solid var(--primary);
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 .no-results {
@@ -424,35 +428,28 @@
         align-items: flex-start;
         margin-bottom: 30px;
     }
-
     .page-header h1 {
         font-size: 1.8rem;
     }
-
     .cheatsheet-filters {
         grid-template-columns: 1fr;
         gap: 12px;
     }
-
     .sheets-grid {
         grid-template-columns: 1fr;
         gap: 20px;
     }
-
     .sheet-header {
         flex-direction: column;
         min-height: auto;
     }
-
     .sheet-level {
         align-self: flex-start;
         margin-top: 0;
     }
-
     .form-row {
         grid-template-columns: 1fr;
     }
-
     .modal-content {
         margin: 10% auto;
         padding: 25px;
@@ -465,14 +462,12 @@
         flex-direction: column;
         gap: 8px;
     }
-
     .sheet-meta {
         flex-direction: column;
         gap: 8px;
     }
 }
 </style>
-
 
 <script>
 function showAddSheetForm() {
@@ -481,6 +476,7 @@ function showAddSheetForm() {
 
 function closeAddModal() {
     document.getElementById('addSheetModal').style.display = 'none';
+    document.getElementById('addSheetForm').reset();
 }
 
 function closeViewModal() {
@@ -488,10 +484,14 @@ function closeViewModal() {
 }
 
 function viewSheet(id) {
-    fetch('/api/cheatsheets')
+    fetch(`/api/cheatsheets`)
     .then(r => r.json())
     .then(sheets => {
-        const sheet = sheets[id];
+        const sheet = sheets.find(s => s.id === id);
+        if (!sheet) {
+            alert('Cheat sheet introuvable');
+            return;
+        }
         document.getElementById('sheetContent').innerHTML = `
             <h2>${sheet.titre}</h2>
             <div style="margin-bottom: 20px;">
@@ -501,14 +501,22 @@ function viewSheet(id) {
             <pre>${sheet.contenu}</pre>
         `;
         document.getElementById('viewSheetModal').style.display = 'block';
+    })
+    .catch(e => {
+        console.error(e);
+        alert('Erreur lors du chargement');
     });
 }
 
 function exportSheet(id) {
-    fetch('/api/cheatsheets')
+    fetch(`/api/cheatsheets`)
     .then(r => r.json())
     .then(sheets => {
-        const sheet = sheets[id];
+        const sheet = sheets.find(s => s.id === id);
+        if (!sheet) {
+            alert('Cheat sheet introuvable');
+            return;
+        }
         const text = `${sheet.titre}\n${sheet.description}\n\n${sheet.contenu}`;
         const blob = new Blob([text], {type: 'text/plain'});
         const url = URL.createObjectURL(blob);
@@ -516,6 +524,11 @@ function exportSheet(id) {
         a.href = url;
         a.download = `${sheet.titre.replace(/\s+/g, '_')}.txt`;
         a.click();
+        URL.revokeObjectURL(url);
+    })
+    .catch(e => {
+        console.error(e);
+        alert('Erreur lors de l\'export');
     });
 }
 
@@ -523,19 +536,30 @@ function deleteSheet(id) {
     if (confirm('Supprimer ce cheat sheet ?')) {
         fetch(`/api/cheatsheets/${id}`, {method: 'DELETE'})
         .then(r => r.json())
-        .then(d => {alert(d.message); location.reload();});
+        .then(d => {
+            alert(d.message); 
+            location.reload();
+        })
+        .catch(e => {
+            console.error(e);
+            alert('Erreur lors de la suppression');
+        });
     }
 }
 
 document.getElementById('addSheetForm').addEventListener('submit', (e) => {
     e.preventDefault();
+    const commandesRaw = document.getElementById('sheetCommandes').value;
+    const commandesArray = commandesRaw ? commandesRaw.split(',').map(c => c.trim()).filter(c => c) : [];
+    
     const data = {
         titre: document.getElementById('sheetTitre').value,
         description: document.getElementById('sheetDescription').value,
         categorie: document.getElementById('sheetCategoryForm').value,
         niveau: document.getElementById('sheetNiveauForm').value,
         contenu: document.getElementById('sheetContenu').value,
-        commandes: document.getElementById('sheetCommandes').value.split(',').map(c => c.trim())
+        commandes: JSON.stringify(commandesArray),
+        ressources: ''
     };
     
     fetch('/api/cheatsheets', {
@@ -544,14 +568,56 @@ document.getElementById('addSheetForm').addEventListener('submit', (e) => {
         body: JSON.stringify(data)
     })
     .then(r => r.json())
-    .then(d => {alert('✅ ' + d.message); location.reload();});
+    .then(d => {
+        alert('✅ ' + d.message); 
+        location.reload();
+    })
+    .catch(e => {
+        console.error(e);
+        alert('❌ Erreur lors de l\'ajout');
+    });
 });
 
 document.getElementById('sheetSearch').addEventListener('input', (e) => {
     const search = e.target.value.toLowerCase();
-    document.querySelectorAll('.sheet-card').forEach(card => {
-        card.style.display = card.textContent.toLowerCase().includes(search) ? 'block' : 'none';
+    const cards = document.querySelectorAll('.sheet-card');
+    let visible = 0;
+    
+    cards.forEach(card => {
+        const match = card.textContent.toLowerCase().includes(search);
+        card.style.display = match ? 'block' : 'none';
+        if (match) visible++;
     });
+    
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+});
+
+document.getElementById('sheetCategory').addEventListener('change', (e) => {
+    const category = e.target.value;
+    const cards = document.querySelectorAll('.sheet-card');
+    let visible = 0;
+    
+    cards.forEach(card => {
+        const match = !category || card.getAttribute('data-category') === category;
+        card.style.display = match ? 'block' : 'none';
+        if (match) visible++;
+    });
+    
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+});
+
+document.getElementById('sheetLevel').addEventListener('change', (e) => {
+    const level = e.target.value;
+    const cards = document.querySelectorAll('.sheet-card');
+    let visible = 0;
+    
+    cards.forEach(card => {
+        const match = !level || card.getAttribute('data-level') === level;
+        card.style.display = match ? 'block' : 'none';
+        if (match) visible++;
+    });
+    
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
 });
 
 window.onclick = (e) => {

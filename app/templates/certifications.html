@@ -20,29 +20,29 @@
 
     <div class="certs-grid" id="certsGrid">
         {% for cert in certifications %}
-        <div class="cert-card" data-level="{{ cert.niveau }}">
+        <div class="cert-card" data-level="{{ cert['niveau'] }}">
             <div class="cert-header">
-                <h3>{{ cert.nom }}</h3>
-                <span class="cert-organisme">{{ cert.organisme }}</span>
+                <h3>{{ cert['nom'] }}</h3>
+                <span class="cert-organisme">{{ cert['organisme'] }}</span>
             </div>
 
             <div class="cert-meta">
-                <span class="cert-level level-{{ cert.niveau.lower() }}">{{ cert.niveau }}</span>
-                <span class="cert-validity">💾 {{ cert.duree_validite }} mois</span>
-                <span class="cert-price">💰 {{ cert.prix_usd }}$</span>
+                <span class="cert-level level-{{ cert['niveau'].lower() }}">{{ cert['niveau'] }}</span>
+                <span class="cert-validity">💾 {{ cert['duree_validite'] }} mois</span>
+                <span class="cert-price">💰 {{ cert['prix_usd'] }}$</span>
             </div>
 
-            <p class="cert-description">{{ cert.description }}</p>
+            <p class="cert-description">{{ cert['description'] }}</p>
 
             <div class="cert-details">
                 <div class="detail-item">
                     <strong>⏱️ Durée d'étude:</strong>
-                    <p>{{ cert.duree_etude }}</p>
+                    <p>{{ cert.get('duree_etude', 'Non spécifié') }}</p>
                 </div>
                 <div class="detail-item">
                     <strong>📋 Domaines couverts:</strong>
                     <div class="tags">
-                        {% for domaine in cert.domaines %}
+                        {% for domaine in cert['domaines'] %}
                         <span class="tag">{{ domaine }}</span>
                         {% endfor %}
                     </div>
@@ -50,21 +50,27 @@
                 <div class="detail-item">
                     <strong>🛠️ Commandes recommandées:</strong>
                     <div class="tags">
-                        {% for cmd in cert.commandes_recommandees %}
+                        {% for cmd in cert['commandes_recommandees'] %}
                         <span class="tag">{{ cmd }}</span>
                         {% endfor %}
                     </div>
                 </div>
+                {% if cert.get('prerequisites') %}
                 <div class="detail-item">
                     <strong>📚 Prérequis:</strong>
-                    <p>{{ cert.prerequisites }}</p>
+                    <p>{{ cert['prerequisites'] }}</p>
                 </div>
+                {% endif %}
             </div>
 
             <div class="cert-actions">
-                <a href="{{ cert.lien }}" target="_blank" class="btn btn-primary">🌐 Voir la certification</a>
-                <button onclick="deleteCert({{ loop.index0 }})" class="btn btn-delete">🗑️ Supprimer</button>
-            </div>
+    <a href="{{ url_for('edit_certification_form', cert_id=cert['id']) }}" class="btn btn-primary">✏️ Éditer</a>
+    {% if cert.get('lien') %}
+    <a href="{{ cert['lien'] }}" target="_blank" class="btn btn-secondary">🌐 Voir la certification</a>
+    {% endif %}
+    <button onclick="deleteCert({{ cert['id'] }})" class="btn btn-delete">🗑️ Supprimer</button>
+</div>
+
         </div>
         {% endfor %}
     </div>
@@ -105,6 +111,22 @@
                         <label>Prix (USD) *</label>
                         <input type="number" id="certPrix" required class="form-input">
                     </div>
+                    <div class="form-group">
+                        <label>Durée de validité (mois)</label>
+                        <input type="number" id="certValidite" value="36" class="form-input">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Durée d'étude</label>
+                    <input type="text" id="certDureeEtude" placeholder="ex: 1-3 mois" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Prérequis</label>
+                    <textarea id="certPrerequisites" class="form-input" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Lien</label>
+                    <input type="url" id="certLien" placeholder="https://..." class="form-input">
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">💾 Ajouter</button>
@@ -278,6 +300,8 @@
     border: 2px solid rgba(0, 255, 157, 0.2);
     border-radius: 12px;
     max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .modal-content h2 {
@@ -297,11 +321,20 @@
     color: var(--primary-dark);
 }
 
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
 @media (max-width: 768px) {
     .certs-filters {
         grid-template-columns: 1fr;
     }
     .certs-grid {
+        grid-template-columns: 1fr;
+    }
+    .form-row {
         grid-template-columns: 1fr;
     }
 }
@@ -314,6 +347,7 @@ function showAddCertForm() {
 
 function closeModal() {
     document.getElementById('addCertModal').style.display = 'none';
+    document.getElementById('addCertForm').reset();
 }
 
 document.getElementById('addCertForm').addEventListener('submit', (e) => {
@@ -324,12 +358,12 @@ document.getElementById('addCertForm').addEventListener('submit', (e) => {
         description: document.getElementById('certDescription').value,
         niveau: document.getElementById('certNiveauForm').value,
         prix_usd: parseInt(document.getElementById('certPrix').value),
-        duree_validite: 36,
-        duree_etude: '1-3 mois',
-        domaines: [],
-        commandes_recommandees: [],
-        prerequisites: '',
-        lien: 'https://example.com'
+        duree_validite: parseInt(document.getElementById('certValidite').value),
+        duree_etude: document.getElementById('certDureeEtude').value || '1-3 mois',
+        domaines: JSON.stringify([]),
+        commandes_recommandees: JSON.stringify([]),
+        prerequisites: document.getElementById('certPrerequisites').value,
+        lien: document.getElementById('certLien').value || 'https://example.com'
     };
     
     fetch('/api/certifications', {
@@ -341,34 +375,61 @@ document.getElementById('addCertForm').addEventListener('submit', (e) => {
     .then(d => {
         alert('✅ Certification ajoutée');
         location.reload();
+    })
+    .catch(e => {
+        alert('❌ Erreur lors de l\'ajout');
+        console.error(e);
     });
 });
 
 document.getElementById('certSearch').addEventListener('input', (e) => {
     const search = e.target.value.toLowerCase();
-    document.querySelectorAll('.cert-card').forEach(card => {
-        card.style.display = card.textContent.toLowerCase().includes(search) ? 'block' : 'none';
+    const cards = document.querySelectorAll('.cert-card');
+    let visible = 0;
+    
+    cards.forEach(card => {
+        const match = card.textContent.toLowerCase().includes(search);
+        card.style.display = match ? 'block' : 'none';
+        if (match) visible++;
     });
+    
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
 });
 
 document.getElementById('certLevel').addEventListener('change', (e) => {
     const level = e.target.value;
-    document.querySelectorAll('.cert-card').forEach(card => {
-        card.style.display = !level || card.getAttribute('data-level') === level ? 'block' : 'none';
+    const cards = document.querySelectorAll('.cert-card');
+    let visible = 0;
+    
+    cards.forEach(card => {
+        const match = !level || card.getAttribute('data-level') === level;
+        card.style.display = match ? 'block' : 'none';
+        if (match) visible++;
     });
+    
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
 });
 
 function deleteCert(id) {
     if (confirm('Supprimer cette certification ?')) {
         fetch(`/api/certifications/${id}`, {method: 'DELETE'})
         .then(r => r.json())
-        .then(d => {alert(d.message); location.reload();});
+        .then(d => {
+            alert(d.message); 
+            location.reload();
+        })
+        .catch(e => {
+            alert('❌ Erreur lors de la suppression');
+            console.error(e);
+        });
     }
 }
 
 window.onclick = (e) => {
     const modal = document.getElementById('addCertModal');
-    if (e.target === modal) modal.style.display = 'none';
+    if (e.target === modal) {
+        closeModal();
+    }
 };
 </script>
 {% endblock %}

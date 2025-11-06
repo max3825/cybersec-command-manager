@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>✏️ Éditer un outil</h1>
+        <a href="{{ url_for('tools') }}" class="btn btn-secondary">← Retour</a>
+    </div>
+
+    <div class="edit-form-container">
+        <form id="editToolForm">
+            <div class="form-group">
+                <label>Nom *</label>
+                <input type="text" id="toolNom" value="{{ tool['nom'] }}" required class="form-input">
+            </div>
+            <div class="form-group">
+                <label>Description *</label>
+                <textarea id="toolDescription" required class="form-input" rows="3">{{ tool['description'] }}</textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Catégorie *</label>
+                    <select id="toolCategoryForm" required class="form-input">
+                        <option value="Reconnaissance" {% if tool['categorie'] == 'Reconnaissance' %}selected{% endif %}>Reconnaissance</option>
+                        <option value="Scanning" {% if tool['categorie'] == 'Scanning' %}selected{% endif %}>Scanning</option>
+                        <option value="Exploitation" {% if tool['categorie'] == 'Exploitation' %}selected{% endif %}>Exploitation</option>
+                        <option value="Web Security" {% if tool['categorie'] == 'Web Security' %}selected{% endif %}>Web Security</option>
+                        <option value="Forensics" {% if tool['categorie'] == 'Forensics' %}selected{% endif %}>Forensics</option>
+                        <option value="Network Analysis" {% if tool['categorie'] == 'Network Analysis' %}selected{% endif %}>Network Analysis</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Type *</label>
+                    <input type="text" id="toolType" value="{{ tool['type'] }}" required class="form-input" placeholder="Framework, Scanner, etc">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Installation *</label>
+                <input type="text" id="toolInstallation" value="{{ tool['installation'] }}" required class="form-input" placeholder="Ex: apt install nmap">
+            </div>
+            <div class="form-group">
+                <label>Documentation (URL) *</label>
+                <input type="url" id="toolDoc" value="{{ tool['documentation'] }}" required class="form-input" placeholder="https://example.com/docs">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Prix</label>
+                    <input type="text" id="toolPrice" value="{{ tool['prix'] }}" class="form-input" placeholder="Gratuit ou Payant">
+                </div>
+                <div class="form-group">
+                    <label>Plateformes (séparées par virgule)</label>
+                    <input type="text" id="toolPlatformes" value="{{ tool['plateforme']|join(', ') }}" class="form-input" placeholder="Linux, Windows, macOS">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Commandes courantes (séparées par virgule)</label>
+                <input type="text" id="toolCommandes" value="{{ tool['commandes_courantes']|join(', ') }}" class="form-input" placeholder="cmd1, cmd2, cmd3">
+            </div>
+            <div class="form-group">
+                <label>Alternatives (séparées par virgule)</label>
+                <input type="text" id="toolAlternatives" value="{{ tool['alternatives']|join(', ') }}" class="form-input" placeholder="alt1, alt2">
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
+                <a href="{{ url_for('tools') }}" class="btn btn-secondary">❌ Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    gap: 20px;
+}
+
+.page-header h1 {
+    color: var(--primary);
+    font-size: 2.2rem;
+    margin: 0;
+}
+
+.edit-form-container {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 40px;
+    border: 2px solid rgba(0, 255, 157, 0.2);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    color: var(--primary);
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(0, 255, 157, 0.3);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0, 255, 157, 0.3);
+    background: rgba(0, 255, 157, 0.05);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid rgba(0, 255, 157, 0.2);
+}
+
+.form-actions .btn {
+    flex: 1;
+    padding: 14px;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    .edit-form-container {
+        padding: 25px;
+    }
+}
+</style>
+
+<script>
+document.getElementById('editToolForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const platformesRaw = document.getElementById('toolPlatformes').value;
+    const platformesArray = platformesRaw ? platformesRaw.split(',').map(p => p.trim()).filter(p => p) : [];
+    
+    const commandesRaw = document.getElementById('toolCommandes').value;
+    const commandesArray = commandesRaw ? commandesRaw.split(',').map(c => c.trim()).filter(c => c) : [];
+    
+    const alternativesRaw = document.getElementById('toolAlternatives').value;
+    const alternativesArray = alternativesRaw ? alternativesRaw.split(',').map(a => a.trim()).filter(a => a) : [];
+    
+    const data = {
+        nom: document.getElementById('toolNom').value,
+        description: document.getElementById('toolDescription').value,
+        categorie: document.getElementById('toolCategoryForm').value,
+        type: document.getElementById('toolType').value,
+        installation: document.getElementById('toolInstallation').value,
+        documentation: document.getElementById('toolDoc').value,
+        prix: document.getElementById('toolPrice').value || 'Gratuit',
+        plateforme: JSON.stringify(platformesArray),
+        commandes_courantes: JSON.stringify(commandesArray),
+        alternatives: JSON.stringify(alternativesArray)
+    };
+    
+    fetch(`/api/tools/{{ tool_id }}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(d => {
+        alert('✅ ' + d.message);
+        window.location.href = '{{ url_for("tools") }}';
+    })
+    .catch(e => {
+        console.error(e);
+        alert('❌ Erreur lors de la mise à jour');
+    });
+});
+</script>
+{% endblock %}

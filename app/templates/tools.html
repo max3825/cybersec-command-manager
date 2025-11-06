@@ -27,36 +27,36 @@
 
     <div class="tools-grid" id="toolsGrid">
         {% for tool in tools %}
-        <div class="tool-card" data-category="{{ tool.categorie }}" data-price="{{ tool.prix }}">
+        <div class="tool-card" data-id="{{ tool['id'] }}" data-category="{{ tool['categorie'] }}" data-price="{{ tool['prix'] }}">
             <div class="tool-header">
-                <h3>{{ tool.nom }}</h3>
-                <span class="tool-price {% if 'Gratuit' in tool.prix %}free{% else %}paid{% endif %}">{{ tool.prix }}</span>
+                <h3>{{ tool['nom'] }}</h3>
+                <span class="tool-price {% if 'Gratuit' in tool['prix'] %}free{% else %}paid{% endif %}">{{ tool['prix'] }}</span>
             </div>
 
-            <p class="tool-description">{{ tool.description }}</p>
+            <p class="tool-description">{{ tool['description'] }}</p>
 
             <div class="tool-meta">
                 <div class="meta-item">
-                    <strong>📁 Type:</strong> {{ tool.type }}
+                    <strong>📁 Type:</strong> {{ tool['type'] }}
                 </div>
                 <div class="meta-item">
                     <strong>🖥️ Plateforme:</strong>
                     <div class="platforms">
-                        {% for plat in tool.plateforme %}
+                        {% for plat in tool['plateforme'] %}
                         <span class="platform-badge">{{ plat }}</span>
                         {% endfor %}
                     </div>
                 </div>
                 <div class="meta-item">
                     <strong>⚙️ Installation:</strong>
-                    <code class="install-cmd">{{ tool.installation }}</code>
+                    <code class="install-cmd">{{ tool['installation'] }}</code>
                 </div>
             </div>
 
             <div class="tool-commands">
                 <strong>🛠️ Commandes courantes:</strong>
                 <div class="commands-list">
-                    {% for cmd in tool.commandes_courantes[:3] %}
+                    {% for cmd in tool['commandes_courantes'][:3] %}
                     <code class="command-snippet">{{ cmd }}</code>
                     {% endfor %}
                 </div>
@@ -65,16 +65,20 @@
             <div class="tool-alternatives">
                 <strong>🔄 Alternatives:</strong>
                 <div class="alternatives-list">
-                    {% for alt in tool.alternatives %}
+                    {% for alt in tool['alternatives'] %}
                     <span class="alt-tag">{{ alt }}</span>
                     {% endfor %}
                 </div>
             </div>
 
             <div class="tool-actions">
-                <a href="{{ tool.documentation }}" target="_blank" class="btn btn-primary">📖 Documentation</a>
-                <button onclick="deleteTool({{ loop.index0 }})" class="btn btn-delete">🗑️ Supprimer</button>
-            </div>
+    <a href="{{ url_for('edit_tool_form', tool_id=tool['id']) }}" class="btn btn-primary">✏️ Éditer</a>
+    {% if tool.get('documentation') %}
+    <a href="{{ tool['documentation'] }}" target="_blank" class="btn btn-secondary">📖 Documentation</a>
+    {% endif %}
+    <button onclick="deleteTool({{ tool['id'] }})" class="btn btn-delete">🗑️ Supprimer</button>
+</div>
+
         </div>
         {% endfor %}
     </div>
@@ -462,35 +466,28 @@
         align-items: flex-start;
         margin-bottom: 30px;
     }
-
     .page-header h1 {
         font-size: 1.8rem;
     }
-
     .tools-filters {
         grid-template-columns: 1fr;
         gap: 12px;
     }
-
     .tools-grid {
         grid-template-columns: 1fr;
         gap: 20px;
     }
-
     .tool-header {
         flex-direction: column;
         min-height: auto;
     }
-
     .tool-price {
         align-self: flex-start;
         margin-top: 0;
     }
-
     .form-row {
         grid-template-columns: 1fr;
     }
-
     .modal-content {
         margin: 10% auto;
         padding: 25px;
@@ -503,7 +500,6 @@
         flex-direction: column;
         gap: 8px;
     }
-
     .tool-meta {
         flex-direction: column;
         gap: 8px;
@@ -518,6 +514,7 @@ function showAddToolForm() {
 
 function closeToolModal() {
     document.getElementById('addToolModal').style.display = 'none';
+    document.getElementById('addToolForm').reset();
 }
 
 document.getElementById('addToolForm').addEventListener('submit', (e) => {
@@ -530,10 +527,9 @@ document.getElementById('addToolForm').addEventListener('submit', (e) => {
         installation: document.getElementById('toolInstallation').value,
         documentation: document.getElementById('toolDoc').value,
         prix: document.getElementById('toolPrice').value || 'Gratuit',
-        plateforme: ["Linux"],
-        commandes_courantes: [],
-        alternatives: [],
-        date_ajout: new Date().toISOString().split('T')[0]
+        plateforme: JSON.stringify(["Linux"]),
+        commandes_courantes: JSON.stringify([]),
+        alternatives: JSON.stringify([])
     };
 
     fetch('/api/tools', {
@@ -542,17 +538,17 @@ document.getElementById('addToolForm').addEventListener('submit', (e) => {
         body: JSON.stringify(data)
     })
     .then(r => r.json())
-    .then(d => {alert('✅ ' + d.message); location.reload();})
-    .catch(e => alert('❌ Erreur: ' + e));
-});
-
-document.getElementById('toolSearch').addEventListener('input', (e) => {
-    const search = e.target.value.toLowerCase();
-    document.querySelectorAll('.tool-card').forEach(card => {
-        card.style.display = card.textContent.toLowerCase().includes(search) ? 'block' : 'none';
+    .then(d => {
+        alert('✅ ' + d.message); 
+        location.reload();
+    })
+    .catch(e => {
+        console.error(e);
+        alert('❌ Erreur: ' + e);
     });
 });
 
+document.getElementById('toolSearch').addEventListener('input', filterTools);
 document.getElementById('toolCategory').addEventListener('change', filterTools);
 document.getElementById('toolPrice').addEventListener('change', filterTools);
 
@@ -586,8 +582,14 @@ function deleteTool(id) {
     if (confirm('Supprimer cet outil ?')) {
         fetch(`/api/tools/${id}`, {method: 'DELETE'})
         .then(r => r.json())
-        .then(d => {alert(d.message); location.reload();})
-        .catch(e => alert('❌ Erreur'));
+        .then(d => {
+            alert(d.message); 
+            location.reload();
+        })
+        .catch(e => {
+            console.error(e);
+            alert('❌ Erreur');
+        });
     }
 }
 

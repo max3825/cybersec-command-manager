@@ -20,68 +20,86 @@
 
     <div class="vulns-list" id="vulnsList">
         {% for vuln in vulnerabilities %}
-        <div class="vuln-card" data-severity="{{ vuln.severite }}">
+        <div class="vuln-card" data-id="{{ vuln['id'] }}" data-severity="{{ vuln['severite'] }}">
             <div class="vuln-header">
                 <div class="vuln-title">
-                    <span class="cve-id">{{ vuln.cve }}</span>
-                    <h3>{{ vuln.titre }}</h3>
+                    <span class="cve-id">{{ vuln['cve'] }}</span>
+                    <h3>{{ vuln['titre'] }}</h3>
                 </div>
-                <div class="vuln-severity severity-{{ vuln.severite.lower() }}">{{ vuln.severite }}</div>
+                <div class="vuln-severity severity-{{ vuln['severite'].lower() }}">{{ vuln['severite'] }}</div>
             </div>
 
-            <p class="vuln-description">{{ vuln.description }}</p>
+            <p class="vuln-description">{{ vuln['description'] }}</p>
 
             <div class="vuln-details">
                 <div class="detail-row">
                     <strong>CVSS:</strong>
-                    <div class="cvss-score">{{ vuln.score_cvss }}/10</div>
+                    <div class="cvss-score">{{ vuln['score_cvss'] }}/10</div>
                 </div>
                 <div class="detail-row">
                     <strong>Plateforme:</strong>
-                    {% for plat in vuln.plateforme %}
+                    {% for plat in vuln['plateforme'] %}
                     <span class="platform-badge">{{ plat }}</span>
                     {% endfor %}
                 </div>
+                {% if vuln.get('date_decouverte') %}
                 <div class="detail-row">
                     <strong>Découverte:</strong>
-                    <span>{{ vuln.date_decouverte }}</span>
+                    <span>{{ vuln['date_decouverte'] }}</span>
                 </div>
+                {% endif %}
+                {% if vuln.get('date_correction') %}
                 <div class="detail-row">
                     <strong>Correctif:</strong>
-                    <span>{{ vuln.date_correction }}</span>
+                    <span>{{ vuln['date_correction'] }}</span>
                 </div>
+                {% endif %}
             </div>
 
+            {% if vuln.get('mitigation') %}
             <div class="vuln-mitigation">
                 <strong>🛡️ Mitigation:</strong>
-                <p>{{ vuln.mitigation }}</p>
+                <p>{{ vuln['mitigation'] }}</p>
             </div>
+            {% endif %}
 
+            {% if vuln.get('commandes_test') and vuln['commandes_test']|length > 0 %}
             <div class="vuln-commands">
                 <strong>🔧 Commandes de test:</strong>
-                {% for cmd in vuln.commandes_test %}
+                {% for cmd in vuln['commandes_test'] %}
                 <div class="command-box">
                     <code>{{ cmd }}</code>
-                    <button class="copy-btn" onclick="copyToClipboard('{{ cmd }}', this)">📋</button>
+                    <button class="copy-btn" onclick="copyToClipboard('{{ cmd | replace("'", "\\'") }}', this)">📋</button>
                 </div>
                 {% endfor %}
             </div>
+            {% endif %}
 
+            {% if vuln.get('tools') and vuln['tools']|length > 0 %}
             <div class="vuln-tools">
                 <strong>🛠️ Outils suggérés:</strong>
                 <div class="tools-list">
-                    {% for tool in vuln.tools %}
+                    {% for tool in vuln['tools'] %}
                     <span class="tool-tag">{{ tool }}</span>
                     {% endfor %}
                 </div>
             </div>
+            {% endif %}
 
             <div class="vuln-actions">
-                <a href="{{ vuln.ressources[0] }}" target="_blank" class="btn btn-primary">🌐 Détails NVD</a>
-                <button onclick="deleteVuln({{ loop.index0 }})" class="btn btn-delete">🗑️ Supprimer</button>
-            </div>
+    <a href="{{ url_for('edit_vulnerability_form', vuln_id=vuln['id']) }}" class="btn btn-primary">✏️ Éditer</a>
+    {% if vuln.get('ressources') %}
+    <a href="{{ vuln['ressources'] }}" target="_blank" class="btn btn-secondary">🌐 Détails NVD</a>
+    {% endif %}
+    <button onclick="deleteVuln({{ vuln['id'] }})" class="btn btn-delete">🗑️ Supprimer</button>
+</div>
+
         </div>
         {% endfor %}
+    </div>
+
+    <div id="noResults" class="no-results" style="display: none;">
+        <p>😢 Aucune vulnérabilité trouvée avec ces critères.</p>
     </div>
 
     <!-- Modal Ajout -->
@@ -131,6 +149,27 @@
 </div>
 
 <style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    gap: 20px;
+}
+
+.page-header h1 {
+    color: var(--primary);
+    font-size: 2.2rem;
+    margin: 0;
+}
+
+.vulns-filters {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
 .vulns-list {
     display: flex;
     flex-direction: column;
@@ -148,6 +187,7 @@
 
 .vuln-card:hover {
     border-color: var(--primary);
+    box-shadow: 0 8px 25px rgba(0, 255, 157, 0.2);
 }
 
 .vuln-header {
@@ -155,12 +195,14 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 15px;
+    gap: 15px;
 }
 
 .vuln-title {
     display: flex;
     align-items: center;
     gap: 15px;
+    flex: 1;
 }
 
 .cve-id {
@@ -170,17 +212,22 @@
     color: var(--primary);
     font-weight: 700;
     font-family: monospace;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .vuln-title h3 {
     color: var(--text-light);
     margin: 0;
+    line-height: 1.4;
 }
 
 .vuln-severity {
     padding: 8px 16px;
     border-radius: 8px;
     font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .severity-critique {
@@ -206,6 +253,7 @@
 .vuln-description {
     color: var(--text-light);
     margin: 12px 0;
+    line-height: 1.6;
 }
 
 .vuln-details {
@@ -221,6 +269,7 @@
     gap: 12px;
     margin: 8px 0;
     color: var(--text-light);
+    flex-wrap: wrap;
 }
 
 .detail-row strong {
@@ -229,11 +278,21 @@
 }
 
 .cvss-score {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    background: linear-gradient(135deg, var(--primary), #00cc99);
     padding: 4px 12px;
     border-radius: 6px;
     color: var(--bg-dark);
     font-weight: 700;
+    white-space: nowrap;
+}
+
+.platform-badge {
+    padding: 4px 10px;
+    background: rgba(0, 255, 157, 0.1);
+    border: 1px solid rgba(0, 255, 157, 0.3);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: var(--primary);
 }
 
 .vuln-mitigation {
@@ -248,8 +307,19 @@
     color: #4caf50;
 }
 
+.vuln-mitigation p {
+    margin: 5px 0 0 0;
+    color: var(--text-light);
+}
+
 .vuln-commands {
     margin: 15px 0;
+}
+
+.vuln-commands strong {
+    color: var(--primary);
+    display: block;
+    margin-bottom: 8px;
 }
 
 .command-box {
@@ -260,6 +330,7 @@
     border-radius: 6px;
     margin: 8px 0;
     border-left: 3px solid #2196f3;
+    gap: 10px;
 }
 
 .command-box code {
@@ -268,14 +339,23 @@
     margin: 0;
     border: none;
     padding: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    overflow-x: auto;
 }
 
 .command-box .copy-btn {
-    margin-left: 10px;
+    flex-shrink: 0;
 }
 
 .vuln-tools {
     margin: 15px 0;
+}
+
+.vuln-tools strong {
+    color: var(--primary);
+    display: block;
+    margin-bottom: 8px;
 }
 
 .tools-list {
@@ -292,6 +372,12 @@
     border-radius: 8px;
     font-size: 0.85rem;
     color: var(--primary);
+    transition: all 0.3s ease;
+}
+
+.tool-tag:hover {
+    background: rgba(0, 255, 157, 0.2);
+    border-color: var(--primary);
 }
 
 .vuln-actions {
@@ -303,6 +389,136 @@
 .vuln-actions .btn {
     flex: 1;
 }
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    overflow: auto;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    margin: 3% auto;
+    padding: 40px;
+    border: 2px solid rgba(0, 255, 157, 0.2);
+    border-radius: 12px;
+    max-width: 700px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.modal-content h2 {
+    color: var(--primary);
+    margin-bottom: 25px;
+    margin-top: 0;
+}
+
+.close {
+    color: var(--primary);
+    float: right;
+    font-size: 1.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: -10px -10px 0 0;
+}
+
+.close:hover {
+    color: var(--primary-dark);
+    transform: scale(1.1);
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    color: var(--primary);
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(0, 255, 157, 0.3);
+    border-radius: 8px;
+    color: var(--text-light);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0, 255, 157, 0.3);
+    background: rgba(0, 255, 157, 0.05);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.form-actions .btn {
+    flex: 1;
+}
+
+.no-results {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 30px;
+    }
+    .page-header h1 {
+        font-size: 1.8rem;
+    }
+    .vulns-filters {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .vuln-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .vuln-title {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    .modal-content {
+        margin: 10% auto;
+        padding: 25px;
+        width: 95%;
+    }
+}
 </style>
 
 <script>
@@ -312,6 +528,15 @@ function showAddVulnForm() {
 
 function closeVulnModal() {
     document.getElementById('addVulnModal').style.display = 'none';
+    document.getElementById('addVulnForm').reset();
+}
+
+function copyToClipboard(text, button) {
+    navigator.clipboard.writeText(text).then(() => {
+        const orig = button.textContent;
+        button.textContent = '✅ Copié!';
+        setTimeout(() => { button.textContent = orig; }, 2000);
+    }).catch(() => alert('Erreur de copie'));
 }
 
 document.getElementById('addVulnForm').addEventListener('submit', (e) => {
@@ -323,12 +548,12 @@ document.getElementById('addVulnForm').addEventListener('submit', (e) => {
         severite: document.getElementById('vulnSevForm').value,
         score_cvss: parseFloat(document.getElementById('vulnCvss').value),
         mitigation: document.getElementById('vulnMitigation').value,
-        plateforme: ["Linux"],
+        plateforme: JSON.stringify(["Linux"]),
         date_decouverte: new Date().toISOString().split('T')[0],
         date_correction: "",
-        commandes_test: [],
-        ressources: [],
-        tools: []
+        commandes_test: JSON.stringify([]),
+        ressources: "",
+        tools: JSON.stringify([])
     };
     
     fetch('/api/vulnerabilities', {
@@ -337,26 +562,60 @@ document.getElementById('addVulnForm').addEventListener('submit', (e) => {
         body: JSON.stringify(data)
     })
     .then(r => r.json())
-    .then(d => {alert('✅ ' + d.message); location.reload();});
-});
-
-document.getElementById('vulnSearch').addEventListener('input', (e) => {
-    const search = e.target.value.toLowerCase();
-    document.querySelectorAll('.vuln-card').forEach(card => {
-        card.style.display = card.textContent.toLowerCase().includes(search) ? 'block' : 'none';
+    .then(d => {
+        alert('✅ ' + d.message); 
+        location.reload();
+    })
+    .catch(e => {
+        console.error(e);
+        alert('❌ Erreur: ' + e);
     });
 });
+
+document.getElementById('vulnSearch').addEventListener('input', filterVulns);
+document.getElementById('vulnSeverity').addEventListener('change', filterVulns);
+
+function filterVulns() {
+    const search = document.getElementById('vulnSearch').value.toLowerCase();
+    const severity = document.getElementById('vulnSeverity').value;
+    let visible = 0;
+
+    document.querySelectorAll('.vuln-card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const sev = card.getAttribute('data-severity');
+
+        const match = (!search || text.includes(search)) &&
+                     (!severity || sev === severity);
+
+        if (match) {
+            card.style.display = 'block';
+            visible++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+}
 
 function deleteVuln(id) {
     if (confirm('Supprimer cette vulnérabilité ?')) {
         fetch(`/api/vulnerabilities/${id}`, {method: 'DELETE'})
         .then(r => r.json())
-        .then(d => {alert(d.message); location.reload();});
+        .then(d => {
+            alert(d.message); 
+            location.reload();
+        })
+        .catch(e => {
+            console.error(e);
+            alert('❌ Erreur');
+        });
     }
 }
 
 window.onclick = (e) => {
-    if (e.target.id === 'addVulnModal') closeVulnModal();
+    const modal = document.getElementById('addVulnModal');
+    if (e.target === modal) closeVulnModal();
 };
 </script>
 {% endblock %}

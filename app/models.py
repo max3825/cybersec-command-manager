@@ -4,32 +4,35 @@ import json
 
 db = SQLAlchemy()
 
+def safe_json_loads(value, default=None):
+    """Parse JSON de façon sécurisée"""
+    if not value:
+        return default if default is not None else []
+    if isinstance(value, (list, dict)):
+        return value
+    try:
+        return json.loads(value)
+    except (json.JSONDecodeError, TypeError, ValueError):
+        return default if default is not None else []
 
-# ============ COMMAND MODEL ============
+
 class Command(db.Model):
     __tablename__ = 'commands'
-
+    
     id = db.Column(db.Integer, primary_key=True)
     nom = db.Column(db.String(100), unique=True, nullable=False, index=True)
-    description = db.Column(db.String(500), nullable=False)
-    categorie = db.Column(db.String(100), nullable=False, index=True)
-    plateforme = db.Column(db.String(100), nullable=False, index=True)
-    arguments_options = db.Column(db.Text, nullable=False)
-    exemple = db.Column(db.Text, nullable=False)
-    usage = db.Column(db.Text, nullable=False)
-    tags = db.Column(db.String(500), nullable=False)
-    niveau = db.Column(db.String(50), default='Débutant', index=True)
-    ressources = db.Column(db.String(500))
-    date_ajout = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    description = db.Column(db.Text, nullable=False)
+    categorie = db.Column(db.String(100), nullable=False)
+    plateforme = db.Column(db.String(50), nullable=False)
+    arguments_options = db.Column(db.Text)
+    exemple = db.Column(db.Text)
+    usage = db.Column(db.Text)
+    tags = db.Column(db.String(200))
+    niveau = db.Column(db.String(50), default='Débutant')
+    ressources = db.Column(db.Text)
+    date_ajout = db.Column(db.DateTime, default=datetime.utcnow)
     date_modification = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    # Relationships
-    favorites = db.relationship('Favorite', backref='command', lazy=True, cascade='all, delete-orphan')
-    search_history = db.relationship('SearchHistory', backref='command', lazy=True)
-
-    def __repr__(self):
-        return f'<Command {self.nom}>'
-
+    
     def to_dict(self):
         return {
             'id': self.id,
@@ -37,203 +40,174 @@ class Command(db.Model):
             'description': self.description,
             'categorie': self.categorie,
             'plateforme': self.plateforme,
-            'arguments_options': self.arguments_options,
-            'exemple': self.exemple,
-            'usage': self.usage,
-            'tags': self.tags,
-            'niveau': self.niveau,
-            'ressources': self.ressources,
-            'date_ajout': self.date_ajout.isoformat() if self.date_ajout else None,
-            'date_modification': self.date_modification.isoformat() if self.date_modification else None
+            'arguments_options': self.arguments_options or '',
+            'exemple': self.exemple or '',
+            'usage': self.usage or '',
+            'tags': self.tags or '',
+            'niveau': self.niveau or 'Débutant',
+            'ressources': self.ressources or '',
+            'date_ajout': self.date_ajout.isoformat() if self.date_ajout else None
         }
 
 
-# ============ CERTIFICATION MODEL ============
 class Certification(db.Model):
     __tablename__ = 'certifications'
-
+    
     id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String(100), unique=True, nullable=False, index=True)
-    organisme = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(500), nullable=False)
-    niveau = db.Column(db.String(50), nullable=False, index=True)
-    prix_usd = db.Column(db.Integer, nullable=False)
+    nom = db.Column(db.String(200), nullable=False)
+    organisme = db.Column(db.String(200))
+    description = db.Column(db.Text)
+    niveau = db.Column(db.String(50))
+    prix_usd = db.Column(db.Integer)
     duree_validite = db.Column(db.Integer, default=36)
     duree_etude = db.Column(db.String(100))
-    domaines = db.Column(db.Text)  # JSON string
-    commandes_recommandees = db.Column(db.Text)  # JSON string
-    prerequisites = db.Column(db.String(500))
+    domaines = db.Column(db.Text)
+    commandes_recommandees = db.Column(db.Text)
+    prerequisites = db.Column(db.Text)
     lien = db.Column(db.String(500))
     date_ajout = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<Certification {self.nom}>'
-
+    
     def to_dict(self):
         return {
             'id': self.id,
             'nom': self.nom,
-            'organisme': self.organisme,
-            'description': self.description,
-            'niveau': self.niveau,
-            'prix_usd': self.prix_usd,
-            'duree_validite': self.duree_validite,
-            'duree_etude': self.duree_etude,
-            'domaines': json.loads(self.domaines) if self.domaines else [],
-            'commandes_recommandees': json.loads(self.commandes_recommandees) if self.commandes_recommandees else [],
-            'prerequisites': self.prerequisites,
-            'lien': self.lien,
+            'organisme': self.organisme or '',
+            'description': self.description or '',
+            'niveau': self.niveau or '',
+            'prix_usd': self.prix_usd or 0,
+            'duree_validite': self.duree_validite or 36,
+            'duree_etude': self.duree_etude or '',
+            'domaines': safe_json_loads(self.domaines, []),
+            'commandes_recommandees': safe_json_loads(self.commandes_recommandees, []),
+            'prerequisites': self.prerequisites or '',
+            'lien': self.lien or '',
             'date_ajout': self.date_ajout.isoformat() if self.date_ajout else None
         }
 
 
-# ============ CHEATSHEET MODEL ============
 class CheatSheet(db.Model):
     __tablename__ = 'cheatsheets'
-
+    
     id = db.Column(db.Integer, primary_key=True)
-    titre = db.Column(db.String(100), unique=True, nullable=False, index=True)
-    description = db.Column(db.String(500), nullable=False)
-    categorie = db.Column(db.String(100), nullable=False, index=True)
-    niveau = db.Column(db.String(50), nullable=False, index=True)
-    contenu = db.Column(db.Text, nullable=False)
-    commandes = db.Column(db.Text)  # JSON string list
-    ressources = db.Column(db.Text)
-    date_ajout = db.Column(db.DateTime, default=datetime.utcnow)
-    date_modification = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<CheatSheet {self.titre}>'
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'titre': self.titre,
-            'description': self.description,
-            'categorie': self.categorie,
-            'niveau': self.niveau,
-            'contenu': self.contenu,
-            'commandes': json.loads(self.commandes) if self.commandes else [],
-            'ressources': json.loads(self.ressources) if self.ressources else [],
-            'date_ajout': self.date_ajout.isoformat() if self.date_ajout else None,
-            'date_modification': self.date_modification.isoformat() if self.date_modification else None
-        }
-
-
-# ============ TOOL MODEL ============
-class Tool(db.Model):
-    __tablename__ = 'tools'
-
-    id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String(100), unique=True, nullable=False, index=True)
-    description = db.Column(db.String(500), nullable=False)
-    categorie = db.Column(db.String(100), nullable=False, index=True)
-    type = db.Column(db.String(100), nullable=False)
-    installation = db.Column(db.String(500), nullable=False)
-    documentation = db.Column(db.String(500), nullable=False)
-    prix = db.Column(db.String(50), default='Gratuit', index=True)
-    plateforme = db.Column(db.Text)  # JSON string list
-    commandes_courantes = db.Column(db.Text)  # JSON string list
-    alternatives = db.Column(db.Text)  # JSON string list
-    date_ajout = db.Column(db.DateTime, default=datetime.utcnow)
-    date_modification = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<Tool {self.nom}>'
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'nom': self.nom,
-            'description': self.description,
-            'categorie': self.categorie,
-            'type': self.type,
-            'installation': self.installation,
-            'documentation': self.documentation,
-            'prix': self.prix,
-            'plateforme': json.loads(self.plateforme) if self.plateforme else [],
-            'commandes_courantes': json.loads(self.commandes_courantes) if self.commandes_courantes else [],
-            'alternatives': json.loads(self.alternatives) if self.alternatives else [],
-            'date_ajout': self.date_ajout.isoformat() if self.date_ajout else None,
-            'date_modification': self.date_modification.isoformat() if self.date_modification else None
-        }
-
-
-# ============ VULNERABILITY MODEL ============
-class Vulnerability(db.Model):
-    __tablename__ = 'vulnerabilities'
-
-    id = db.Column(db.Integer, primary_key=True)
-    cve = db.Column(db.String(50), unique=True, nullable=False, index=True)
     titre = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    severite = db.Column(db.String(50), nullable=False, index=True)
-    score_cvss = db.Column(db.Float, nullable=False)
-    mitigation = db.Column(db.Text, nullable=False)
-    plateforme = db.Column(db.Text)  # JSON string list
-    date_decouverte = db.Column(db.String(50))
-    date_correction = db.Column(db.String(50))
-    commandes_test = db.Column(db.Text)  # JSON string list
+    description = db.Column(db.Text)
+    categorie = db.Column(db.String(100))
+    niveau = db.Column(db.String(50))
+    contenu = db.Column(db.Text)
+    commandes = db.Column(db.Text)
     ressources = db.Column(db.Text)
-    tools = db.Column(db.Text)  # JSON string list
     date_ajout = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<Vulnerability {self.cve}>'
-
+    
     def to_dict(self):
         return {
             'id': self.id,
-            'cve': self.cve,
-            'titre': self.titre,
-            'description': self.description,
-            'severite': self.severite,
-            'score_cvss': self.score_cvss,
-            'mitigation': self.mitigation,
-            'plateforme': json.loads(self.plateforme) if self.plateforme else [],
-            'date_decouverte': self.date_decouverte,
-            'date_correction': self.date_correction,
-            'commandes_test': json.loads(self.commandes_test) if self.commandes_test else [],
-            'ressources': self.ressources,
-            'tools': json.loads(self.tools) if self.tools else [],
+            'titre': self.titre or '',
+            'description': self.description or '',
+            'categorie': self.categorie or '',
+            'niveau': self.niveau or '',
+            'contenu': self.contenu or '',
+            'commandes': safe_json_loads(self.commandes, []),
+            'ressources': self.ressources or '',
             'date_ajout': self.date_ajout.isoformat() if self.date_ajout else None
         }
 
 
-# ============ NOTE MODEL ============
-class Note(db.Model):
-    __tablename__ = 'notes'
-
+class Tool(db.Model):
+    __tablename__ = 'tools'
+    
     id = db.Column(db.Integer, primary_key=True)
-    titre = db.Column(db.String(200), nullable=False, index=True)
-    contenu = db.Column(db.Text, nullable=False)
-    date_creation = db.Column(db.DateTime, default=datetime.utcnow, index=True)
-    date_modification = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<Note {self.titre}>'
-
+    nom = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
+    categorie = db.Column(db.String(100))
+    type = db.Column(db.String(100))
+    installation = db.Column(db.Text)
+    documentation = db.Column(db.String(500))
+    prix = db.Column(db.String(100), default='Gratuit')
+    plateforme = db.Column(db.Text)
+    commandes_courantes = db.Column(db.Text)
+    alternatives = db.Column(db.Text)
+    date_ajout = db.Column(db.DateTime, default=datetime.utcnow)
+    
     def to_dict(self):
         return {
             'id': self.id,
-            'titre': self.titre,
-            'contenu': self.contenu,
+            'nom': self.nom or '',
+            'description': self.description or '',
+            'categorie': self.categorie or '',
+            'type': self.type or '',
+            'installation': self.installation or '',
+            'documentation': self.documentation or '',
+            'prix': self.prix or 'Gratuit',
+            'plateforme': safe_json_loads(self.plateforme, []),
+            'commandes_courantes': safe_json_loads(self.commandes_courantes, []),
+            'alternatives': safe_json_loads(self.alternatives, []),
+            'date_ajout': self.date_ajout.isoformat() if self.date_ajout else None
+        }
+
+
+class Vulnerability(db.Model):
+    __tablename__ = 'vulnerabilities'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    cve = db.Column(db.String(50), unique=True)
+    titre = db.Column(db.String(300))
+    description = db.Column(db.Text)
+    severite = db.Column(db.String(50))
+    score_cvss = db.Column(db.Float)
+    mitigation = db.Column(db.Text)
+    plateforme = db.Column(db.Text)
+    date_decouverte = db.Column(db.String(50))
+    date_correction = db.Column(db.String(50))
+    commandes_test = db.Column(db.Text)
+    ressources = db.Column(db.Text)
+    tools = db.Column(db.Text)
+    date_ajout = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'cve': self.cve or '',
+            'titre': self.titre or '',
+            'description': self.description or '',
+            'severite': self.severite or '',
+            'score_cvss': self.score_cvss or 0.0,
+            'mitigation': self.mitigation or '',
+            'plateforme': safe_json_loads(self.plateforme, []),
+            'date_decouverte': self.date_decouverte or '',
+            'date_correction': self.date_correction or '',
+            'commandes_test': safe_json_loads(self.commandes_test, []),
+            'ressources': self.ressources or '',
+            'tools': safe_json_loads(self.tools, []),
+            'date_ajout': self.date_ajout.isoformat() if self.date_ajout else None
+        }
+
+
+class Note(db.Model):
+    __tablename__ = 'notes'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    titre = db.Column(db.String(300), nullable=False)
+    contenu = db.Column(db.Text)
+    date_creation = db.Column(db.DateTime, default=datetime.utcnow)
+    date_modification = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'titre': self.titre or '',
+            'contenu': self.contenu or '',
             'date_creation': self.date_creation.isoformat() if self.date_creation else None,
             'date_modification': self.date_modification.isoformat() if self.date_modification else None
         }
 
 
-# ============ FAVORITE MODEL ============
 class Favorite(db.Model):
     __tablename__ = 'favorites'
-
+    
     id = db.Column(db.Integer, primary_key=True)
-    command_id = db.Column(db.Integer, db.ForeignKey('commands.id', ondelete='CASCADE'), nullable=False, index=True)
+    command_id = db.Column(db.Integer, nullable=False)
     date_ajout = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<Favorite command_id={self.command_id}>'
-
+    
     def to_dict(self):
         return {
             'id': self.id,
@@ -242,78 +216,39 @@ class Favorite(db.Model):
         }
 
 
-# ============ SEARCH HISTORY MODEL ============
 class SearchHistory(db.Model):
     __tablename__ = 'search_history'
-
+    
     id = db.Column(db.Integer, primary_key=True)
-    search_term = db.Column(db.String(200), nullable=False, index=True)
-    type = db.Column(db.String(50), default='general', index=True)
-    command_id = db.Column(db.Integer, db.ForeignKey('commands.id', ondelete='SET NULL'), nullable=True)
-    date = db.Column(db.DateTime, default=datetime.utcnow, index=True)
-
-    def __repr__(self):
-        return f'<SearchHistory {self.search_term}>'
-
+    search_term = db.Column(db.String(300))
+    type = db.Column(db.String(50))
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+    
     def to_dict(self):
         return {
             'id': self.id,
-            'search_term': self.search_term,
-            'type': self.type,
-            'command_id': self.command_id,
+            'search_term': self.search_term or '',
+            'type': self.type or '',
             'date': self.date.isoformat() if self.date else None
         }
 
 
-# ============ BADGE MODEL ============
 class Badge(db.Model):
     __tablename__ = 'badges'
-
+    
     id = db.Column(db.Integer, primary_key=True)
-    badge_id = db.Column(db.String(50), unique=True, nullable=False, index=True)
-    title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(500))
-    icon = db.Column(db.String(50))  # emoji ou URL
+    badge_id = db.Column(db.String(100), unique=True)
+    title = db.Column(db.String(200))
+    description = db.Column(db.Text)
+    icon = db.Column(db.String(50))
     date_earned = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<Badge {self.title}>'
-
+    
     def to_dict(self):
         return {
             'id': self.id,
-            'badge_id': self.badge_id,
-            'title': self.title,
-            'description': self.description,
-            'icon': self.icon,
+            'badge_id': self.badge_id or '',
+            'title': self.title or '',
+            'description': self.description or '',
+            'icon': self.icon or '',
             'date_earned': self.date_earned.isoformat() if self.date_earned else None
-        }
-
-
-# ============ STATS MODEL ============
-class UserStats(db.Model):
-    __tablename__ = 'user_stats'
-
-    id = db.Column(db.Integer, primary_key=True)
-    total_searches = db.Column(db.Integer, default=0)
-    total_commands_viewed = db.Column(db.Integer, default=0)
-    total_commands_copied = db.Column(db.Integer, default=0)
-    favorite_commands_count = db.Column(db.Integer, default=0)
-    notes_created = db.Column(db.Integer, default=0)
-    last_visited = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<UserStats>'
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'total_searches': self.total_searches,
-            'total_commands_viewed': self.total_commands_viewed,
-            'total_commands_copied': self.total_commands_copied,
-            'favorite_commands_count': self.favorite_commands_count,
-            'notes_created': self.notes_created,
-            'last_visited': self.last_visited.isoformat() if self.last_visited else None,
-            'created_at': self.created_at.isoformat() if self.created_at else None
         }

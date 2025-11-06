@@ -2,6 +2,12 @@
 
 {% block content %}
 <div class="container">
+    <!-- Header avec bouton d'ajout -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>⚡ Commandes Cybersécurité</h1>
+        <a href="{{ url_for('add_form') }}" class="btn btn-primary" style="font-size: 1.1em;">➕ Ajouter une commande</a>
+    </div>
+
     <!-- Statistiques Dashboard -->
     <div class="stats-overview">
         <h2>📊 Vue d'ensemble</h2>
@@ -80,47 +86,59 @@
     <!-- Grid de commandes -->
     <div class="commands-grid" id="commandsGrid">
         {% for cmd in commands %}
-        <div class="command-card" data-id="{{ loop.index0 }}" data-category="{{ cmd.categorie }}" data-platform="{{ cmd.plateforme }}" data-level="{{ cmd.get('niveau', 'Débutant') }}">
+        <div class="command-card" 
+             data-id="{{ cmd['id'] }}" 
+             data-category="{{ cmd['categorie'] }}" 
+             data-platform="{{ cmd['plateforme'] }}" 
+             data-level="{{ cmd.get('niveau', 'Débutant') }}">
+            
             <div class="command-header">
                 <div>
-                    <h3 class="command-name">{{ cmd.nom }}</h3><br>
+                    <h3 class="command-name">{{ cmd['nom'] }}</h3><br>
                     <div class="command-meta">
-                        <span class="platform-badge">{{ cmd.plateforme }}</span>
-                        <span class="level-badge level-{{ cmd.get('niveau', 'Débutant').lower() }}">{{ cmd.get('niveau', 'Débutant') }}</span>
+                        <span class="platform-badge">{{ cmd['plateforme'] }}</span>
+                        <span class="level-badge level-{{ cmd.get('niveau', 'Débutant').lower() }}">
+                            {{ cmd.get('niveau', 'Débutant') }}
+                        </span>
                     </div>
                 </div>
-                <button class="favorite-btn" onclick="toggleFavorite({{ loop.index0 }}, this)" data-cmd-id="{{ loop.index0 }}" {% if loop.index0 in favorites %}data-favorited="true"{% endif %}>
-                    {% if loop.index0 in favorites %}⭐{% else %}☆{% endif %}
+                <button class="favorite-btn" 
+                        onclick="toggleFavorite({{ cmd['id'] }}, this)" 
+                        data-cmd-id="{{ cmd['id'] }}" 
+                        {% if cmd['id'] in favorites %}data-favorited="true"{% endif %}>
+                    {% if cmd['id'] in favorites %}⭐{% else %}☆{% endif %}
                 </button>
             </div>
 
             <div class="command-category">
                 <span class="category-icon">📁</span>
-                {{ cmd.categorie }}
+                {{ cmd['categorie'] }}
             </div>
 
-            <p class="command-description">{{ cmd.description }}</p>
+            <p class="command-description">{{ cmd['description'] }}</p>
 
             <div class="command-section">
                 <strong>⚙️ Arguments/Options:</strong>
-                <code class="command-code">{{ cmd.arguments_options }}</code>
+                <code class="command-code">{{ cmd['arguments_options'] }}</code>
             </div>
 
             <div class="command-section">
                 <strong>💡 Exemple:</strong>
                 <div class="command-example">
-                    <code>{{ cmd.exemple }}</code>
-                    <button class="copy-btn" onclick="copyToClipboard('{{ cmd.exemple }}', this)" title="Copier">📋</button>
+                    <code>{{ cmd['exemple'] }}</code>
+                    <button class="copy-btn" 
+                            onclick="copyToClipboard('{{ cmd['exemple'] | replace("'", "\\'") }}', this)" 
+                            title="Copier">📋</button>
                 </div>
             </div>
 
             <div class="command-section">
                 <strong>📌 Usage:</strong>
-                <p class="command-usage">{{ cmd.usage }}</p>
+                <p class="command-usage">{{ cmd['usage'] }}</p>
             </div>
 
             <div class="command-tags">
-                {% for tag in cmd.tags.split(', ') %}
+                {% for tag in cmd['tags'].split(', ') %}
                 <span class="tag" onclick="searchByTag(this)">{{ tag }}</span>
                 {% endfor %}
             </div>
@@ -128,14 +146,15 @@
             {% if cmd.get('ressources') %}
             <div class="command-resources">
                 <strong>📖 Documentation:</strong>
-                <a href="{{ cmd.ressources }}" target="_blank" class="btn btn-docs">Lire la doc →</a>
+                <a href="{{ cmd['ressources'] }}" target="_blank" class="btn btn-docs">Lire la doc →</a>
             </div>
             {% endif %}
 
             <div class="command-actions">
-                <a href="{{ url_for('edit_form', cmd_id=loop.index0) }}" class="btn btn-edit">✏️ Éditer</a>
-                <button onclick="deleteCommand({{ loop.index0 }})" class="btn btn-delete">🗑️ Supprimer</button>
+                <a href="{{ url_for('edit_form', cmd_id=cmd['id']) }}" class="btn btn-edit">✏️ Éditer</a>
+                <button onclick="deleteCommand({{ cmd['id'] }})" class="btn btn-delete">🗑️ Supprimer</button>
             </div>
+
         </div>
         {% endfor %}
     </div>
@@ -203,8 +222,11 @@ function deleteCommand(id) {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) {
         fetch(`/api/commands/${id}`, {method: 'DELETE'})
         .then(r => r.json())
-        .then(d => {alert(d.message); location.reload();})
-        .catch(e => alert('Erreur'));
+        .then(d => {
+            alert(d.message); 
+            location.reload();
+        })
+        .catch(e => alert('Erreur lors de la suppression'));
     }
 }
 
@@ -223,27 +245,29 @@ function toggleFavorite(id, btn) {
             btn.removeAttribute('data-favorited');
         }
         filterCommands();
-    });
+    })
+    .catch(e => alert('Erreur favoris'));
 }
 
 function switchView(mode) {
-  const grid = document.getElementById('commandsGrid');
-  const btnGrid = document.querySelector('.view-btn:nth-child(1)');
-  const btnList = document.querySelector('.view-btn:nth-child(2)');
-  if(mode === 'grid') {
-    grid.classList.add('commands-grid');
-    grid.classList.remove('commands-list');
-    btnGrid.classList.add('active');
-    btnList.classList.remove('active');
-  } else {
-    grid.classList.remove('commands-grid');
-    grid.classList.add('commands-list');
-    btnGrid.classList.remove('active');
-    btnList.classList.add('active');
-  }
+    const grid = document.getElementById('commandsGrid');
+    const btnGrid = document.querySelector('.view-btn:nth-child(1)');
+    const btnList = document.querySelector('.view-btn:nth-child(2)');
+    
+    if(mode === 'grid') {
+        grid.classList.add('commands-grid');
+        grid.classList.remove('commands-list');
+        btnGrid.classList.add('active');
+        btnList.classList.remove('active');
+    } else {
+        grid.classList.remove('commands-grid');
+        grid.classList.add('commands-list');
+        btnGrid.classList.remove('active');
+        btnList.classList.add('active');
+    }
 }
 
-
+// Event listeners
 document.getElementById('searchInput').addEventListener('input', filterCommands);
 document.getElementById('categoryFilter').addEventListener('change', filterCommands);
 document.getElementById('platformFilter').addEventListener('change', filterCommands);
@@ -265,6 +289,7 @@ document.getElementById('toggleFavorites').addEventListener('click', (e) => {
     filterCommands();
 });
 
+// Initial filter
 filterCommands();
 </script>
 {% endblock %}
