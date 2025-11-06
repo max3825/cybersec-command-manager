@@ -688,17 +688,47 @@ a:hover {
 }
 
 .command-card {
-    background: linear-gradient(135deg, var(--bg-card) 0%, #2a3255 100%);
-    border-radius: 14px;
+    background: linear-gradient(125deg, #232849 85%, #153065 100%);
+    border: 2.2px solid rgba(44, 215, 177, 0.28);
+    border-radius: 17px;
+    box-shadow:
+        0 2px 22px 2px rgba(0,255,157,0.045),
+        0 1.5px 13px rgba(0,0,0,0.11),
+        0 0.5px 9px rgba(32,205,209,0.07);
     padding: 30px;
-    border: 2px solid var(--border-color);
     transition: var(--transition);
-    overflow: hidden;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    overflow: hidden;
+    backdrop-filter: blur(7px) saturate(1.1);
 }
+
+.command-card:hover {
+    border: 2.6px solid var(--primary);
+    box-shadow:
+        0 6px 32px 7px rgba(0,255,157,0.11),
+        0 1.5px 20px rgba(0,0,0,0.17);
+    background: linear-gradient(135deg, #1e3356 65%, #1f524c 100%);
+    transform: translateY(-5px) scale(1.018);
+}
+
+
+
+/* ... */
+.command-card::after {
+    content: "";
+    position: absolute;
+    right: -65px;
+    top: -46px;
+    width: 155px;
+    height: 85px;
+    background: linear-gradient(100deg, var(--accent) 33%, transparent 65%);
+    filter: blur(22px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: .30;
+    border-radius: 80px 120px 90px 100px;
+}
+
 
 .command-card::before {
     content: '';
@@ -712,11 +742,6 @@ a:hover {
     pointer-events: none;
 }
 
-.command-card:hover {
-    transform: translateY(-10px);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--primary);
-}
 
 .command-header {
     display: flex;
@@ -1282,3 +1307,4 @@ a:hover {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+

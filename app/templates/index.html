@@ -69,6 +69,7 @@
         </div>
         <div id="resultCount" class="result-count"></div>
     </div>
+    <br>
 
     <!-- Vue de commandes -->
     <div id="viewToggle" class="view-toggle">
@@ -82,7 +83,7 @@
         <div class="command-card" data-id="{{ loop.index0 }}" data-category="{{ cmd.categorie }}" data-platform="{{ cmd.plateforme }}" data-level="{{ cmd.get('niveau', 'Débutant') }}">
             <div class="command-header">
                 <div>
-                    <h3 class="command-name">{{ cmd.nom }}</h3>
+                    <h3 class="command-name">{{ cmd.nom }}</h3><br>
                     <div class="command-meta">
                         <span class="platform-badge">{{ cmd.plateforme }}</span>
                         <span class="level-badge level-{{ cmd.get('niveau', 'Débutant').lower() }}">{{ cmd.get('niveau', 'Débutant') }}</span>
@@ -225,12 +226,23 @@ function toggleFavorite(id, btn) {
     });
 }
 
-function switchView(view) {
-    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-    const grid = document.getElementById('commandsGrid');
-    grid.classList.toggle('list-view', view === 'list');
+function switchView(mode) {
+  const grid = document.getElementById('commandsGrid');
+  const btnGrid = document.querySelector('.view-btn:nth-child(1)');
+  const btnList = document.querySelector('.view-btn:nth-child(2)');
+  if(mode === 'grid') {
+    grid.classList.add('commands-grid');
+    grid.classList.remove('commands-list');
+    btnGrid.classList.add('active');
+    btnList.classList.remove('active');
+  } else {
+    grid.classList.remove('commands-grid');
+    grid.classList.add('commands-list');
+    btnGrid.classList.remove('active');
+    btnList.classList.add('active');
+  }
 }
+
 
 document.getElementById('searchInput').addEventListener('input', filterCommands);
 document.getElementById('categoryFilter').addEventListener('change', filterCommands);
