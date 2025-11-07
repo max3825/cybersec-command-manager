@@ -291,5 +291,40 @@ document.getElementById('toggleFavorites').addEventListener('click', (e) => {
 
 // Initial filter
 filterCommands();
+
+// Highlight depuis URL
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const highlightId = urlParams.get('highlight');
+    
+    if (highlightId) {
+        // Trouve la carte de commande correspondante
+        const cards = document.querySelectorAll('.command-card[data-id="' + highlightId + '"]');
+        
+        if (cards.length > 0) {
+            const card = cards[0];
+            
+            // Scroll vers l'élément
+            setTimeout(() => {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Highlight temporaire
+                card.style.transition = 'all 0.3s ease';
+                card.style.transform = 'scale(1.05)';
+                card.style.boxShadow = '0 0 30px rgba(0, 255, 157, 0.6)';
+                card.style.borderColor = 'var(--primary)';
+                card.style.backgroundColor = 'rgba(0, 255, 157, 0.1)';
+                
+                // Retire le highlight après 3 secondes
+                setTimeout(() => {
+                    card.style.transform = '';
+                    card.style.boxShadow = '';
+                    card.style.backgroundColor = '';
+                }, 3000);
+            }, 300);
+        }
+    }
+});
 </script>
+
 {% endblock %}

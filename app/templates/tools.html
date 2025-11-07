@@ -597,5 +597,36 @@ window.onclick = (e) => {
     const modal = document.getElementById('addToolModal');
     if (e.target === modal) closeToolModal();
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const highlightId = urlParams.get('highlight');
+    
+    if (highlightId) {
+        // Trouve la carte correspondante
+        const cards = document.querySelectorAll('[data-id="' + highlightId + '"]');
+        
+        if (cards.length > 0) {
+            const card = cards[0];
+            
+            // Scroll vers l'élément
+            setTimeout(() => {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Highlight temporaire
+                card.style.transition = 'all 0.3s ease';
+                card.style.transform = 'scale(1.05)';
+                card.style.boxShadow = '0 0 30px rgba(0, 255, 157, 0.6)';
+                card.style.borderColor = 'var(--primary)';
+                
+                // Retire le highlight après 3 secondes
+                setTimeout(() => {
+                    card.style.transform = '';
+                    card.style.boxShadow = '';
+                }, 3000);
+            }, 300);
+        }
+    }
+});
 </script>
 {% endblock %}

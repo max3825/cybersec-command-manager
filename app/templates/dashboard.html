@@ -27,14 +27,14 @@
             <div class="stat-mini-card">
                 <div class="stat-icon">📜</div>
                 <div class="stat-info">
-                    <p class="stat-value">{{ stats.total_certs }}</p>
+                    <p class="stat-value">{{ stats.total_certifications }}</p>
                     <p class="stat-label">Certifications</p>
                 </div>
             </div>
             <div class="stat-mini-card">
                 <div class="stat-icon">📋</div>
                 <div class="stat-info">
-                    <p class="stat-value">{{ stats.total_sheets }}</p>
+                    <p class="stat-value">{{ stats.total_cheatsheets }}</p>
                     <p class="stat-label">Cheat Sheets</p>
                 </div>
             </div>
@@ -48,7 +48,7 @@
             <div class="stat-mini-card">
                 <div class="stat-icon">🔒</div>
                 <div class="stat-info">
-                    <p class="stat-value">{{ stats.total_vulns }}</p>
+                    <p class="stat-value">{{ stats.total_vulnerabilities }}</p>
                     <p class="stat-label">Vulnérabilités</p>
                 </div>
             </div>
@@ -104,9 +104,9 @@
                 {% if recent_commands %}
                     {% for cmd in recent_commands %}
                     <div class="recent-item">
-                        <div class="recent-title">{{ cmd.nom }}</div>
-                        <div class="recent-category">{{ cmd.categorie }}</div>
-                        <button onclick="copyToClipboard('{{ cmd.exemple }}')" class="copy-btn-small">📋 Copier</button>
+                        <div class="recent-title">{{ cmd['nom'] }}</div>
+                        <div class="recent-category">{{ cmd['categorie'] }}</div>
+                        <button onclick="copyToClipboard('{{ cmd['exemple'] }}')" class="copy-btn-small">📋 Copier</button>
                     </div>
                     {% endfor %}
                 {% else %}
@@ -122,18 +122,14 @@
                 <a href="{{ url_for('certifications') }}" class="view-all">Voir tout →</a>
             </div>
             <div class="cert-progress-list">
-                {% if cert_progress %}
-                    {% for cert in cert_progress %}
+                {% if certifications %}
+                    {% for cert in certifications[:3] %}
                     <div class="cert-progress-item">
                         <div class="cert-info">
-                            <h4>{{ cert.nom }}</h4>
-                            <p class="cert-org">{{ cert.organisme }}</p>
+                            <h4>{{ cert['nom'] }}</h4>
+                            <p class="cert-org">{{ cert['organisme'] }}</p>
                         </div>
-                        <div class="cert-level">{{ cert.niveau }}</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: {{ cert.progress }}%"></div>
-                        </div>
-                        <p class="progress-text">{{ cert.progress }}% complété</p>
+                        <div class="cert-level">{{ cert['niveau'] }}</div>
                     </div>
                     {% endfor %}
                 {% else %}
@@ -150,8 +146,8 @@
             <div class="badges-display">
                 {% if badges %}
                     {% for badge in badges %}
-                    <div class="badge-item" title="{{ badge.title }}">
-                        <span class="badge-icon">{{ badge.title.split()[0] }}</span>
+                    <div class="badge-item" title="{{ badge['title'] }}">
+                        <span class="badge-icon">{{ badge['icon'] }}</span>
                     </div>
                     {% endfor %}
                 {% else %}
@@ -202,6 +198,7 @@
     transform: translateY(-50%);
     font-size: 1.3rem;
     pointer-events: none;
+    z-index: 2;
 }
 
 .global-search-input {
@@ -224,17 +221,16 @@
 
 .search-results-dropdown {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 5px);
     left: 0;
     right: 0;
     background: var(--bg-card);
     border: 2px solid rgba(0, 255, 157, 0.3);
-    border-top: none;
-    border-radius: 0 0 12px 12px;
+    border-radius: 12px;
     max-height: 500px;
     overflow-y: auto;
     display: none;
-    z-index: 100;
+    z-index: 1000;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
@@ -252,6 +248,10 @@
     gap: 12px;
 }
 
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
 .search-result-item:hover {
     background: rgba(0, 255, 157, 0.1);
     padding-left: 30px;
@@ -260,13 +260,41 @@
 .search-result-type {
     display: inline-block;
     padding: 4px 8px;
-    background: rgba(0, 255, 157, 0.2);
-    color: var(--primary);
     border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 700;
-    min-width: 60px;
+    min-width: 80px;
     text-align: center;
+}
+
+.type-command {
+    background: rgba(33, 150, 243, 0.2);
+    color: #2196f3;
+    border: 1px solid #2196f3;
+}
+
+.type-cve {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+    border: 1px solid #f44336;
+}
+
+.type-tool {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ff9800;
+    border: 1px solid #ff9800;
+}
+
+.type-cert {
+    background: rgba(156, 39, 176, 0.2);
+    color: #9c27b0;
+    border: 1px solid #9c27b0;
+}
+
+.type-sheet {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+    border: 1px solid #4caf50;
 }
 
 .search-result-text {
@@ -521,27 +549,6 @@
     margin: 10px 0;
 }
 
-.progress-bar {
-    width: 100%;
-    height: 8px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    overflow: hidden;
-    margin: 10px 0 8px 0;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-    transition: width 0.5s ease;
-}
-
-.progress-text {
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    margin: 0;
-}
-
 /* Badges */
 .badges-display {
     display: grid;
@@ -637,33 +644,30 @@
 // Global Search
 const globalSearchInput = document.getElementById('globalSearch');
 const searchResults = document.getElementById('searchResults');
+let searchTimeout;
 
 globalSearchInput.addEventListener('input', async (e) => {
+    clearTimeout(searchTimeout);
     const query = e.target.value.trim();
     
     if (query.length < 2) {
         searchResults.classList.remove('active');
+        searchResults.innerHTML = '';
         return;
     }
     
-    try {
-        const response = await fetch(`/api/search/global?q=${encodeURIComponent(query)}`);
-        const data = await response.json();
-        
-        // Add to search history
-        fetch('/api/search/add-history', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({search: query, type: 'global'})
-        });
-        
-        // Display results
-        displaySearchResults(data);
-    } catch (error) {
-        console.error('Search error:', error);
-    }
+    searchTimeout = setTimeout(async () => {
+        try {
+            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            displaySearchResults(data);
+        } catch (error) {
+            console.error('Search error:', error);
+            searchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">❌ Erreur de recherche</div>';
+            searchResults.classList.add('active');
+        }
+    }, 300);
 });
-
 function displaySearchResults(data) {
     let html = '';
     let totalResults = 0;
@@ -672,43 +676,11 @@ function displaySearchResults(data) {
     if (data.commands && data.commands.length > 0) {
         data.commands.forEach(cmd => {
             html += `
-                <div class="search-result-item" onclick="copyToClipboard('${cmd.nom}')">
-                    <span class="search-result-type">Commande</span>
+                <div class="search-result-item" onclick="window.location.href='/commandes?highlight=${cmd.id}'">
+                    <span class="search-result-type type-command">Commande</span>
                     <div class="search-result-text">
                         <div class="search-result-title">${cmd.nom}</div>
-                        <div class="search-result-desc">${cmd.description}</div>
-                    </div>
-                </div>
-            `;
-            totalResults++;
-        });
-    }
-    
-    // Cheatsheets
-    if (data.cheatsheets && data.cheatsheets.length > 0) {
-        data.cheatsheets.forEach(sheet => {
-            html += `
-                <div class="search-result-item">
-                    <span class="search-result-type">Cheat Sheet</span>
-                    <div class="search-result-text">
-                        <div class="search-result-title">${sheet.titre}</div>
-                        <div class="search-result-desc">${sheet.description}</div>
-                    </div>
-                </div>
-            `;
-            totalResults++;
-        });
-    }
-    
-    // Tools
-    if (data.tools && data.tools.length > 0) {
-        data.tools.forEach(tool => {
-            html += `
-                <div class="search-result-item">
-                    <span class="search-result-type">Outil</span>
-                    <div class="search-result-text">
-                        <div class="search-result-title">${tool.nom}</div>
-                        <div class="search-result-desc">${tool.description}</div>
+                        <div class="search-result-desc">${cmd.description.substring(0, 60)}...</div>
                     </div>
                 </div>
             `;
@@ -720,11 +692,27 @@ function displaySearchResults(data) {
     if (data.vulnerabilities && data.vulnerabilities.length > 0) {
         data.vulnerabilities.forEach(vuln => {
             html += `
-                <div class="search-result-item">
-                    <span class="search-result-type">CVE</span>
+                <div class="search-result-item" onclick="window.location.href='/vulnerabilities?highlight=${vuln.id}'">
+                    <span class="search-result-type type-cve">CVE</span>
                     <div class="search-result-text">
                         <div class="search-result-title">${vuln.cve}</div>
-                        <div class="search-result-desc">${vuln.titre}</div>
+                        <div class="search-result-desc">${vuln.titre.substring(0, 60)}...</div>
+                    </div>
+                </div>
+            `;
+            totalResults++;
+        });
+    }
+    
+    // Tools
+    if (data.tools && data.tools.length > 0) {
+        data.tools.forEach(tool => {
+            html += `
+                <div class="search-result-item" onclick="window.location.href='/tools?highlight=${tool.id}'">
+                    <span class="search-result-type type-tool">Outil</span>
+                    <div class="search-result-text">
+                        <div class="search-result-title">${tool.nom}</div>
+                        <div class="search-result-desc">${tool.description.substring(0, 60)}...</div>
                     </div>
                 </div>
             `;
@@ -736,11 +724,27 @@ function displaySearchResults(data) {
     if (data.certifications && data.certifications.length > 0) {
         data.certifications.forEach(cert => {
             html += `
-                <div class="search-result-item">
-                    <span class="search-result-type">Certification</span>
+                <div class="search-result-item" onclick="window.location.href='/certifications?highlight=${cert.id}'">
+                    <span class="search-result-type type-cert">Certification</span>
                     <div class="search-result-text">
                         <div class="search-result-title">${cert.nom}</div>
-                        <div class="search-result-desc">${cert.description}</div>
+                        <div class="search-result-desc">${cert.organisme} - ${cert.niveau}</div>
+                    </div>
+                </div>
+            `;
+            totalResults++;
+        });
+    }
+    
+    // Cheatsheets
+    if (data.cheatsheets && data.cheatsheets.length > 0) {
+        data.cheatsheets.forEach(sheet => {
+            html += `
+                <div class="search-result-item" onclick="window.location.href='/cheatsheets?highlight=${sheet.id}'">
+                    <span class="search-result-type type-sheet">Cheat Sheet</span>
+                    <div class="search-result-text">
+                        <div class="search-result-title">${sheet.titre}</div>
+                        <div class="search-result-desc">${sheet.categorie} - ${sheet.niveau}</div>
                     </div>
                 </div>
             `;
@@ -752,21 +756,16 @@ function displaySearchResults(data) {
         searchResults.innerHTML = html;
         searchResults.classList.add('active');
     } else {
-        searchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">Aucun résultat trouvé</div>';
+        searchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">😢 Aucun résultat trouvé</div>';
         searchResults.classList.add('active');
     }
-}
-
-// Close search results when clicking outside
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-input-wrapper')) {
-        searchResults.classList.remove('active');
-    }
-});
+};
 
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
         alert('✅ Copié: ' + text);
+    }).catch(() => {
+        alert('❌ Erreur de copie');
     });
 }
 </script>

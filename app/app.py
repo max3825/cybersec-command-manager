@@ -21,55 +21,47 @@ with app.app_context():
 # ============ ROUTE DASHBOARD ============
 @app.route('/')
 def dashboard():
-    """Enhanced dashboard homepage"""
-    commands = Command.query.all()
-    certifications = Certification.query.all()
-    cheatsheets = CheatSheet.query.all()
-    tools = Tool.query.all()
-    vulnerabilities = Vulnerability.query.all()
-    notes = Note.query.all()
-    favorites = Favorite.query.all()
-    badges = Badge.query.all()
-
+    # Stats
     stats = {
-        'total_commands': len(commands),
-        'total_certs': len(certifications),
-        'total_sheets': len(cheatsheets),
-        'total_tools': len(tools),
-        'total_vulns': len(vulnerabilities),
-        'total_favorites': len(favorites),
-        'total_history': SearchHistory.query.count(),
-        'total_badges': len(badges)
+        'total_commands': Command.query.count(),
+        'total_certifications': Certification.query.count(),
+        'total_cheatsheets': CheatSheet.query.count(),
+        'total_tools': Tool.query.count(),
+        'total_vulnerabilities': Vulnerability.query.count(),
+        'total_favorites': Favorite.query.count()
     }
-
-    # Recent commands (dernières 5)
+    
+    # Commandes récentes (5 dernières)
     recent_commands = Command.query.order_by(Command.date_ajout.desc()).limit(5).all()
-
-    # Certifications progress
-    cert_progress = []
-    for cert in certifications[:3]:
-        cert_progress.append({
-            'id': cert.id,
-            'nom': cert.nom,
-            'organisme': cert.organisme,
-            'niveau': cert.niveau,
-            'prix': cert.prix_usd,
-            'progress': 35
-        })
-
-    # Categories breakdown
+    recent_commands_data = [cmd.to_dict() for cmd in recent_commands]
+    
+    # Certifications (3 premières)
+    certifications = Certification.query.limit(3).all()
+    certifications_data = [cert.to_dict() for cert in certifications]
+    
+    # Badges (fictif pour l'instant)
+    badges = [
+        {'title': '🏆 Premier pas', 'icon': '🏆'},
+        {'title': '⭐ 10 commandes', 'icon': '⭐'},
+        {'title': '🎯 Expert', 'icon': '🎯'}
+    ]
+    
+    # Catégories breakdown
     categories = {}
+    commands = Command.query.all()
     for cmd in commands:
         cat = cmd.categorie
-        categories[cat] = categories.get(cat, 0) + 1
-
+        if cat in categories:
+            categories[cat] += 1
+        else:
+            categories[cat] = 1
+    
     return render_template('dashboard.html',
-                           stats=stats,
-                           recent_commands=recent_commands,
-                           cert_progress=cert_progress,
-                           categories=categories,
-                           favorites_count=len(favorites),
-                           badges=badges)
+                         stats=stats,
+                         recent_commands=recent_commands_data,
+                         certifications=certifications_data,
+                         badges=badges,
+                         categories=categories)
 
 # ============ ROUTES COMMANDES ============
 @app.route('/commandes')
@@ -731,6 +723,88 @@ def not_found(error):
 @app.errorhandler(500)
 def server_error(error):
     return render_template('500.html'), 500
+
+@app.route('/api/search', methods=['GET'])
+def global_search():
+    query = request.args.get('q', '').lower()
+    print(f"🔍 Recherche: '{query}'")  # Debug
+    
+    if len(query) < 2:
+        return jsonify({})
+    
+    results = {
+        'commands': [],
+        'vulnerabilities': [],
+        'tools': [],
+        'certifications': [],
+        'cheatsheets': []
+    }
+    
+    try:
+        # Recherche dans les commandes
+        commands = Command.query.filter(
+            db.or_(
+                Command.nom.ilike(f'%{query}%'),
+                Command.description.ilike(f'%{query}%'),
+                Command.tags.ilike(f'%{query}%')
+            )
+        ).limit(5).all()
+        print(f"✅ Commandes trouvées: {len(commands)}")  # Debug
+        results['commands'] = [cmd.to_dict() for cmd in commands]
+        
+        # Recherche dans les vulnérabilités
+        vulns = Vulnerability.query.filter(
+            db.or_(
+                Vulnerability.cve.ilike(f'%{query}%'),
+                Vulnerability.titre.ilike(f'%{query}%'),
+                Vulnerability.description.ilike(f'%{query}%')
+            )
+        ).limit(5).all()
+        print(f"✅ CVE trouvées: {len(vulns)}")  # Debug
+        results['vulnerabilities'] = [vuln.to_dict() for vuln in vulns]
+        
+        # Recherche dans les outils
+        tools = Tool.query.filter(
+            db.or_(
+                Tool.nom.ilike(f'%{query}%'),
+                Tool.description.ilike(f'%{query}%'),
+                Tool.categorie.ilike(f'%{query}%')
+            )
+        ).limit(5).all()
+        print(f"✅ Outils trouvés: {len(tools)}")  # Debug
+        results['tools'] = [tool.to_dict() for tool in tools]
+        
+        # Recherche dans les certifications
+        certs = Certification.query.filter(
+            db.or_(
+                Certification.nom.ilike(f'%{query}%'),
+                Certification.description.ilike(f'%{query}%'),
+                Certification.organisme.ilike(f'%{query}%')
+            )
+        ).limit(5).all()
+        print(f"✅ Certifications trouvées: {len(certs)}")  # Debug
+        results['certifications'] = [cert.to_dict() for cert in certs]
+        
+        # Recherche dans les cheat sheets
+        sheets = CheatSheet.query.filter(
+            db.or_(
+                CheatSheet.titre.ilike(f'%{query}%'),
+                CheatSheet.description.ilike(f'%{query}%'),
+                CheatSheet.categorie.ilike(f'%{query}%')
+            )
+        ).limit(5).all()
+        print(f"✅ Cheat Sheets trouvés: {len(sheets)}")  # Debug
+        results['cheatsheets'] = [sheet.to_dict() for sheet in sheets]
+        
+        print(f"📊 Total résultats: {sum(len(v) for v in results.values())}")  # Debug
+        
+    except Exception as e:
+        print(f"❌ Erreur recherche: {e}")  # Debug
+        import traceback
+        traceback.print_exc()
+    
+    return jsonify(results)
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
