@@ -45,7 +45,9 @@
                 <div class="stat-item">
                     <span class="stat-label">{{ cat }}</span>
                     <div class="stat-bar">
-                        <div class="stat-fill" style="width: {% if stats.total_commands > 0 %}{{ (count / stats.total_commands * 100) }}{% else %}0{% endif %}%"></div>
+                        <div class="stat-fill"
+                            style="width: {% if stats.total_commands > 0 %}{{ (count / stats.total_commands * 100) }}{% else %}0{% endif %}%">
+                        </div>
                     </div>
                     <span class="stat-value">{{ count }}</span>
                 </div>
@@ -60,7 +62,9 @@
                 <div class="stat-item">
                     <span class="stat-label">{{ plat }}</span>
                     <div class="stat-bar">
-                        <div class="stat-fill" style="width: {% if stats.total_commands > 0 %}{{ (count / stats.total_commands * 100) }}{% else %}0{% endif %}%"></div>
+                        <div class="stat-fill"
+                            style="width: {% if stats.total_commands > 0 %}{{ (count / stats.total_commands * 100) }}{% else %}0{% endif %}%">
+                        </div>
                     </div>
                     <span class="stat-value">{{ count }}</span>
                 </div>
@@ -75,133 +79,133 @@
 </div>
 
 <style>
-.page-header {
-    margin-bottom: 30px;
-}
+    .page-header {
+        margin-bottom: 30px;
+    }
 
-.page-header h1 {
-    color: var(--primary);
-    font-size: 2.2rem;
-}
+    .page-header h1 {
+        color: var(--primary);
+        font-size: 2.2rem;
+    }
 
-.stats-dashboard {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
-}
-
-.stat-card {
-    background: linear-gradient(135deg, var(--bg-card) 0%, #2a3255 100%);
-    padding: 25px;
-    border-radius: 12px;
-    border: 2px solid rgba(0, 255, 157, 0.2);
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    transition: all 0.3s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--primary);
-    box-shadow: 0 8px 30px rgba(0, 255, 157, 0.3);
-}
-
-.stat-icon {
-    font-size: 2.5rem;
-}
-
-.stat-content h3 {
-    color: var(--primary);
-    font-size: 1.8rem;
-    margin: 0;
-}
-
-.stat-content p {
-    color: var(--text-muted);
-    margin: 5px 0 0 0;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 25px;
-}
-
-.stats-card {
-    background: var(--bg-card);
-    padding: 30px;
-    border-radius: 12px;
-    border: 2px solid rgba(0, 255, 157, 0.2);
-    transition: all 0.3s ease;
-}
-
-.stats-card:hover {
-    border-color: var(--primary);
-}
-
-.stats-card h3 {
-    color: var(--primary);
-    margin-bottom: 20px;
-    font-size: 1.2rem;
-}
-
-.stat-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.stat-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.stat-label {
-    flex: 0 0 120px;
-    color: var(--text-light);
-    font-weight: 600;
-    font-size: 0.95rem;
-}
-
-.stat-bar {
-    flex: 1;
-    height: 30px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.stat-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-    transition: width 0.5s ease;
-    border-radius: 12px;
-}
-
-.stat-value {
-    flex: 0 0 50px;
-    text-align: right;
-    color: var(--primary);
-    font-weight: 700;
-    font-size: 1.1rem;
-}
-
-.action-buttons {
-    text-align: center;
-    margin-top: 40px;
-}
-
-@media (max-width: 768px) {
     .stats-dashboard {
-        grid-template-columns: repeat(2, 1fr);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, var(--bg-card) 0%, #2a3255 100%);
+        padding: 25px;
+        border-radius: 12px;
+        border: 2px solid rgba(0, 255, 157, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary);
+        box-shadow: 0 8px 30px rgba(0, 255, 157, 0.3);
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+    }
+
+    .stat-content h3 {
+        color: var(--primary);
+        font-size: 1.8rem;
+        margin: 0;
+    }
+
+    .stat-content p {
+        color: var(--text-muted);
+        margin: 5px 0 0 0;
     }
 
     .stats-grid {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 25px;
     }
-}
+
+    .stats-card {
+        background: var(--bg-card);
+        padding: 30px;
+        border-radius: 12px;
+        border: 2px solid rgba(0, 255, 157, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .stats-card:hover {
+        border-color: var(--primary);
+    }
+
+    .stats-card h3 {
+        color: var(--primary);
+        margin-bottom: 20px;
+        font-size: 1.2rem;
+    }
+
+    .stat-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .stat-label {
+        flex: 0 0 120px;
+        color: var(--text-light);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .stat-bar {
+        flex: 1;
+        height: 30px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .stat-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+        transition: width 0.5s ease;
+        border-radius: 12px;
+    }
+
+    .stat-value {
+        flex: 0 0 50px;
+        text-align: right;
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .action-buttons {
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    @media (max-width: 768px) {
+        .stats-dashboard {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 {% endblock %}

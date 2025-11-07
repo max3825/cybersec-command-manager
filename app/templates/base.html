@@ -1,33 +1,44 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CyberSec Command Manager{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
     <nav class="navbar">
-    <div class="container">
-        <div class="nav-brand">
-            <span class="nav-icon">🛡️</span>
-            <div class="nav-title">
-                <h1>CyberSec Command Manager</h1>
-                <p>Référence complète des commandes de sécurité</p>
+        <div class="container">
+            <div class="nav-brand">
+                <span class="nav-icon">🛡️</span>
+                <div class="nav-title">
+                    <h1>CyberSec Command Manager</h1>
+                    <p>Référence complète des commandes de sécurité</p>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('dashboard') }}"
+                    class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">🏠 Accueil</a>
+                <a href="{{ url_for('index') }}"
+                    class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">📋 Commandes</a>
+                <a href="{{ url_for('certifications') }}"
+                    class="nav-link {% if request.endpoint == 'certifications' %}active{% endif %}">📜
+                    Certifications</a>
+                <a href="{{ url_for('cheatsheets') }}"
+                    class="nav-link {% if request.endpoint == 'cheatsheets' %}active{% endif %}">📋 Cheat Sheets</a>
+                <a href="{{ url_for('notes') }}"
+                    class="nav-link {% if request.endpoint == 'notes' %}active{% endif %}">📝 Notes</a>
+                <a href="{{ url_for('tools') }}"
+                    class="nav-link {% if request.endpoint == 'tools' %}active{% endif %}">🔧 Outils</a>
+                <a href="{{ url_for('vulnerabilities') }}"
+                    class="nav-link {% if request.endpoint == 'vulnerabilities' %}active{% endif %}">🔒 CVE</a>
+                <a href="{{ url_for('stats') }}"
+                    class="nav-link {% if request.endpoint == 'stats' %}active{% endif %}">📊 Stats</a>
             </div>
         </div>
-        <div class="nav-links">
-            <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">🏠 Accueil</a>
-            <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">📋 Commandes</a>
-            <a href="{{ url_for('certifications') }}" class="nav-link {% if request.endpoint == 'certifications' %}active{% endif %}">📜 Certifications</a>
-            <a href="{{ url_for('cheatsheets') }}" class="nav-link {% if request.endpoint == 'cheatsheets' %}active{% endif %}">📋 Cheat Sheets</a>
-            <a href="{{ url_for('notes') }}" class="nav-link {% if request.endpoint == 'notes' %}active{% endif %}">📝 Notes</a>
-            <a href="{{ url_for('tools') }}" class="nav-link {% if request.endpoint == 'tools' %}active{% endif %}">🔧 Outils</a>
-            <a href="{{ url_for('vulnerabilities') }}" class="nav-link {% if request.endpoint == 'vulnerabilities' %}active{% endif %}">🔒 CVE</a>
-            <a href="{{ url_for('stats') }}" class="nav-link {% if request.endpoint == 'stats' %}active{% endif %}">📊 Stats</a>
-        </div>
-    </div>
-</nav>
+    </nav>
 
 
     <main class="main-content">
@@ -59,4 +70,5 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
+
 </html>

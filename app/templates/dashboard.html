@@ -7,7 +7,8 @@
         <div class="search-wrapper">
             <div class="search-input-wrapper">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="globalSearch" class="global-search-input" placeholder="Rechercher partout... (commandes, outils, CVE, certifications...)">
+                <input type="text" id="globalSearch" class="global-search-input"
+                    placeholder="Rechercher partout... (commandes, outils, CVE, certifications...)">
                 <div class="search-results-dropdown" id="searchResults"></div>
             </div>
         </div>
@@ -102,15 +103,15 @@
             </div>
             <div class="recent-list">
                 {% if recent_commands %}
-                    {% for cmd in recent_commands %}
-                    <div class="recent-item">
-                        <div class="recent-title">{{ cmd['nom'] }}</div>
-                        <div class="recent-category">{{ cmd['categorie'] }}</div>
-                        <button onclick="copyToClipboard('{{ cmd['exemple'] }}')" class="copy-btn-small">📋 Copier</button>
-                    </div>
-                    {% endfor %}
+                {% for cmd in recent_commands %}
+                <div class="recent-item">
+                    <div class="recent-title">{{ cmd['nom'] }}</div>
+                    <div class="recent-category">{{ cmd['categorie'] }}</div>
+                    <button onclick="copyToClipboard('{{ cmd['exemple'] }}')" class="copy-btn-small">📋 Copier</button>
+                </div>
+                {% endfor %}
                 {% else %}
-                    <p style="color: var(--text-muted); text-align: center;">Aucune commande ajoutée</p>
+                <p style="color: var(--text-muted); text-align: center;">Aucune commande ajoutée</p>
                 {% endif %}
             </div>
         </div>
@@ -123,17 +124,17 @@
             </div>
             <div class="cert-progress-list">
                 {% if certifications %}
-                    {% for cert in certifications[:3] %}
-                    <div class="cert-progress-item">
-                        <div class="cert-info">
-                            <h4>{{ cert['nom'] }}</h4>
-                            <p class="cert-org">{{ cert['organisme'] }}</p>
-                        </div>
-                        <div class="cert-level">{{ cert['niveau'] }}</div>
+                {% for cert in certifications[:3] %}
+                <div class="cert-progress-item">
+                    <div class="cert-info">
+                        <h4>{{ cert['nom'] }}</h4>
+                        <p class="cert-org">{{ cert['organisme'] }}</p>
                     </div>
-                    {% endfor %}
+                    <div class="cert-level">{{ cert['niveau'] }}</div>
+                </div>
+                {% endfor %}
                 {% else %}
-                    <p style="color: var(--text-muted); text-align: center;">Aucune certification</p>
+                <p style="color: var(--text-muted); text-align: center;">Aucune certification</p>
                 {% endif %}
             </div>
         </div>
@@ -145,13 +146,13 @@
             </div>
             <div class="badges-display">
                 {% if badges %}
-                    {% for badge in badges %}
-                    <div class="badge-item" title="{{ badge['title'] }}">
-                        <span class="badge-icon">{{ badge['icon'] }}</span>
-                    </div>
-                    {% endfor %}
+                {% for badge in badges %}
+                <div class="badge-item" title="{{ badge['title'] }}">
+                    <span class="badge-icon">{{ badge['icon'] }}</span>
+                </div>
+                {% endfor %}
                 {% else %}
-                    <p style="color: var(--text-muted); text-align: center;">Aucun badge pour le moment</p>
+                <p style="color: var(--text-muted); text-align: center;">Aucun badge pour le moment</p>
                 {% endif %}
             </div>
         </div>
@@ -166,7 +167,9 @@
                 <div class="category-item">
                     <span class="category-name">{{ cat }}</span>
                     <div class="category-bar">
-                        <div class="category-fill" style="width: {% if stats.total_commands > 0 %}{{ (count / stats.total_commands * 100) }}{% else %}0{% endif %}%"></div>
+                        <div class="category-fill"
+                            style="width: {% if stats.total_commands > 0 %}{{ (count / stats.total_commands * 100) }}{% else %}0{% endif %}%">
+                        </div>
                     </div>
                     <span class="category-count">{{ count }}</span>
                 </div>
@@ -177,505 +180,505 @@
 </div>
 
 <style>
-.global-search-section {
-    margin-bottom: 40px;
-    padding: 30px 0;
-}
-
-.search-wrapper {
-    position: relative;
-}
-
-.search-input-wrapper {
-    position: relative;
-    width: 100%;
-}
-
-.search-icon {
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.3rem;
-    pointer-events: none;
-    z-index: 2;
-}
-
-.global-search-input {
-    width: 100%;
-    padding: 16px 20px 16px 50px;
-    background: linear-gradient(135deg, rgba(0, 255, 157, 0.05) 0%, rgba(0, 255, 157, 0.02) 100%);
-    border: 2px solid rgba(0, 255, 157, 0.3);
-    border-radius: 12px;
-    color: var(--text-light);
-    font-size: 1.05rem;
-    transition: all 0.3s ease;
-}
-
-.global-search-input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 25px rgba(0, 255, 157, 0.4);
-    background: linear-gradient(135deg, rgba(0, 255, 157, 0.1) 0%, rgba(0, 255, 157, 0.05) 100%);
-}
-
-.search-results-dropdown {
-    position: absolute;
-    top: calc(100% + 5px);
-    left: 0;
-    right: 0;
-    background: var(--bg-card);
-    border: 2px solid rgba(0, 255, 157, 0.3);
-    border-radius: 12px;
-    max-height: 500px;
-    overflow-y: auto;
-    display: none;
-    z-index: 1000;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.search-results-dropdown.active {
-    display: block;
-}
-
-.search-result-item {
-    padding: 15px 20px;
-    border-bottom: 1px solid rgba(0, 255, 157, 0.1);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.search-result-item:last-child {
-    border-bottom: none;
-}
-
-.search-result-item:hover {
-    background: rgba(0, 255, 157, 0.1);
-    padding-left: 30px;
-}
-
-.search-result-type {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    min-width: 80px;
-    text-align: center;
-}
-
-.type-command {
-    background: rgba(33, 150, 243, 0.2);
-    color: #2196f3;
-    border: 1px solid #2196f3;
-}
-
-.type-cve {
-    background: rgba(244, 67, 54, 0.2);
-    color: #f44336;
-    border: 1px solid #f44336;
-}
-
-.type-tool {
-    background: rgba(255, 152, 0, 0.2);
-    color: #ff9800;
-    border: 1px solid #ff9800;
-}
-
-.type-cert {
-    background: rgba(156, 39, 176, 0.2);
-    color: #9c27b0;
-    border: 1px solid #9c27b0;
-}
-
-.type-sheet {
-    background: rgba(76, 175, 80, 0.2);
-    color: #4caf50;
-    border: 1px solid #4caf50;
-}
-
-.search-result-text {
-    flex: 1;
-}
-
-.search-result-title {
-    color: var(--primary);
-    font-weight: 600;
-}
-
-.search-result-desc {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    margin-top: 4px;
-}
-
-/* Stats Overview */
-.stats-overview {
-    margin-bottom: 50px;
-}
-
-.stats-overview h2 {
-    color: var(--primary);
-    font-size: 1.8rem;
-    margin-bottom: 25px;
-}
-
-.stats-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 15px;
-}
-
-.stat-mini-card {
-    background: linear-gradient(135deg, var(--bg-card) 0%, #2a3255 100%);
-    padding: 20px;
-    border-radius: 12px;
-    border: 2px solid rgba(0, 255, 157, 0.2);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    transition: all 0.3s ease;
-}
-
-.stat-mini-card:hover {
-    transform: translateY(-3px);
-    border-color: var(--primary);
-    box-shadow: 0 8px 25px rgba(0, 255, 157, 0.2);
-}
-
-.stat-icon {
-    font-size: 2rem;
-}
-
-.stat-info {
-    flex: 1;
-}
-
-.stat-value {
-    color: var(--primary);
-    font-size: 1.6rem;
-    font-weight: 800;
-    margin: 0;
-}
-
-.stat-label {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin: 3px 0 0 0;
-}
-
-/* Quick Access */
-.quick-access-section {
-    margin-bottom: 50px;
-}
-
-.quick-access-section h2 {
-    color: var(--primary);
-    font-size: 1.8rem;
-    margin-bottom: 25px;
-}
-
-.quick-links {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-}
-
-.quick-link {
-    background: linear-gradient(135deg, var(--bg-card) 0%, #2a3255 100%);
-    padding: 25px;
-    border-radius: 12px;
-    border: 2px solid rgba(0, 255, 157, 0.2);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    color: var(--text-light);
-    transition: all 0.3s ease;
-}
-
-.quick-link:hover {
-    transform: translateY(-5px);
-    border-color: var(--primary);
-    box-shadow: 0 10px 30px rgba(0, 255, 157, 0.3);
-}
-
-.quick-icon {
-    font-size: 2.5rem;
-}
-
-.quick-link span:last-child {
-    color: var(--primary);
-    font-weight: 600;
-    text-align: center;
-}
-
-/* Dashboard Grid */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 30px;
-    margin-bottom: 50px;
-}
-
-.dashboard-card {
-    background: var(--bg-card);
-    border-radius: 12px;
-    padding: 30px;
-    border: 2px solid rgba(0, 255, 157, 0.2);
-    transition: all 0.3s ease;
-}
-
-.dashboard-card:hover {
-    border-color: var(--primary);
-    box-shadow: 0 8px 25px rgba(0, 255, 157, 0.15);
-}
-
-.dashboard-card.full-width {
-    grid-column: 1 / -1;
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid rgba(0, 255, 157, 0.1);
-}
-
-.card-header h3 {
-    color: var(--primary);
-    font-size: 1.3rem;
-    margin: 0;
-}
-
-.view-all {
-    color: var(--primary);
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.view-all:hover {
-    transform: translateX(5px);
-}
-
-/* Recent Items */
-.recent-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.recent-item {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 15px;
-    border-radius: 8px;
-    border-left: 3px solid var(--primary);
-    transition: all 0.3s ease;
-}
-
-.recent-item:hover {
-    background: rgba(0, 255, 157, 0.1);
-    transform: translateX(5px);
-}
-
-.recent-title {
-    color: var(--primary);
-    font-weight: 700;
-    margin-bottom: 5px;
-}
-
-.recent-category {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin-bottom: 8px;
-}
-
-.copy-btn-small {
-    padding: 6px 12px;
-    background: rgba(0, 255, 157, 0.15);
-    border: 1px solid rgba(0, 255, 157, 0.3);
-    color: var(--primary);
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    transition: all 0.3s ease;
-}
-
-.copy-btn-small:hover {
-    background: rgba(0, 255, 157, 0.3);
-}
-
-/* Certification Progress */
-.cert-progress-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.cert-progress-item {
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-}
-
-.cert-info h4 {
-    color: var(--primary);
-    margin: 0 0 5px 0;
-    font-size: 1.05rem;
-}
-
-.cert-org {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin: 0;
-}
-
-.cert-level {
-    display: inline-block;
-    padding: 4px 10px;
-    background: rgba(244, 67, 54, 0.2);
-    color: #f44336;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    margin: 10px 0;
-}
-
-/* Badges */
-.badges-display {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-    gap: 15px;
-}
-
-.badge-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, rgba(0, 255, 157, 0.2) 0%, rgba(0, 255, 157, 0.05) 100%);
-    border: 2px solid rgba(0, 255, 157, 0.3);
-    border-radius: 12px;
-    transition: all 0.3s ease;
-}
-
-.badge-item:hover {
-    transform: scale(1.1) rotate(5deg);
-    border-color: var(--primary);
-}
-
-.badge-icon {
-    font-size: 1.8rem;
-}
-
-/* Categories Breakdown */
-.categories-breakdown {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.category-item {
-    display: grid;
-    grid-template-columns: 150px 1fr 50px;
-    align-items: center;
-    gap: 15px;
-}
-
-.category-name {
-    color: var(--text-light);
-    font-weight: 600;
-}
-
-.category-bar {
-    height: 30px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.category-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-    transition: width 0.5s ease;
-}
-
-.category-count {
-    color: var(--primary);
-    font-weight: 700;
-    text-align: right;
-}
-
-@media (max-width: 1024px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
+    .global-search-section {
+        margin-bottom: 40px;
+        padding: 30px 0;
     }
-    
-    .dashboard-card.full-width {
-        grid-column: 1;
-    }
-}
 
-@media (max-width: 768px) {
+    .search-wrapper {
+        position: relative;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.3rem;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .global-search-input {
+        width: 100%;
+        padding: 16px 20px 16px 50px;
+        background: linear-gradient(135deg, rgba(0, 255, 157, 0.05) 0%, rgba(0, 255, 157, 0.02) 100%);
+        border: 2px solid rgba(0, 255, 157, 0.3);
+        border-radius: 12px;
+        color: var(--text-light);
+        font-size: 1.05rem;
+        transition: all 0.3s ease;
+    }
+
+    .global-search-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 25px rgba(0, 255, 157, 0.4);
+        background: linear-gradient(135deg, rgba(0, 255, 157, 0.1) 0%, rgba(0, 255, 157, 0.05) 100%);
+    }
+
+    .search-results-dropdown {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        right: 0;
+        background: var(--bg-card);
+        border: 2px solid rgba(0, 255, 157, 0.3);
+        border-radius: 12px;
+        max-height: 500px;
+        overflow-y: auto;
+        display: none;
+        z-index: 1000;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .search-results-dropdown.active {
+        display: block;
+    }
+
+    .search-result-item {
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(0, 255, 157, 0.1);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .search-result-item:last-child {
+        border-bottom: none;
+    }
+
+    .search-result-item:hover {
+        background: rgba(0, 255, 157, 0.1);
+        padding-left: 30px;
+    }
+
+    .search-result-type {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        min-width: 80px;
+        text-align: center;
+    }
+
+    .type-command {
+        background: rgba(33, 150, 243, 0.2);
+        color: #2196f3;
+        border: 1px solid #2196f3;
+    }
+
+    .type-cve {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+        border: 1px solid #f44336;
+    }
+
+    .type-tool {
+        background: rgba(255, 152, 0, 0.2);
+        color: #ff9800;
+        border: 1px solid #ff9800;
+    }
+
+    .type-cert {
+        background: rgba(156, 39, 176, 0.2);
+        color: #9c27b0;
+        border: 1px solid #9c27b0;
+    }
+
+    .type-sheet {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+        border: 1px solid #4caf50;
+    }
+
+    .search-result-text {
+        flex: 1;
+    }
+
+    .search-result-title {
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    .search-result-desc {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 4px;
+    }
+
+    /* Stats Overview */
+    .stats-overview {
+        margin-bottom: 50px;
+    }
+
+    .stats-overview h2 {
+        color: var(--primary);
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+    }
+
     .stats-cards {
-        grid-template-columns: repeat(2, 1fr);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 15px;
     }
-    
+
+    .stat-mini-card {
+        background: linear-gradient(135deg, var(--bg-card) 0%, #2a3255 100%);
+        padding: 20px;
+        border-radius: 12px;
+        border: 2px solid rgba(0, 255, 157, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .stat-mini-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--primary);
+        box-shadow: 0 8px 25px rgba(0, 255, 157, 0.2);
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+    }
+
+    .stat-info {
+        flex: 1;
+    }
+
+    .stat-value {
+        color: var(--primary);
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin: 3px 0 0 0;
+    }
+
+    /* Quick Access */
+    .quick-access-section {
+        margin-bottom: 50px;
+    }
+
+    .quick-access-section h2 {
+        color: var(--primary);
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+    }
+
     .quick-links {
-        grid-template-columns: repeat(2, 1fr);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
     }
-    
+
+    .quick-link {
+        background: linear-gradient(135deg, var(--bg-card) 0%, #2a3255 100%);
+        padding: 25px;
+        border-radius: 12px;
+        border: 2px solid rgba(0, 255, 157, 0.2);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: var(--text-light);
+        transition: all 0.3s ease;
+    }
+
+    .quick-link:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary);
+        box-shadow: 0 10px 30px rgba(0, 255, 157, 0.3);
+    }
+
+    .quick-icon {
+        font-size: 2.5rem;
+    }
+
+    .quick-link span:last-child {
+        color: var(--primary);
+        font-weight: 600;
+        text-align: center;
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    .dashboard-card {
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 30px;
+        border: 2px solid rgba(0, 255, 157, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .dashboard-card:hover {
+        border-color: var(--primary);
+        box-shadow: 0 8px 25px rgba(0, 255, 157, 0.15);
+    }
+
+    .dashboard-card.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(0, 255, 157, 0.1);
+    }
+
+    .card-header h3 {
+        color: var(--primary);
+        font-size: 1.3rem;
+        margin: 0;
+    }
+
+    .view-all {
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .view-all:hover {
+        transform: translateX(5px);
+    }
+
+    /* Recent Items */
+    .recent-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .recent-item {
+        background: rgba(0, 0, 0, 0.2);
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 3px solid var(--primary);
+        transition: all 0.3s ease;
+    }
+
+    .recent-item:hover {
+        background: rgba(0, 255, 157, 0.1);
+        transform: translateX(5px);
+    }
+
+    .recent-title {
+        color: var(--primary);
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .recent-category {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+
+    .copy-btn-small {
+        padding: 6px 12px;
+        background: rgba(0, 255, 157, 0.15);
+        border: 1px solid rgba(0, 255, 157, 0.3);
+        color: var(--primary);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+    }
+
+    .copy-btn-small:hover {
+        background: rgba(0, 255, 157, 0.3);
+    }
+
+    /* Certification Progress */
+    .cert-progress-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .cert-progress-item {
+        padding: 15px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+    }
+
+    .cert-info h4 {
+        color: var(--primary);
+        margin: 0 0 5px 0;
+        font-size: 1.05rem;
+    }
+
+    .cert-org {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin: 0;
+    }
+
+    .cert-level {
+        display: inline-block;
+        padding: 4px 10px;
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin: 10px 0;
+    }
+
+    /* Badges */
+    .badges-display {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+        gap: 15px;
+    }
+
+    .badge-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, rgba(0, 255, 157, 0.2) 0%, rgba(0, 255, 157, 0.05) 100%);
+        border: 2px solid rgba(0, 255, 157, 0.3);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .badge-item:hover {
+        transform: scale(1.1) rotate(5deg);
+        border-color: var(--primary);
+    }
+
+    .badge-icon {
+        font-size: 1.8rem;
+    }
+
+    /* Categories Breakdown */
+    .categories-breakdown {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
     .category-item {
-        grid-template-columns: 100px 1fr 40px;
+        display: grid;
+        grid-template-columns: 150px 1fr 50px;
+        align-items: center;
+        gap: 15px;
     }
-}
+
+    .category-name {
+        color: var(--text-light);
+        font-weight: 600;
+    }
+
+    .category-bar {
+        height: 30px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .category-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+        transition: width 0.5s ease;
+    }
+
+    .category-count {
+        color: var(--primary);
+        font-weight: 700;
+        text-align: right;
+    }
+
+    @media (max-width: 1024px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-card.full-width {
+            grid-column: 1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .stats-cards {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .quick-links {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .category-item {
+            grid-template-columns: 100px 1fr 40px;
+        }
+    }
 </style>
 
 <script>
-// Global Search
-const globalSearchInput = document.getElementById('globalSearch');
-const searchResults = document.getElementById('searchResults');
-let searchTimeout;
+    // Global Search
+    const globalSearchInput = document.getElementById('globalSearch');
+    const searchResults = document.getElementById('searchResults');
+    let searchTimeout;
 
-globalSearchInput.addEventListener('input', async (e) => {
-    clearTimeout(searchTimeout);
-    const query = e.target.value.trim();
-    
-    if (query.length < 2) {
-        searchResults.classList.remove('active');
-        searchResults.innerHTML = '';
-        return;
-    }
-    
-    searchTimeout = setTimeout(async () => {
-        try {
-            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-            const data = await response.json();
-            displaySearchResults(data);
-        } catch (error) {
-            console.error('Search error:', error);
-            searchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">❌ Erreur de recherche</div>';
-            searchResults.classList.add('active');
+    globalSearchInput.addEventListener('input', async (e) => {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.trim();
+
+        if (query.length < 2) {
+            searchResults.classList.remove('active');
+            searchResults.innerHTML = '';
+            return;
         }
-    }, 300);
-});
-function displaySearchResults(data) {
-    let html = '';
-    let totalResults = 0;
-    
-    // Commands
-    if (data.commands && data.commands.length > 0) {
-        data.commands.forEach(cmd => {
-            html += `
+
+        searchTimeout = setTimeout(async () => {
+            try {
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                displaySearchResults(data);
+            } catch (error) {
+                console.error('Search error:', error);
+                searchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">❌ Erreur de recherche</div>';
+                searchResults.classList.add('active');
+            }
+        }, 300);
+    });
+    function displaySearchResults(data) {
+        let html = '';
+        let totalResults = 0;
+
+        // Commands
+        if (data.commands && data.commands.length > 0) {
+            data.commands.forEach(cmd => {
+                html += `
                 <div class="search-result-item" onclick="window.location.href='/commandes?highlight=${cmd.id}'">
                     <span class="search-result-type type-command">Commande</span>
                     <div class="search-result-text">
@@ -684,14 +687,14 @@ function displaySearchResults(data) {
                     </div>
                 </div>
             `;
-            totalResults++;
-        });
-    }
-    
-    // Vulnerabilities
-    if (data.vulnerabilities && data.vulnerabilities.length > 0) {
-        data.vulnerabilities.forEach(vuln => {
-            html += `
+                totalResults++;
+            });
+        }
+
+        // Vulnerabilities
+        if (data.vulnerabilities && data.vulnerabilities.length > 0) {
+            data.vulnerabilities.forEach(vuln => {
+                html += `
                 <div class="search-result-item" onclick="window.location.href='/vulnerabilities?highlight=${vuln.id}'">
                     <span class="search-result-type type-cve">CVE</span>
                     <div class="search-result-text">
@@ -700,14 +703,14 @@ function displaySearchResults(data) {
                     </div>
                 </div>
             `;
-            totalResults++;
-        });
-    }
-    
-    // Tools
-    if (data.tools && data.tools.length > 0) {
-        data.tools.forEach(tool => {
-            html += `
+                totalResults++;
+            });
+        }
+
+        // Tools
+        if (data.tools && data.tools.length > 0) {
+            data.tools.forEach(tool => {
+                html += `
                 <div class="search-result-item" onclick="window.location.href='/tools?highlight=${tool.id}'">
                     <span class="search-result-type type-tool">Outil</span>
                     <div class="search-result-text">
@@ -716,14 +719,14 @@ function displaySearchResults(data) {
                     </div>
                 </div>
             `;
-            totalResults++;
-        });
-    }
-    
-    // Certifications
-    if (data.certifications && data.certifications.length > 0) {
-        data.certifications.forEach(cert => {
-            html += `
+                totalResults++;
+            });
+        }
+
+        // Certifications
+        if (data.certifications && data.certifications.length > 0) {
+            data.certifications.forEach(cert => {
+                html += `
                 <div class="search-result-item" onclick="window.location.href='/certifications?highlight=${cert.id}'">
                     <span class="search-result-type type-cert">Certification</span>
                     <div class="search-result-text">
@@ -732,14 +735,14 @@ function displaySearchResults(data) {
                     </div>
                 </div>
             `;
-            totalResults++;
-        });
-    }
-    
-    // Cheatsheets
-    if (data.cheatsheets && data.cheatsheets.length > 0) {
-        data.cheatsheets.forEach(sheet => {
-            html += `
+                totalResults++;
+            });
+        }
+
+        // Cheatsheets
+        if (data.cheatsheets && data.cheatsheets.length > 0) {
+            data.cheatsheets.forEach(sheet => {
+                html += `
                 <div class="search-result-item" onclick="window.location.href='/cheatsheets?highlight=${sheet.id}'">
                     <span class="search-result-type type-sheet">Cheat Sheet</span>
                     <div class="search-result-text">
@@ -748,25 +751,25 @@ function displaySearchResults(data) {
                     </div>
                 </div>
             `;
-            totalResults++;
+                totalResults++;
+            });
+        }
+
+        if (totalResults > 0) {
+            searchResults.innerHTML = html;
+            searchResults.classList.add('active');
+        } else {
+            searchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">😢 Aucun résultat trouvé</div>';
+            searchResults.classList.add('active');
+        }
+    };
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('✅ Copié: ' + text);
+        }).catch(() => {
+            alert('❌ Erreur de copie');
         });
     }
-    
-    if (totalResults > 0) {
-        searchResults.innerHTML = html;
-        searchResults.classList.add('active');
-    } else {
-        searchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">😢 Aucun résultat trouvé</div>';
-        searchResults.classList.add('active');
-    }
-};
-
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        alert('✅ Copié: ' + text);
-    }).catch(() => {
-        alert('❌ Erreur de copie');
-    });
-}
 </script>
 {% endblock %}

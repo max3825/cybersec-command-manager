@@ -47,7 +47,8 @@
     <div class="search-section">
         <h2>🔍 Recherche Avancée</h2>
         <div class="search-controls">
-            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher par nom, description, tags...">
+            <input type="text" id="searchInput" class="search-input"
+                placeholder="Rechercher par nom, description, tags...">
 
             <select id="categoryFilter" class="filter-select">
                 <option value="">📁 Toutes les catégories</option>
@@ -86,12 +87,9 @@
     <!-- Grid de commandes -->
     <div class="commands-grid" id="commandsGrid">
         {% for cmd in commands %}
-        <div class="command-card" 
-             data-id="{{ cmd['id'] }}" 
-             data-category="{{ cmd['categorie'] }}" 
-             data-platform="{{ cmd['plateforme'] }}" 
-             data-level="{{ cmd.get('niveau', 'Débutant') }}">
-            
+        <div class="command-card" data-id="{{ cmd['id'] }}" data-category="{{ cmd['categorie'] }}"
+            data-platform="{{ cmd['plateforme'] }}" data-level="{{ cmd.get('niveau', 'Débutant') }}">
+
             <div class="command-header">
                 <div>
                     <h3 class="command-name">{{ cmd['nom'] }}</h3><br>
@@ -102,10 +100,8 @@
                         </span>
                     </div>
                 </div>
-                <button class="favorite-btn" 
-                        onclick="toggleFavorite({{ cmd['id'] }}, this)" 
-                        data-cmd-id="{{ cmd['id'] }}" 
-                        {% if cmd['id'] in favorites %}data-favorited="true"{% endif %}>
+                <button class="favorite-btn" onclick="toggleFavorite({{ cmd['id'] }}, this)"
+                    data-cmd-id="{{ cmd['id'] }}" {% if cmd['id'] in favorites %}data-favorited="true" {% endif %}>
                     {% if cmd['id'] in favorites %}⭐{% else %}☆{% endif %}
                 </button>
             </div>
@@ -126,9 +122,9 @@
                 <strong>💡 Exemple:</strong>
                 <div class="command-example">
                     <code>{{ cmd['exemple'] }}</code>
-                    <button class="copy-btn" 
-                            onclick="copyToClipboard('{{ cmd['exemple'] | replace("'", "\\'") }}', this)" 
-                            title="Copier">📋</button>
+                    <button class="copy-btn"
+                        onclick="copyToClipboard('{{ cmd['exemple'] | replace("'", "\\'") }}', this)"
+                        title="Copier">📋</button>
                 </div>
             </div>
 
@@ -165,166 +161,166 @@
 </div>
 
 <script>
-let showingOnlyFavorites = false;
+    let showingOnlyFavorites = false;
 
-function filterCommands() {
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    const category = document.getElementById('categoryFilter').value;
-    const platform = document.getElementById('platformFilter').value;
-    const level = document.getElementById('levelFilter').value;
-    const cards = document.querySelectorAll('.command-card');
-    let visible = 0;
+    function filterCommands() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const category = document.getElementById('categoryFilter').value;
+        const platform = document.getElementById('platformFilter').value;
+        const level = document.getElementById('levelFilter').value;
+        const cards = document.querySelectorAll('.command-card');
+        let visible = 0;
 
-    cards.forEach(card => {
-        const text = card.textContent.toLowerCase();
-        const cat = card.getAttribute('data-category');
-        const plat = card.getAttribute('data-platform');
-        const lv = card.getAttribute('data-level');
-        const id = parseInt(card.getAttribute('data-id'));
+        cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            const cat = card.getAttribute('data-category');
+            const plat = card.getAttribute('data-platform');
+            const lv = card.getAttribute('data-level');
+            const id = parseInt(card.getAttribute('data-id'));
 
-        let match = (!search || text.includes(search)) &&
-                    (!category || cat === category) &&
-                    (!platform || plat === platform) &&
-                    (!level || lv === level);
+            let match = (!search || text.includes(search)) &&
+                (!category || cat === category) &&
+                (!platform || plat === platform) &&
+                (!level || lv === level);
 
-        if (showingOnlyFavorites) {
-            const isFav = document.querySelector(`[data-cmd-id="${id}"][data-favorited="true"]`) !== null;
-            match = match && isFav;
+            if (showingOnlyFavorites) {
+                const isFav = document.querySelector(`[data-cmd-id="${id}"][data-favorited="true"]`) !== null;
+                match = match && isFav;
+            }
+
+            if (match) {
+                card.style.display = 'block';
+                visible++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        document.getElementById('resultCount').textContent = `✨ ${visible} commande(s) trouvée(s)`;
+        document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+    }
+
+    function searchByTag(tagElement) {
+        document.getElementById('searchInput').value = tagElement.textContent;
+        filterCommands();
+        document.getElementById('searchInput').focus();
+    }
+
+    function copyToClipboard(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const orig = button.textContent;
+            button.textContent = '✅ Copié!';
+            setTimeout(() => { button.textContent = orig; }, 2000);
+        }).catch(() => alert('Erreur de copie'));
+    }
+
+    function deleteCommand(id) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) {
+            fetch(`/api/commands/${id}`, { method: 'DELETE' })
+                .then(r => r.json())
+                .then(d => {
+                    alert(d.message);
+                    location.reload();
+                })
+                .catch(e => alert('Erreur lors de la suppression'));
         }
+    }
 
-        if (match) {
-            card.style.display = 'block';
-            visible++;
+    function toggleFavorite(id, btn) {
+        const isFav = btn.getAttribute('data-favorited') === 'true';
+        const endpoint = isFav ? 'DELETE' : 'POST';
+
+        fetch(`/api/favorites/${id}`, { method: endpoint })
+            .then(r => r.json())
+            .then(d => {
+                if (endpoint === 'POST') {
+                    btn.textContent = '⭐';
+                    btn.setAttribute('data-favorited', 'true');
+                } else {
+                    btn.textContent = '☆';
+                    btn.removeAttribute('data-favorited');
+                }
+                filterCommands();
+            })
+            .catch(e => alert('Erreur favoris'));
+    }
+
+    function switchView(mode) {
+        const grid = document.getElementById('commandsGrid');
+        const btnGrid = document.querySelector('.view-btn:nth-child(1)');
+        const btnList = document.querySelector('.view-btn:nth-child(2)');
+
+        if (mode === 'grid') {
+            grid.classList.add('commands-grid');
+            grid.classList.remove('commands-list');
+            btnGrid.classList.add('active');
+            btnList.classList.remove('active');
         } else {
-            card.style.display = 'none';
+            grid.classList.remove('commands-grid');
+            grid.classList.add('commands-list');
+            btnGrid.classList.remove('active');
+            btnList.classList.add('active');
         }
+    }
+
+    // Event listeners
+    document.getElementById('searchInput').addEventListener('input', filterCommands);
+    document.getElementById('categoryFilter').addEventListener('change', filterCommands);
+    document.getElementById('platformFilter').addEventListener('change', filterCommands);
+    document.getElementById('levelFilter').addEventListener('change', filterCommands);
+
+    document.getElementById('clearFilters').addEventListener('click', () => {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('categoryFilter').value = '';
+        document.getElementById('platformFilter').value = '';
+        document.getElementById('levelFilter').value = '';
+        showingOnlyFavorites = false;
+        document.getElementById('toggleFavorites').classList.remove('active');
+        filterCommands();
     });
 
-    document.getElementById('resultCount').textContent = `✨ ${visible} commande(s) trouvée(s)`;
-    document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
-}
-
-function searchByTag(tagElement) {
-    document.getElementById('searchInput').value = tagElement.textContent;
-    filterCommands();
-    document.getElementById('searchInput').focus();
-}
-
-function copyToClipboard(text, button) {
-    navigator.clipboard.writeText(text).then(() => {
-        const orig = button.textContent;
-        button.textContent = '✅ Copié!';
-        setTimeout(() => { button.textContent = orig; }, 2000);
-    }).catch(() => alert('Erreur de copie'));
-}
-
-function deleteCommand(id) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) {
-        fetch(`/api/commands/${id}`, {method: 'DELETE'})
-        .then(r => r.json())
-        .then(d => {
-            alert(d.message); 
-            location.reload();
-        })
-        .catch(e => alert('Erreur lors de la suppression'));
-    }
-}
-
-function toggleFavorite(id, btn) {
-    const isFav = btn.getAttribute('data-favorited') === 'true';
-    const endpoint = isFav ? 'DELETE' : 'POST';
-
-    fetch(`/api/favorites/${id}`, {method: endpoint})
-    .then(r => r.json())
-    .then(d => {
-        if (endpoint === 'POST') {
-            btn.textContent = '⭐';
-            btn.setAttribute('data-favorited', 'true');
-        } else {
-            btn.textContent = '☆';
-            btn.removeAttribute('data-favorited');
-        }
+    document.getElementById('toggleFavorites').addEventListener('click', (e) => {
+        showingOnlyFavorites = !showingOnlyFavorites;
+        e.target.classList.toggle('active');
         filterCommands();
-    })
-    .catch(e => alert('Erreur favoris'));
-}
+    });
 
-function switchView(mode) {
-    const grid = document.getElementById('commandsGrid');
-    const btnGrid = document.querySelector('.view-btn:nth-child(1)');
-    const btnList = document.querySelector('.view-btn:nth-child(2)');
-    
-    if(mode === 'grid') {
-        grid.classList.add('commands-grid');
-        grid.classList.remove('commands-list');
-        btnGrid.classList.add('active');
-        btnList.classList.remove('active');
-    } else {
-        grid.classList.remove('commands-grid');
-        grid.classList.add('commands-list');
-        btnGrid.classList.remove('active');
-        btnList.classList.add('active');
-    }
-}
-
-// Event listeners
-document.getElementById('searchInput').addEventListener('input', filterCommands);
-document.getElementById('categoryFilter').addEventListener('change', filterCommands);
-document.getElementById('platformFilter').addEventListener('change', filterCommands);
-document.getElementById('levelFilter').addEventListener('change', filterCommands);
-
-document.getElementById('clearFilters').addEventListener('click', () => {
-    document.getElementById('searchInput').value = '';
-    document.getElementById('categoryFilter').value = '';
-    document.getElementById('platformFilter').value = '';
-    document.getElementById('levelFilter').value = '';
-    showingOnlyFavorites = false;
-    document.getElementById('toggleFavorites').classList.remove('active');
+    // Initial filter
     filterCommands();
-});
 
-document.getElementById('toggleFavorites').addEventListener('click', (e) => {
-    showingOnlyFavorites = !showingOnlyFavorites;
-    e.target.classList.toggle('active');
-    filterCommands();
-});
+    // Highlight depuis URL
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const highlightId = urlParams.get('highlight');
 
-// Initial filter
-filterCommands();
+        if (highlightId) {
+            // Trouve la carte de commande correspondante
+            const cards = document.querySelectorAll('.command-card[data-id="' + highlightId + '"]');
 
-// Highlight depuis URL
-document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const highlightId = urlParams.get('highlight');
-    
-    if (highlightId) {
-        // Trouve la carte de commande correspondante
-        const cards = document.querySelectorAll('.command-card[data-id="' + highlightId + '"]');
-        
-        if (cards.length > 0) {
-            const card = cards[0];
-            
-            // Scroll vers l'élément
-            setTimeout(() => {
-                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
-                // Highlight temporaire
-                card.style.transition = 'all 0.3s ease';
-                card.style.transform = 'scale(1.05)';
-                card.style.boxShadow = '0 0 30px rgba(0, 255, 157, 0.6)';
-                card.style.borderColor = 'var(--primary)';
-                card.style.backgroundColor = 'rgba(0, 255, 157, 0.1)';
-                
-                // Retire le highlight après 3 secondes
+            if (cards.length > 0) {
+                const card = cards[0];
+
+                // Scroll vers l'élément
                 setTimeout(() => {
-                    card.style.transform = '';
-                    card.style.boxShadow = '';
-                    card.style.backgroundColor = '';
-                }, 3000);
-            }, 300);
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    // Highlight temporaire
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.transform = 'scale(1.05)';
+                    card.style.boxShadow = '0 0 30px rgba(0, 255, 157, 0.6)';
+                    card.style.borderColor = 'var(--primary)';
+                    card.style.backgroundColor = 'rgba(0, 255, 157, 0.1)';
+
+                    // Retire le highlight après 3 secondes
+                    setTimeout(() => {
+                        card.style.transform = '';
+                        card.style.boxShadow = '';
+                        card.style.backgroundColor = '';
+                    }, 3000);
+                }, 300);
+            }
         }
-    }
-});
+    });
 </script>
 
 {% endblock %}

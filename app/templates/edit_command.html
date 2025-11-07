@@ -18,7 +18,8 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="categorie">Catégorie *</label>
-                    <input type="text" id="categorie" value="{{ command.categorie }}" required list="cats" class="form-input">
+                    <input type="text" id="categorie" value="{{ command.categorie }}" required list="cats"
+                        class="form-input">
                     <datalist id="cats">
                         {% for cat in categories %}<option value="{{ cat }}">{% endfor %}
                     </datalist>
@@ -27,9 +28,11 @@
                 <div class="form-group">
                     <label for="plateforme">Plateforme *</label>
                     <select id="plateforme" required class="form-input">
-                        <option value="Linux" {% if command.plateforme == 'Linux' %}selected{% endif %}>🐧 Linux</option>
-                        <option value="Windows" {% if command.plateforme == 'Windows' %}selected{% endif %}>🪟 Windows</option>
-                        <option value="Linux/Windows" {% if command.plateforme == 'Linux/Windows' %}selected{% endif %}>🔄 Linux/Windows</option>
+                        <option value="Linux" {% if command.plateforme=='Linux' %}selected{% endif %}>🐧 Linux</option>
+                        <option value="Windows" {% if command.plateforme=='Windows' %}selected{% endif %}>🪟 Windows
+                        </option>
+                        <option value="Linux/Windows" {% if command.plateforme=='Linux/Windows' %}selected{% endif %}>🔄
+                            Linux/Windows</option>
                     </select>
                 </div>
             </div>
@@ -38,9 +41,12 @@
                 <div class="form-group">
                     <label for="niveau">Niveau *</label>
                     <select id="niveau" required class="form-input">
-                        <option value="Débutant" {% if command.get('niveau', 'Débutant') == 'Débutant' %}selected{% endif %}>📚 Débutant</option>
-                        <option value="Intermédiaire" {% if command.get('niveau', 'Débutant') == 'Intermédiaire' %}selected{% endif %}>⚡ Intermédiaire</option>
-                        <option value="Avancé" {% if command.get('niveau', 'Débutant') == 'Avancé' %}selected{% endif %}>🔥 Avancé</option>
+                        <option value="Débutant" {% if command.get('niveau', 'Débutant' )=='Débutant' %}selected{% endif
+                            %}>📚 Débutant</option>
+                        <option value="Intermédiaire" {% if command.get('niveau', 'Débutant' )=='Intermédiaire'
+                            %}selected{% endif %}>⚡ Intermédiaire</option>
+                        <option value="Avancé" {% if command.get('niveau', 'Débutant' )=='Avancé' %}selected{% endif %}>
+                            🔥 Avancé</option>
                     </select>
                 </div>
 
@@ -52,7 +58,8 @@
 
             <div class="form-group">
                 <label for="arguments_options">Arguments/Options *</label>
-                <textarea id="arguments_options" required class="form-input" rows="3">{{ command.arguments_options }}</textarea>
+                <textarea id="arguments_options" required class="form-input"
+                    rows="3">{{ command.arguments_options }}</textarea>
             </div>
 
             <div class="form-group">
@@ -84,39 +91,39 @@
 </div>
 
 <script>
-document.getElementById('editForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const data = {
-        nom: document.getElementById('nom').value,
-        description: document.getElementById('description').value,
-        categorie: document.getElementById('categorie').value,
-        plateforme: document.getElementById('plateforme').value,
-        niveau: document.getElementById('niveau').value,
-        groupe: document.getElementById('groupe').value,
-        arguments_options: document.getElementById('arguments_options').value,
-        exemple: document.getElementById('exemple').value,
-        usage: document.getElementById('usage').value,
-        tags: document.getElementById('tags').value,
-        notes: document.getElementById('notes').value || ''
-    };
-    fetch('/api/commands/{{ cmd_id }}', {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    })
-    .then(r => r.json())
-    .then(d => {
-        if (d.message) {
-            alert('✅ ' + d.message);
-            window.location = '/';
-        } else if (d.error) {
-            alert('❌ Erreur: ' + d.error);
-        }
-    })
-    .catch(e => {
-        console.error(e);
-        alert('❌ Erreur lors de la mise à jour');
+    document.getElementById('editForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const data = {
+            nom: document.getElementById('nom').value,
+            description: document.getElementById('description').value,
+            categorie: document.getElementById('categorie').value,
+            plateforme: document.getElementById('plateforme').value,
+            niveau: document.getElementById('niveau').value,
+            groupe: document.getElementById('groupe').value,
+            arguments_options: document.getElementById('arguments_options').value,
+            exemple: document.getElementById('exemple').value,
+            usage: document.getElementById('usage').value,
+            tags: document.getElementById('tags').value,
+            notes: document.getElementById('notes').value || ''
+        };
+        fetch('/api/commands/{{ cmd_id }}', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(r => r.json())
+            .then(d => {
+                if (d.message) {
+                    alert('✅ ' + d.message);
+                    window.location = '/';
+                } else if (d.error) {
+                    alert('❌ Erreur: ' + d.error);
+                }
+            })
+            .catch(e => {
+                console.error(e);
+                alert('❌ Erreur lors de la mise à jour');
+            });
     });
-});
 </script>
 {% endblock %}

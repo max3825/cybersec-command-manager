@@ -15,35 +15,45 @@
             </div>
             <div class="form-group">
                 <label>Description *</label>
-                <textarea id="sheetDescription" required class="form-input" rows="2">{{ cheatsheet['description'] }}</textarea>
+                <textarea id="sheetDescription" required class="form-input"
+                    rows="2">{{ cheatsheet['description'] }}</textarea>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Catégorie *</label>
                     <select id="sheetCategoryForm" required class="form-input">
-                        <option value="Linux" {% if cheatsheet['categorie'] == 'Linux' %}selected{% endif %}>Linux</option>
-                        <option value="Windows" {% if cheatsheet['categorie'] == 'Windows' %}selected{% endif %}>Windows</option>
-                        <option value="Web" {% if cheatsheet['categorie'] == 'Web' %}selected{% endif %}>Web</option>
-                        <option value="Scripting" {% if cheatsheet['categorie'] == 'Scripting' %}selected{% endif %}>Scripting</option>
-                        <option value="Réseau" {% if cheatsheet['categorie'] == 'Réseau' %}selected{% endif %}>Réseau</option>
+                        <option value="Linux" {% if cheatsheet['categorie']=='Linux' %}selected{% endif %}>Linux
+                        </option>
+                        <option value="Windows" {% if cheatsheet['categorie']=='Windows' %}selected{% endif %}>Windows
+                        </option>
+                        <option value="Web" {% if cheatsheet['categorie']=='Web' %}selected{% endif %}>Web</option>
+                        <option value="Scripting" {% if cheatsheet['categorie']=='Scripting' %}selected{% endif %}>
+                            Scripting</option>
+                        <option value="Réseau" {% if cheatsheet['categorie']=='Réseau' %}selected{% endif %}>Réseau
+                        </option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Niveau *</label>
                     <select id="sheetNiveauForm" required class="form-input">
-                        <option value="Débutant" {% if cheatsheet['niveau'] == 'Débutant' %}selected{% endif %}>Débutant</option>
-                        <option value="Intermédiaire" {% if cheatsheet['niveau'] == 'Intermédiaire' %}selected{% endif %}>Intermédiaire</option>
-                        <option value="Avancé" {% if cheatsheet['niveau'] == 'Avancé' %}selected{% endif %}>Avancé</option>
+                        <option value="Débutant" {% if cheatsheet['niveau']=='Débutant' %}selected{% endif %}>Débutant
+                        </option>
+                        <option value="Intermédiaire" {% if cheatsheet['niveau']=='Intermédiaire' %}selected{% endif %}>
+                            Intermédiaire</option>
+                        <option value="Avancé" {% if cheatsheet['niveau']=='Avancé' %}selected{% endif %}>Avancé
+                        </option>
                     </select>
                 </div>
             </div>
             <div class="form-group">
                 <label>Contenu (Markdown) *</label>
-                <textarea id="sheetContenu" required class="form-input" rows="10" placeholder="# Titre&#10;&#10;## Section&#10;Contenu">{{ cheatsheet['contenu'] }}</textarea>
+                <textarea id="sheetContenu" required class="form-input" rows="10"
+                    placeholder="# Titre&#10;&#10;## Section&#10;Contenu">{{ cheatsheet['contenu'] }}</textarea>
             </div>
             <div class="form-group">
                 <label>Commandes (séparées par virgule)</label>
-                <input type="text" id="sheetCommandes" value="{{ cheatsheet['commandes']|join(', ') }}" class="form-input" placeholder="cmd1, cmd2, cmd3">
+                <input type="text" id="sheetCommandes" value="{{ cheatsheet['commandes']|join(', ') }}"
+                    class="form-input" placeholder="cmd1, cmd2, cmd3">
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
@@ -54,125 +64,127 @@
 </div>
 
 <style>
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-    gap: 20px;
-}
-
-.page-header h1 {
-    color: var(--primary);
-    font-size: 2.2rem;
-    margin: 0;
-}
-
-.edit-form-container {
-    background: var(--bg-card);
-    border-radius: 12px;
-    padding: 40px;
-    border: 2px solid rgba(0, 255, 157, 0.2);
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-.form-group {
-    margin-bottom: 25px;
-}
-
-.form-group label {
-    display: block;
-    color: var(--primary);
-    margin-bottom: 10px;
-    font-weight: 700;
-    font-size: 1rem;
-}
-
-.form-input {
-    width: 100%;
-    padding: 14px 16px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid rgba(0, 255, 157, 0.3);
-    border-radius: 8px;
-    color: var(--text-light);
-    font-size: 1rem;
-    font-family: inherit;
-    transition: all 0.3s ease;
-}
-
-.form-input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 20px rgba(0, 255, 157, 0.3);
-    background: rgba(0, 255, 157, 0.05);
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.form-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
-    padding-top: 30px;
-    border-top: 2px solid rgba(0, 255, 157, 0.2);
-}
-
-.form-actions .btn {
-    flex: 1;
-    padding: 14px;
-    font-weight: 700;
-}
-
-@media (max-width: 768px) {
     .page-header {
-        flex-direction: column;
-        align-items: flex-start;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        gap: 20px;
     }
-    .form-row {
-        grid-template-columns: 1fr;
+
+    .page-header h1 {
+        color: var(--primary);
+        font-size: 2.2rem;
+        margin: 0;
     }
+
     .edit-form-container {
-        padding: 25px;
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 40px;
+        border: 2px solid rgba(0, 255, 157, 0.2);
+        max-width: 900px;
+        margin: 0 auto;
     }
-}
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--primary);
+        margin-bottom: 10px;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 14px 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(0, 255, 157, 0.3);
+        border-radius: 8px;
+        color: var(--text-light);
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 20px rgba(0, 255, 157, 0.3);
+        background: rgba(0, 255, 157, 0.05);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 2px solid rgba(0, 255, 157, 0.2);
+    }
+
+    .form-actions .btn {
+        flex: 1;
+        padding: 14px;
+        font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .edit-form-container {
+            padding: 25px;
+        }
+    }
 </style>
 
 <script>
-document.getElementById('editSheetForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const commandesRaw = document.getElementById('sheetCommandes').value;
-    const commandesArray = commandesRaw ? commandesRaw.split(',').map(c => c.trim()).filter(c => c) : [];
-    
-    const data = {
-        titre: document.getElementById('sheetTitre').value,
-        description: document.getElementById('sheetDescription').value,
-        categorie: document.getElementById('sheetCategoryForm').value,
-        niveau: document.getElementById('sheetNiveauForm').value,
-        contenu: document.getElementById('sheetContenu').value,
-        commandes: JSON.stringify(commandesArray),
-        ressources: ''
-    };
-    
-    fetch(`/api/cheatsheets/{{ sheet_id }}`, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    })
-    .then(r => r.json())
-    .then(d => {
-        alert('✅ ' + d.message);
-        window.location.href = '{{ url_for("cheatsheets") }}';
-    })
-    .catch(e => {
-        console.error(e);
-        alert('❌ Erreur lors de la mise à jour');
+    document.getElementById('editSheetForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const commandesRaw = document.getElementById('sheetCommandes').value;
+        const commandesArray = commandesRaw ? commandesRaw.split(',').map(c => c.trim()).filter(c => c) : [];
+
+        const data = {
+            titre: document.getElementById('sheetTitre').value,
+            description: document.getElementById('sheetDescription').value,
+            categorie: document.getElementById('sheetCategoryForm').value,
+            niveau: document.getElementById('sheetNiveauForm').value,
+            contenu: document.getElementById('sheetContenu').value,
+            commandes: JSON.stringify(commandesArray),
+            ressources: ''
+        };
+
+        fetch(`/api/cheatsheets/{{ sheet_id }}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(r => r.json())
+            .then(d => {
+                alert('✅ ' + d.message);
+                window.location.href = '{{ url_for("cheatsheets") }}';
+            })
+            .catch(e => {
+                console.error(e);
+                alert('❌ Erreur lors de la mise à jour');
+            });
     });
-});
 </script>
 {% endblock %}

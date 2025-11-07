@@ -12,7 +12,8 @@
 
             <div class="form-group">
                 <label for="description">Description *</label>
-                <input type="text" id="description" required class="form-input" placeholder="Description courte et claire">
+                <input type="text" id="description" required class="form-input"
+                    placeholder="Description courte et claire">
             </div>
 
             <div class="form-row">
@@ -72,7 +73,8 @@
 
             <div class="form-group">
                 <label for="arguments_options">Arguments/Options *</label>
-                <textarea id="arguments_options" required class="form-input" rows="3" placeholder="Ex: -sT (TCP), -sS (SYN), -sV (versions)"></textarea>
+                <textarea id="arguments_options" required class="form-input" rows="3"
+                    placeholder="Ex: -sT (TCP), -sS (SYN), -sV (versions)"></textarea>
             </div>
 
             <div class="form-group">
@@ -82,7 +84,8 @@
 
             <div class="form-group">
                 <label for="usage">Usage / Cas d'emploi *</label>
-                <textarea id="usage" required class="form-input" rows="3" placeholder="Quand et pourquoi utiliser cette commande"></textarea>
+                <textarea id="usage" required class="form-input" rows="3"
+                    placeholder="Quand et pourquoi utiliser cette commande"></textarea>
             </div>
 
             <div class="form-group">
@@ -92,7 +95,8 @@
 
             <div class="form-group">
                 <label for="notes">Notes optionnelles</label>
-                <textarea id="notes" class="form-input" rows="2" placeholder="Informations supplémentaires..."></textarea>
+                <textarea id="notes" class="form-input" rows="2"
+                    placeholder="Informations supplémentaires..."></textarea>
             </div>
 
             <div class="form-actions">
@@ -104,39 +108,39 @@
 </div>
 
 <script>
-document.getElementById('addForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const data = {
-        nom: document.getElementById('nom').value,
-        description: document.getElementById('description').value,
-        categorie: document.getElementById('categorie').value,
-        plateforme: document.getElementById('plateforme').value,
-        niveau: document.getElementById('niveau').value,
-        groupe: document.getElementById('groupe').value,
-        arguments_options: document.getElementById('arguments_options').value,
-        exemple: document.getElementById('exemple').value,
-        usage: document.getElementById('usage').value,
-        tags: document.getElementById('tags').value,
-        notes: document.getElementById('notes').value || ''
-    };
-    fetch('/api/commands', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    })
-    .then(r => r.json())
-    .then(d => {
-        if (d.message) {
-            alert('✅ ' + d.message);
-            window.location = '/';
-        } else if (d.error) {
-            alert('❌ Erreur: ' + d.error);
-        }
-    })
-    .catch(e => {
-        console.error(e);
-        alert('❌ Erreur lors de l\'ajout');
+    document.getElementById('addForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const data = {
+            nom: document.getElementById('nom').value,
+            description: document.getElementById('description').value,
+            categorie: document.getElementById('categorie').value,
+            plateforme: document.getElementById('plateforme').value,
+            niveau: document.getElementById('niveau').value,
+            groupe: document.getElementById('groupe').value,
+            arguments_options: document.getElementById('arguments_options').value,
+            exemple: document.getElementById('exemple').value,
+            usage: document.getElementById('usage').value,
+            tags: document.getElementById('tags').value,
+            notes: document.getElementById('notes').value || ''
+        };
+        fetch('/api/commands', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(r => r.json())
+            .then(d => {
+                if (d.message) {
+                    alert('✅ ' + d.message);
+                    window.location = '/';
+                } else if (d.error) {
+                    alert('❌ Erreur: ' + d.error);
+                }
+            })
+            .catch(e => {
+                console.error(e);
+                alert('❌ Erreur lors de l\'ajout');
+            });
     });
-});
 </script>
 {% endblock %}
