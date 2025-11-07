@@ -96,25 +96,27 @@
 
     <div class="dashboard-grid">
         <!-- Recent Commands -->
-        <div class="dashboard-card">
-            <div class="card-header">
-                <h3>📚 Commandes récentes</h3>
-                <a href="{{ url_for('index') }}" class="view-all">Voir tout →</a>
-            </div>
-            <div class="recent-list">
-                {% if recent_commands %}
-                {% for cmd in recent_commands %}
-                <div class="recent-item">
-                    <div class="recent-title">{{ cmd['nom'] }}</div>
-                    <div class="recent-category">{{ cmd['categorie'] }}</div>
-                    <button onclick="copyToClipboard('{{ cmd['exemple'] }}')" class="copy-btn-small">📋 Copier</button>
-                </div>
-                {% endfor %}
-                {% else %}
-                <p style="color: var(--text-muted); text-align: center;">Aucune commande ajoutée</p>
-                {% endif %}
-            </div>
+        <!-- Recent Commands -->
+    <div class="dashboard-card">
+        <div class="card-header">
+            <h3>📚 Commandes récentes</h3>
+            <a href="{{ url_for('index') }}" class="view-all">Voir tout →</a>
         </div>
+        <div class="recent-list">
+            {% if recent_commands %}
+            {% for cmd in recent_commands %}
+            <div class="recent-item">
+                <div class="recent-title">{{ cmd['nom'] }}</div>
+                <div class="recent-category">{{ cmd['categorie'] }}</div>
+                <button class="copy-btn-small" data-command="{{ cmd['exemple'] }}">📋 Copier</button>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="color: var(--text-muted); text-align: center;">Aucune commande ajoutée</p>
+            {% endif %}
+        </div>
+    </div>
+
 
         <!-- Certifications Progress -->
         <div class="dashboard-card">
@@ -644,41 +646,42 @@
 </style>
 
 <script>
-    // Global Search
-    const globalSearchInput = document.getElementById('globalSearch');
-    const searchResults = document.getElementById('searchResults');
-    let searchTimeout;
+// Global Search
+const globalSearchInput = document.getElementById('globalSearch');
+const searchResults = document.getElementById('searchResults');
+let searchTimeout;
 
-    globalSearchInput.addEventListener('input', async (e) => {
-        clearTimeout(searchTimeout);
-        const query = e.target.value.trim();
+globalSearchInput.addEventListener('input', async (e) => {
+    clearTimeout(searchTimeout);
+    const query = e.target.value.trim();
 
-        if (query.length < 2) {
-            searchResults.classList.remove('active');
-            searchResults.innerHTML = '';
-            return;
+    if (query.length < 2) {
+        searchResults.classList.remove('active');
+        searchResults.innerHTML = '';
+        return;
+    }
+
+    searchTimeout = setTimeout(async () => {
+        try {
+            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            displaySearchResults(data);
+        } catch (error) {
+            console.error('Search error:', error);
+            searchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">❌ Erreur de recherche</div>';
+            searchResults.classList.add('active');
         }
+    }, 300);
+});
 
-        searchTimeout = setTimeout(async () => {
-            try {
-                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-                const data = await response.json();
-                displaySearchResults(data);
-            } catch (error) {
-                console.error('Search error:', error);
-                searchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">❌ Erreur de recherche</div>';
-                searchResults.classList.add('active');
-            }
-        }, 300);
-    });
-    function displaySearchResults(data) {
-        let html = '';
-        let totalResults = 0;
+function displaySearchResults(data) {
+    let html = '';
+    let totalResults = 0;
 
-        // Commands
-        if (data.commands && data.commands.length > 0) {
-            data.commands.forEach(cmd => {
-                html += `
+    // Commands
+    if (data.commands && data.commands.length > 0) {
+        data.commands.forEach(cmd => {
+            html += `
                 <div class="search-result-item" onclick="window.location.href='/commandes?highlight=${cmd.id}'">
                     <span class="search-result-type type-command">Commande</span>
                     <div class="search-result-text">
@@ -687,14 +690,14 @@
                     </div>
                 </div>
             `;
-                totalResults++;
-            });
-        }
+            totalResults++;
+        });
+    }
 
-        // Vulnerabilities
-        if (data.vulnerabilities && data.vulnerabilities.length > 0) {
-            data.vulnerabilities.forEach(vuln => {
-                html += `
+    // Vulnerabilities
+    if (data.vulnerabilities && data.vulnerabilities.length > 0) {
+        data.vulnerabilities.forEach(vuln => {
+            html += `
                 <div class="search-result-item" onclick="window.location.href='/vulnerabilities?highlight=${vuln.id}'">
                     <span class="search-result-type type-cve">CVE</span>
                     <div class="search-result-text">
@@ -703,14 +706,14 @@
                     </div>
                 </div>
             `;
-                totalResults++;
-            });
-        }
+            totalResults++;
+        });
+    }
 
-        // Tools
-        if (data.tools && data.tools.length > 0) {
-            data.tools.forEach(tool => {
-                html += `
+    // Tools
+    if (data.tools && data.tools.length > 0) {
+        data.tools.forEach(tool => {
+            html += `
                 <div class="search-result-item" onclick="window.location.href='/tools?highlight=${tool.id}'">
                     <span class="search-result-type type-tool">Outil</span>
                     <div class="search-result-text">
@@ -719,14 +722,14 @@
                     </div>
                 </div>
             `;
-                totalResults++;
-            });
-        }
+            totalResults++;
+        });
+    }
 
-        // Certifications
-        if (data.certifications && data.certifications.length > 0) {
-            data.certifications.forEach(cert => {
-                html += `
+    // Certifications
+    if (data.certifications && data.certifications.length > 0) {
+        data.certifications.forEach(cert => {
+            html += `
                 <div class="search-result-item" onclick="window.location.href='/certifications?highlight=${cert.id}'">
                     <span class="search-result-type type-cert">Certification</span>
                     <div class="search-result-text">
@@ -735,14 +738,14 @@
                     </div>
                 </div>
             `;
-                totalResults++;
-            });
-        }
+            totalResults++;
+        });
+    }
 
-        // Cheatsheets
-        if (data.cheatsheets && data.cheatsheets.length > 0) {
-            data.cheatsheets.forEach(sheet => {
-                html += `
+    // Cheatsheets
+    if (data.cheatsheets && data.cheatsheets.length > 0) {
+        data.cheatsheets.forEach(sheet => {
+            html += `
                 <div class="search-result-item" onclick="window.location.href='/cheatsheets?highlight=${sheet.id}'">
                     <span class="search-result-type type-sheet">Cheat Sheet</span>
                     <div class="search-result-text">
@@ -751,25 +754,134 @@
                     </div>
                 </div>
             `;
-                totalResults++;
-            });
-        }
-
-        if (totalResults > 0) {
-            searchResults.innerHTML = html;
-            searchResults.classList.add('active');
-        } else {
-            searchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">😢 Aucun résultat trouvé</div>';
-            searchResults.classList.add('active');
-        }
-    };
-
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            alert('✅ Copié: ' + text);
-        }).catch(() => {
-            alert('❌ Erreur de copie');
+            totalResults++;
         });
     }
+
+    if (totalResults > 0) {
+        searchResults.innerHTML = html;
+        searchResults.classList.add('active');
+    } else {
+        searchResults.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">😢 Aucun résultat trouvé</div>';
+        searchResults.classList.add('active');
+    }
+}
+
+// Gestion des boutons de copie
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM chargé, initialisation des boutons de copie...');
+    
+    const copyButtons = document.querySelectorAll('.copy-btn-small');
+    console.log(`Nombre de boutons trouvés: ${copyButtons.length}`);
+    
+    copyButtons.forEach((btn, index) => {
+        console.log(`Bouton ${index}:`, btn.getAttribute('data-command'));
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const text = this.getAttribute('data-command');
+            console.log('Tentative de copie:', text);
+            copyToClipboard(text);
+        });
+    });
+});
+
+function copyToClipboard(text) {
+    console.log('copyToClipboard appelé avec:', text);
+    
+    if (!text) {
+        alert('❌ Aucun texte à copier');
+        return;
+    }
+    
+    if (!navigator.clipboard) {
+        // Fallback pour les navigateurs sans clipboard API
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            showNotification('✅ Copié !');
+        } catch (err) {
+            console.error('Fallback copy failed:', err);
+            alert('❌ Impossible de copier');
+        }
+        document.body.removeChild(textarea);
+        return;
+    }
+    
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            console.log('Copie réussie');
+            showNotification('✅ Copié !');
+        })
+        .catch((err) => {
+            console.error('Erreur de copie:', err);
+            alert('❌ Impossible de copier: ' + err.message);
+        });
+}
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.innerHTML = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 255, 157, 0.9);
+        color: #0a0f1e;
+        padding: 15px 25px;
+        border-radius: 8px;
+        font-weight: 700;
+        z-index: 10000;
+        box-shadow: 0 4px 15px rgba(0, 255, 157, 0.5);
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 2000);
+}
+
+// Fermer la recherche quand on clique dehors
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-input-wrapper')) {
+        searchResults.classList.remove('active');
+    }
+});
 </script>
+
+<style>
+/* ... ton CSS existant ... */
+
+/* Animations pour les notifications */
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+</style>
 {% endblock %}
+
