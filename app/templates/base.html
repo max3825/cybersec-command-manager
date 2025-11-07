@@ -9,64 +9,189 @@
 </head>
 
 <body>
+    <!-- NAVBAR AMÉLIORÉE -->
     <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <span class="nav-icon">🛡️</span>
-                <div class="nav-title">
-                    <h1>CyberSec Command Manager</h1>
-                    <p>Référence complète des commandes de sécurité</p>
-                </div>
+        <div class="navbar-container">
+            <!-- Logo & Brand -->
+            <div class="navbar-brand">
+                <a href="{{ url_for('dashboard') }}" class="brand-logo">
+                    <span class="brand-icon">🔐</span>
+                    <div class="brand-text">
+                        <h1>CyberSec Manager</h1>
+                        <p>Référence Complète</p>
+                    </div>
+                </a>
             </div>
-            <div class="nav-links">
-                <a href="{{ url_for('dashboard') }}"
-                    class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">🏠 Accueil</a>
-                <a href="{{ url_for('index') }}"
-                    class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">📋 Commandes</a>
-                <a href="{{ url_for('certifications') }}"
-                    class="nav-link {% if request.endpoint == 'certifications' %}active{% endif %}">📜
-                    Certifications</a>
-                <a href="{{ url_for('cheatsheets') }}"
-                    class="nav-link {% if request.endpoint == 'cheatsheets' %}active{% endif %}">📋 Cheat Sheets</a>
-                <a href="{{ url_for('notes') }}"
-                    class="nav-link {% if request.endpoint == 'notes' %}active{% endif %}">📝 Notes</a>
-                <a href="{{ url_for('tools') }}"
-                    class="nav-link {% if request.endpoint == 'tools' %}active{% endif %}">🔧 Outils</a>
-                <a href="{{ url_for('vulnerabilities') }}"
-                    class="nav-link {% if request.endpoint == 'vulnerabilities' %}active{% endif %}">🔒 CVE</a>
-                <a href="{{ url_for('stats') }}"
-                    class="nav-link {% if request.endpoint == 'stats' %}active{% endif %}">📊 Stats</a>
+
+            <!-- Menu Mobile Toggle -->
+            <button class="navbar-toggle" id="navbarToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="navbar-menu" id="navbarMenu">
+                <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                    <span class="nav-icon">🏠</span>
+                    <span>Accueil</span>
+                </a>
+                <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                    <span class="nav-icon">📋</span>
+                    <span>Commandes</span>
+                </a>
+                <a href="{{ url_for('certifications') }}" class="nav-link {% if request.endpoint == 'certifications' %}active{% endif %}">
+                    <span class="nav-icon">📜</span>
+                    <span>Certifications</span>
+                </a>
+                <a href="{{ url_for('cheatsheets') }}" class="nav-link {% if request.endpoint == 'cheatsheets' %}active{% endif %}">
+                    <span class="nav-icon">📚</span>
+                    <span>Cheat Sheets</span>
+                </a>
+                <a href="{{ url_for('tools') }}" class="nav-link {% if request.endpoint == 'tools' %}active{% endif %}">
+                    <span class="nav-icon">🔧</span>
+                    <span>Outils</span>
+                </a>
+                <a href="{{ url_for('vulnerabilities') }}" class="nav-link {% if request.endpoint == 'vulnerabilities' %}active{% endif %}">
+                    <span class="nav-icon">🔒</span>
+                    <span>CVE</span>
+                </a>
+                <a href="{{ url_for('notes') }}" class="nav-link {% if request.endpoint == 'notes' %}active{% endif %}">
+                    <span class="nav-icon">📝</span>
+                    <span>Notes</span>
+                </a>
+                <a href="{{ url_for('stats') }}" class="nav-link {% if request.endpoint == 'stats' %}active{% endif %}">
+                    <span class="nav-icon">📊</span>
+                    <span>Stats</span>
+                </a>
+
+                <!-- Theme Toggle dans le menu mobile -->
+                <div class="nav-divider"></div>
+                <label class="theme-switch-inline">
+                    <input type="checkbox" id="themeCheckboxMobile">
+                    <span class="slider-inline">
+                        <span class="slider-icon" id="sliderIconMobile">🌙</span>
+                    </span>
+                </label>
+            </div>
+
+            <!-- Right Section: Theme Toggle & Icons -->
+            <div class="navbar-right">
+                <label class="theme-switch">
+                    <input type="checkbox" id="themeCheckbox">
+                    <span class="slider">
+                        <span class="slider-icon" id="sliderIcon">🌙</span>
+                    </span>
+                </label>
             </div>
         </div>
     </nav>
 
-
+    <!-- Main Content -->
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
 
+    <!-- FOOTER AMÉLIORÉ -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>CyberSec Command Manager</h4>
-                <p>Gestionnaire complet des commandes de cybersécurité</p>
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>🔐 CyberSec Manager</h4>
+                    <p>Gestionnaire complet des commandes, outils et ressources de cybersécurité</p>
+                    <div class="footer-badges">
+                        <span class="badge">v1.0.0</span>
+                        <span class="badge">2025</span>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>📚 Ressources</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com" target="_blank">🔗 GitHub</a></li>
+                        <li><a href="https://owasp.org" target="_blank">🔗 OWASP</a></li>
+                        <li><a href="https://nvd.nist.gov" target="_blank">🔗 NVD</a></li>
+                        <li><a href="https://cve.mitre.org" target="_blank">🔗 CVE</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>🛠️ Outils</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/swisskyrepo/PayloadsAllTheThings" target="_blank">🔗 PayloadsAllTheThings</a></li>
+                        <li><a href="https://gtfobins.github.io" target="_blank">🔗 GTFOBins</a></li>
+                        <li><a href="https://exploit-db.com" target="_blank">🔗 Exploit-DB</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>📈 Stats</h4>
+                    <p id="statsText">Contenu en constante évolution</p>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px;">
+                        Dernière mise à jour: <span id="lastUpdate">2025-11-07</span>
+                    </p>
+                </div>
             </div>
-            <div class="footer-section">
-                <h4>Ressources</h4>
-                <ul>
-                    <li><a href="https://github.com" target="_blank">GitHub</a></li>
-                    <li><a href="https://owasp.org" target="_blank">OWASP</a></li>
-                    <li><a href="https://nvd.nist.gov" target="_blank">NVD</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Informations</h4>
-                <p>Version 1.0.0</p>
-                <p id="lastUpdate">2025-11-05</p>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 CyberSec Manager. Tous droits réservés.</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Créé avec ❤️ pour la communauté cybersécurité
+                </p>
             </div>
         </div>
     </footer>
 
+    <!-- THEME TOGGLE SCRIPT -->
+    <script>
+        // Initialiser le thème
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        
+        // Mettre à jour les checkboxes
+        function updateThemeUI(theme) {
+            const isDark = theme === 'dark';
+            document.getElementById('themeCheckbox').checked = !isDark;
+            document.getElementById('themeCheckboxMobile').checked = !isDark;
+            document.getElementById('sliderIcon').textContent = isDark ? '🌙' : '☀️';
+            document.getElementById('sliderIconMobile').textContent = isDark ? '🌙' : '☀️';
+        }
+        
+        updateThemeUI(currentTheme);
+
+        // Toggle du thème
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeUI(newTheme);
+        }
+
+        // Event listeners pour les deux checkboxes
+        document.getElementById('themeCheckbox').addEventListener('change', toggleTheme);
+        document.getElementById('themeCheckboxMobile').addEventListener('change', toggleTheme);
+
+        // Mobile menu toggle
+        const navbarToggle = document.getElementById('navbarToggle');
+        const navbarMenu = document.getElementById('navbarMenu');
+
+        navbarToggle.addEventListener('click', function() {
+            navbarMenu.classList.toggle('active');
+            this.classList.toggle('active');
+        });
+
+        // Fermer le menu quand on clique sur un lien
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                navbarMenu.classList.remove('active');
+                navbarToggle.classList.remove('active');
+            });
+        });
+    </script>
+
+    <!-- Main JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>

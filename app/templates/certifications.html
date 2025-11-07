@@ -11,10 +11,10 @@
         <input type="text" id="certSearch" placeholder="🔍 Rechercher une certification..." class="search-input">
         <select id="certLevel" class="filter-select">
             <option value="">📚 Tous les niveaux</option>
-            <option value="Débutant">Débutant</option>
-            <option value="Intermédiaire">Intermédiaire</option>
-            <option value="Avancé">Avancé</option>
-            <option value="Expert">Expert</option>
+            <option value="Débutant">🟢 Débutant</option>
+            <option value="Intermédiaire">🟡 Intermédiaire</option>
+            <option value="Avancé">🟠 Avancé</option>
+            <option value="Expert">🔴 Expert</option>
         </select>
     </div>
 
@@ -64,14 +64,12 @@
             </div>
 
             <div class="cert-actions">
-                <a href="{{ url_for('edit_certification_form', cert_id=cert['id']) }}" class="btn btn-primary">✏️
-                    Éditer</a>
+                <a href="{{ url_for('edit_certification_form', cert_id=cert['id']) }}" class="btn btn-primary">✏️ Éditer</a>
                 {% if cert.get('lien') %}
-                <a href="{{ cert['lien'] }}" target="_blank" class="btn btn-secondary">🌐 Voir la certification</a>
+                <a href="{{ cert['lien'] }}" target="_blank" class="btn btn-secondary">🌐 Voir</a>
                 {% endif %}
                 <button onclick="deleteCert({{ cert['id'] }})" class="btn btn-delete">🗑️ Supprimer</button>
             </div>
-
         </div>
         {% endfor %}
     </div>
@@ -80,57 +78,75 @@
         <p>😢 Aucune certification trouvée avec ces critères.</p>
     </div>
 
-    <!-- Modal ajout certification -->
+    <!-- Modal ajout certification - AMÉLIORÉ -->
     <div id="addCertModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>➕ Ajouter une certification</h2>
+            <h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+                ➕ Ajouter une certification
+            </h2>
+            
             <form id="addCertForm">
+                <!-- Section 1: Infos de base -->
                 <div class="form-group">
-                    <label>Nom *</label>
-                    <input type="text" id="certNom" required class="form-input">
+                    <label>Nom <span class="required">*</span></label>
+                    <input type="text" id="certNom" required placeholder="ex: OSCP, CEH, CISSP...">
                 </div>
+
                 <div class="form-group">
-                    <label>Organisme *</label>
-                    <input type="text" id="certOrganisme" required class="form-input">
+                    <label>Organisme <span class="required">*</span></label>
+                    <input type="text" id="certOrganisme" required placeholder="ex: Offensive Security, EC-Council...">
                 </div>
+
                 <div class="form-group">
-                    <label>Description *</label>
-                    <textarea id="certDescription" required class="form-input" rows="3"></textarea>
+                    <label>Description <span class="required">*</span></label>
+                    <textarea id="certDescription" required placeholder="Décrivez les objectifs et compétences..."></textarea>
                 </div>
+
+                <!-- Section 2: Niveau & Prix -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Niveau *</label>
-                        <select id="certNiveauForm" required class="form-input">
-                            <option>Débutant</option>
-                            <option>Intermédiaire</option>
-                            <option>Avancé</option>
-                            <option>Expert</option>
+                        <label>Niveau <span class="required">*</span></label>
+                        <select id="certNiveauForm" required>
+                            <option value="">-- Sélectionner --</option>
+                            <option value="Débutant">🟢 Débutant</option>
+                            <option value="Intermédiaire">🟡 Intermédiaire</option>
+                            <option value="Avancé">🟠 Avancé</option>
+                            <option value="Expert">🔴 Expert</option>
                         </select>
                     </div>
+
                     <div class="form-group">
-                        <label>Prix (USD) *</label>
-                        <input type="number" id="certPrix" required class="form-input">
+                        <label>Prix (USD) <span class="required">*</span></label>
+                        <input type="number" id="certPrix" required min="0" placeholder="999">
                     </div>
+
                     <div class="form-group">
-                        <label>Durée de validité (mois)</label>
-                        <input type="number" id="certValidite" value="36" class="form-input">
+                        <label>Validité (mois)</label>
+                        <input type="number" id="certValidite" value="36" min="0" placeholder="36">
                     </div>
                 </div>
+
+                <!-- Section 3: Durée d'étude & Prérequis -->
                 <div class="form-group">
                     <label>Durée d'étude</label>
-                    <input type="text" id="certDureeEtude" placeholder="ex: 1-3 mois" class="form-input">
+                    <input type="text" id="certDureeEtude" placeholder="ex: 1-3 mois, 6 mois...">
                 </div>
+
                 <div class="form-group">
                     <label>Prérequis</label>
-                    <textarea id="certPrerequisites" class="form-input" rows="2"></textarea>
+                    <textarea id="certPrerequisites" placeholder="ex: Linux, réseaux, programmation..." rows="2"></textarea>
                 </div>
+
+                <!-- Section 4: Lien -->
                 <div class="form-group">
-                    <label>Lien</label>
-                    <input type="url" id="certLien" placeholder="https://..." class="form-input">
+                    <label>Lien officiel</label>
+                    <input type="url" id="certLien" placeholder="https://www.offensive-security.com/...">
                 </div>
+
+                <!-- Boutons -->
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">💾 Ajouter</button>
+                    <button type="submit" class="btn btn-primary">💾 Ajouter la certification</button>
                     <button type="button" onclick="closeModal()" class="btn btn-secondary">❌ Annuler</button>
                 </div>
             </form>
@@ -149,6 +165,7 @@
     .page-header h1 {
         color: var(--primary);
         font-size: 2.2rem;
+        margin: 0;
     }
 
     .certs-filters {
@@ -156,6 +173,25 @@
         grid-template-columns: 2fr 1fr;
         gap: 15px;
         margin-bottom: 30px;
+    }
+
+    .search-input,
+    .filter-select {
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(0, 255, 157, 0.3);
+        border-radius: 8px;
+        color: var(--text-light);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus,
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(0, 255, 157, 0.08);
+        box-shadow: 0 0 15px rgba(0, 255, 157, 0.2);
     }
 
     .certs-grid {
@@ -266,11 +302,20 @@
         margin: 0;
     }
 
-    .detail-item .tags {
+    .tags {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
         margin-top: 5px;
+    }
+
+    .tag {
+        background: rgba(0, 255, 157, 0.1);
+        border: 1px solid rgba(0, 255, 157, 0.3);
+        color: var(--primary);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.85rem;
     }
 
     .cert-actions {
@@ -281,8 +326,58 @@
 
     .cert-actions .btn {
         flex: 1;
+        padding: 10px 12px;
+        font-size: 0.9rem;
     }
 
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        border: 2px solid;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), #00cc99);
+        color: var(--bg-dark);
+        border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 255, 157, 0.4);
+    }
+
+    .btn-secondary {
+        background: rgba(33, 150, 243, 0.1);
+        color: #2196f3;
+        border-color: #2196f3;
+    }
+
+    .btn-secondary:hover {
+        background: rgba(33, 150, 243, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .btn-delete {
+        background: rgba(244, 67, 54, 0.1);
+        color: #f44336;
+        border-color: #f44336;
+    }
+
+    .btn-delete:hover {
+        background: rgba(244, 67, 54, 0.2);
+        transform: translateY(-2px);
+    }
+
+    /* MODAL AMÉLIORÉ */
     .modal {
         display: none;
         position: fixed;
@@ -291,41 +386,171 @@
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(5px);
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .modal.show {
+        display: block;
     }
 
     .modal-content {
-        background: var(--bg-card);
+        background: linear-gradient(135deg, var(--bg-card) 0%, #2a3255 100%);
         margin: 5% auto;
-        padding: 30px;
-        border: 2px solid rgba(0, 255, 157, 0.2);
-        border-radius: 12px;
-        max-width: 600px;
-        max-height: 80vh;
+        padding: 40px;
+        border: 2px solid rgba(0, 255, 157, 0.3);
+        border-radius: 16px;
+        max-width: 700px;
+        max-height: 85vh;
         overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        animation: slideDown 0.4s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .modal-content h2 {
         color: var(--primary);
-        margin-bottom: 25px;
+        margin: 0 0 30px 0;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
     .close {
         color: var(--primary);
-        float: right;
-        font-size: 1.5rem;
+        font-size: 2rem;
         font-weight: bold;
         cursor: pointer;
+        transition: all 0.3s ease;
+        line-height: 1;
     }
 
     .close:hover {
-        color: var(--primary-dark);
+        color: #f44336;
+        transform: rotate(90deg);
+    }
+
+    /* FORMULAIRE */
+    #addCertForm {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .required {
+        color: #f44336;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 14px 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(0, 255, 157, 0.3);
+        border-radius: 8px;
+        color: var(--text-light);
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.3s ease;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: var(--text-muted);
+        opacity: 0.6;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(0, 255, 157, 0.08);
+        box-shadow: 0 0 20px rgba(0, 255, 157, 0.2);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
+        line-height: 1.5;
     }
 
     .form-row {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 15px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 25px;
+        padding-top: 25px;
+        border-top: 2px solid rgba(0, 255, 157, 0.1);
+    }
+
+    .form-actions .btn {
+        flex: 1;
+        padding: 14px 24px;
+    }
+
+    /* Scrollbar personnalisée */
+    .modal-content::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .modal-content::-webkit-scrollbar-track {
+        background: rgba(0, 255, 157, 0.1);
+        border-radius: 10px;
+    }
+
+    .modal-content::-webkit-scrollbar-thumb {
+        background: rgba(0, 255, 157, 0.3);
+        border-radius: 10px;
+    }
+
+    .modal-content::-webkit-scrollbar-thumb:hover {
+        background: var(--primary);
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 80px 20px;
+        color: var(--text-muted);
+        font-size: 1.1rem;
     }
 
     @media (max-width: 768px) {
@@ -337,19 +562,54 @@
             grid-template-columns: 1fr;
         }
 
+        .modal-content {
+            margin: 20% auto;
+            padding: 25px;
+            max-width: 95%;
+            border-radius: 12px;
+        }
+
+        .modal-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
         .form-row {
             grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .page-header h1 {
+            font-size: 1.8rem;
         }
     }
 </style>
 
 <script>
     function showAddCertForm() {
-        document.getElementById('addCertModal').style.display = 'block';
+        const modal = document.getElementById('addCertModal');
+        modal.classList.add('show');
+        modal.style.display = 'block';
     }
 
     function closeModal() {
-        document.getElementById('addCertModal').style.display = 'none';
+        const modal = document.getElementById('addCertModal');
+        modal.classList.remove('show');
+        modal.style.display = 'none';
         document.getElementById('addCertForm').reset();
     }
 
@@ -434,28 +694,26 @@
             closeModal();
         }
     };
+
+    // Highlight depuis URL
     document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const highlightId = urlParams.get('highlight');
 
         if (highlightId) {
-            // Trouve la carte correspondante
             const cards = document.querySelectorAll('[data-id="' + highlightId + '"]');
 
             if (cards.length > 0) {
                 const card = cards[0];
 
-                // Scroll vers l'élément
                 setTimeout(() => {
                     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-                    // Highlight temporaire
                     card.style.transition = 'all 0.3s ease';
                     card.style.transform = 'scale(1.05)';
                     card.style.boxShadow = '0 0 30px rgba(0, 255, 157, 0.6)';
                     card.style.borderColor = 'var(--primary)';
 
-                    // Retire le highlight après 3 secondes
                     setTimeout(() => {
                         card.style.transform = '';
                         card.style.boxShadow = '';
@@ -465,4 +723,5 @@
         }
     });
 </script>
+
 {% endblock %}
