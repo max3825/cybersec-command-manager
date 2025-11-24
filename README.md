@@ -1,268 +1,121 @@
-# 🔐 Cybersec Command Manager
+# 🛡️ CyberSec Command Manager
 
-Une application web complète pour gérer les commandes de cybersécurité, certifications, cheat sheets, outils, vulnérabilités et notes.
+Gestionnaire de commandes et ressources pour professionnels de la cybersécurité. Base de données centralisée d'outils, CVE, certifications et cheat sheets.
 
-## 🚀 Stack Technique
+## ⚡ Quick Start
 
-- **Backend** : Flask + SQLAlchemy + PostgreSQL
-- **Frontend** : HTML5 + CSS3 + Vanilla JavaScript
-- **Déploiement** : Docker + Docker Compose
-- **Admin DB** : pgAdmin 4
-
-## 📋 Fonctionnalités
-
-✅ **Commandes** - Recherche avancée, filtrage, favoris, édition
-✅ **Certifications** - Filtrage par niveau, prix, domaines
-✅ **Cheat Sheets** - Affichage, export, édition Markdown
-✅ **Outils** - Gestion des outils de pentest avec alternatives
-✅ **Vulnérabilités CVE** - Score CVSS, mitigation, commandes de test
-✅ **Notes** - Prise de notes personnalisées
-✅ **Favoris** - Marquer les commandes préférées
-✅ **Interface dark/light** - Thème personnalisable
-
-## 🛠️ Installation & Démarrage
-
-### Prérequis
-- Docker & Docker Compose installés
-
-### Démarrer l'application
-
-```bash
-# Cloner le repo
 git clone <repo>
 cd cybersec-command-manager
-
-# Lancer l'application
 docker compose up -d
 
-# L'app est accessible sur http://localhost:5000
-```
+Accès : http://localhost:5000
 
-### Services accessibles
+## 📦 Stack
 
-- **App** : http://localhost:5000
-- **pgAdmin** : http://localhost:5050 (admin@example.com / admin)
-- **PostgreSQL** : localhost:5432
+- **Backend** : Flask + SQLAlchemy
+- **Base de données** : PostgreSQL 15
+- **Frontend** : HTML/CSS/JS vanilla
+- **Déploiement** : Docker Compose
 
-## 📂 Structure du projet
+## 🗂️ Contenu
 
-```
-cybersec-command-manager/
-├── app/
-│   ├── app.py                 # Routes Flask principales
-│   ├── models.py              # Modèles SQLAlchemy
-│   ├── migrate_json_to_db.py  # Import données JSON
-│   ├── requirements.txt        # Dépendances Python
-│   ├── data/                  # Fichiers JSON (données)
-│   └── templates/             # Pages HTML
-│       ├── base.html
-│       ├── index.html
-│       ├── certifications.html
-│       ├── cheatsheets.html
-│       ├── tools.html
-│       ├── vulnerabilities.html
-│       ├── edit_command.html
-│       ├── edit_certification.html
-│       ├── edit_cheatsheet.html
-│       ├── edit_tool.html
-│       └── edit_vulnerability.html
-│   └── static/
-│       ├── css/style.css
-│       └── js/main.js
-├── docker-compose.yml
-├── Dockerfile
-└── README.md
-```
+- **97 commandes** Linux/Windows (nmap, grep, netstat, etc.)
+- **51 outils** de pentest (Metasploit, Burp Suite, etc.)
+- **50 CVE** avec détails et mitigations
+- **12 certifications** (OSCP, CEH, CISSP, etc.)
+- **32 cheat sheets** catégorisés
+- **Notes personnelles** persistantes
 
 ## 🔧 Configuration
 
-### Variables d'environnement (`docker-compose.yml`)
+### Variables d'environnement (.env)
 
-```yaml
-DATABASE_URL: postgresql://postgres:secure_password@db:5432/cybersec_manager
-FLASK_ENV: production
-SECRET_KEY: your-secret-key-change-me
-```
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=votre_mot_de_passe
+POSTGRES_DB=cybersec_manager
+SECRET_KEY=votre_secret_key
+FLASK_ENV=production
+FLASK_DEBUG=0
 
-### Importer les données JSON
+### Commandes Docker
 
-Les données JSON sont automatiquement importées au démarrage. Pour réimporter :
-
-```bash
-docker compose exec web python migrate_json_to_db.py
-```
-
-## 📖 Utilisation
-
-### Pages principales
-
-| Page | URL | Fonction |
-|------|-----|----------|
-| Commandes | `/commandes` | Liste, search, filtrage, favoris |
-| Certifications | `/certifications` | Détails, prix, domaines |
-| Cheat Sheets | `/cheatsheets` | Affichage, export, édition |
-| Outils | `/tools` | Catégories, prix, alternatives |
-| Vulnérabilités | `/vulnerabilities` | CVE, CVSS, mitigation |
-
-### Fonctionnalités clés
-
-**Recherche & Filtrage**
-- Recherche par texte en temps réel
-- Filtrage par catégorie, niveau, prix
-- Filtres multiples combinables
-
-**Édition & CRUD**
-- ✏️ Éditer tous les éléments
-- 🗑️ Supprimer
-- ➕ Ajouter nouveaux éléments
-
-**Favoris**
-- ⭐ Marquer comme favori
-- 🔍 Vue favoris uniquement
-- 📊 Statistiques
-
-**Export & Partage**
-- 📥 Exporter cheat sheets en TXT
-- 📋 Copier commandes au clipboard
-- 📖 Liens vers documentation externe
-
-## 🛠️ API Endpoints
-
-### Commandes
-- `GET /api/commands` - Lister
-- `POST /api/commands` - Créer
-- `PUT /api/commands/<id>` - Modifier
-- `DELETE /api/commands/<id>` - Supprimer
-
-### Certifications
-- `GET /api/certifications` - Lister
-- `POST /api/certifications` - Créer
-- `PUT /api/certifications/<id>` - Modifier
-- `DELETE /api/certifications/<id>` - Supprimer
-
-*Et similaire pour: Cheat Sheets, Tools, Vulnerabilities*
-
-### Favoris
-- `POST /api/favorites/<cmd_id>` - Ajouter aux favoris
-- `DELETE /api/favorites/<cmd_id>` - Retirer des favoris
-
-## 📊 Base de données
-
-**Tables principales**
-- `commands` - 97+ commandes Linux/Windows
-- `certifications` - Certifications cybersec (OSCP, CEH, CISSP, etc.)
-- `cheatsheets` - Guides rapides par catégorie
-- `tools` - Outils de pentest et security
-- `vulnerabilities` - CVE avec scores CVSS
-- `notes` - Notes personnalisées
-- `favorites` - Favoris utilisateur
-- `badges` - Gamification
-
-## 🚨 Dépannage
-
-**L'app ne démarre pas**
-```bash
-# Vérifier les logs
-docker compose logs web
-
-# Rebuilder
+docker compose up -d
+docker compose logs -f web
+docker compose build --no-cache
+docker compose down
 docker compose down -v
-docker compose up --build
-```
 
-**Base de données vide**
-```bash
-# Réimporter les données
-docker compose exec web python migrate_json_to_db.py
-```
+## 📊 Endpoints API
 
-**Erreur 404**
-- Vérifier que la route existe dans `app.py`
-- Redémarrer l'app : `docker compose restart web`
+GET    /api/commands           # Liste des commandes
+POST   /api/commands           # Ajouter une commande
+GET    /api/tools              # Liste des outils
+GET    /api/vulnerabilities    # Liste des CVE
+GET    /api/certifications     # Certifications
+GET    /api/notes              # Notes personnelles
+POST   /api/notes              # Créer une note
+GET    /api/search?q=nmap      # Recherche globale
+GET    /health                 # Health check
 
-**Problème de port**
-```bash
-# Changer le port dans docker-compose.yml
-ports:
-  - "5001:5000"  # Utiliser 5001 au lieu de 5000
-```
+## 🎯 Fonctionnalités
 
-## 🔐 Sécurité
+- ✅ Recherche globale multi-tables
+- ✅ Filtres par catégorie, plateforme, niveau
+- ✅ Favoris et historique
+- ✅ Export JSON
+- ✅ Persistance PostgreSQL
+- ✅ Interface responsive
 
-⚠️ **Production**
-- Changer `SECRET_KEY` dans `docker-compose.yml`
-- Utiliser `FLASK_ENV=production`
-- Utiliser un serveur WSGI (Gunicorn)
-- HTTPS/SSL activé
+## 🗄️ Backup & Restore
 
-## 📝 Modèles de données
+docker compose exec db pg_dump -U postgres cybersec_manager > backup.sql
+docker compose exec -T db psql -U postgres cybersec_manager < backup.sql
 
-```python
-Command
-├── nom (unique)
-├── description
-├── categorie
-├── plateforme
-├── arguments_options
-├── exemple
-├── usage
-├── tags
-├── niveau
-└── ressources
+## 📁 Structure
 
-Certification
-├── nom
-├── organisme
-├── description
-├── niveau
-├── prix_usd
-├── duree_validite
-├── duree_etude
-├── domaines (JSON)
-├── commandes_recommandees (JSON)
-└── prerequisites
+cybersec-command-manager/
+├── app/
+│   ├── app.py                 # Application Flask
+│   ├── models.py              # Modèles SQLAlchemy
+│   ├── migrate_json_to_db.py  # Script d'import
+│   ├── templates/             # Templates HTML
+│   ├── static/                # CSS/JS/Assets
+│   └── data/                  # Fichiers JSON source
+├── docker-compose.yml
+├── Dockerfile
+├── .env
+└── README.md
 
-CheatSheet
-├── titre
-├── description
-├── categorie
-├── niveau
-├── contenu (Markdown)
-├── commandes (JSON)
-└── ressources
+## 🚀 Développement
 
-Tool
-├── nom
-├── description
-├── categorie
-├── type
-├── installation
-├── documentation
-├── prix
-├── plateforme (JSON)
-├── commandes_courantes (JSON)
-└── alternatives (JSON)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+docker compose exec web bash
+docker compose exec db psql -U postgres -d cybersec_manager
 
-Vulnerability
-├── cve
-├── titre
-├── description
-├── severite
-├── score_cvss
-├── mitigation
-├── plateforme (JSON)
-├── date_decouverte
-├── date_correction
-├── commandes_test (JSON)
-├── ressources
-└── tools (JSON)
-```
+## 🔒 Sécurité
 
-## 📞 Support
+- ⚠️ Changer les mots de passe par défaut en production
+- ⚠️ Ne pas exposer le port 5432 en production
+- ⚠️ Utiliser Gunicorn ou uWSGI au lieu du serveur Flask dev
+- ✅ Les volumes Docker assurent la persistance des données
 
-Pour toute question ou bug report, consultez la documentation du projet.
+## 📝 TODO
+
+- [ ] Authentification utilisateur
+- [ ] API REST complète avec authentification JWT
+- [ ] Dark mode
+- [ ] Export PDF des cheat sheets
+- [ ] Intégration MITRE ATT&CK
+- [ ] Notifications de nouvelles CVE
+
+## 📄 Licence
+
+MIT
+
+## 👤 Auteur
+
+Projet réalisé dans le cadre d'un apprentissage en cybersécurité.
 
 ---
 
-**Version** : 1.0.0
-**Dernière mise à jour** : Novembre 2025
+**Made with ☕ by a cybersecurity enthusiast**
