@@ -3,11 +3,12 @@ services:
   db:
     image: postgres:15-alpine
     container_name: cybersec-db
-    restart: always
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secure_password
-      POSTGRES_DB: cybersec_manager
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-cybersec_manager}
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
@@ -15,7 +16,7 @@ services:
     networks:
       - cybersec-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,20 +25,21 @@ services:
   web:
     build: .
     container_name: cybersec-app
-    restart: always
+    restart: unless-stopped
     ports:
       - "5000:5000"
     environment:
-      DATABASE_URL: postgresql://postgres:secure_password@db:5432/cybersec_manager
-      FLASK_ENV: development
-      FLASK_DEBUG: 1
-      SECRET_KEY: your-secret-key-change-me
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-secure_password}@db:5432/${POSTGRES_DB:-cybersec_manager}
+      FLASK_ENV: ${FLASK_ENV:-production}
+      FLASK_DEBUG: ${FLASK_DEBUG:-0}
+      SECRET_KEY: ${SECRET_KEY:-changeme}
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - ./app:/app
+      #- ./app:/app
       - ./logs:/app/logs
+      - app_data:/app/data
     networks:
       - cybersec-network
     command: >
@@ -47,28 +49,18 @@ services:
         echo '📊 Création des tables...' &&
         python -c 'from app import app, db; app.app_context().push(); db.create_all(); print(\"✅ Tables créées\")' &&
         echo '📥 Import des données JSON...' &&
-        python migrate_json_to_db.py || echo '⚠️ Import échoué ou déjà fait' &&
-        echo '🚀 Démarrage de l application...' &&
+        python migrate_json_to_db.py || echo '⚠️ Import échoué ou déjà effectué' &&
+        echo '🚀 Démarrage de l application Flask...' &&
         python app.py
       "
 
-  # PgAdmin (Database Management UI)
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: cybersec-pgadmin
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "5050:80"
-    depends_on:
-      - db
-    networks:
-      - cybersec-network
+  # PgAdmin (Database Management UI) - VERSION CORRIGÉE
+  
 
 volumes:
   postgres_data:
+    driver: local
+  app_data:
     driver: local
 
 networks:

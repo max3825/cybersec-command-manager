@@ -598,5 +598,25 @@
     "plateforme": ["Linux", "Windows", "macOS"],
     "commandes_courantes": ["GUI Interface"],
     "alternatives": ["Shodan", "Recon-ng"]
-  }
+  },
+  {
+  "nom": "Exegol",
+  "description": "Environnement Docker tout-en-un pour le pentest. Préconfiguré avec 400+ outils offensifs, gestionnaire de conteneurs optimisés.",
+  "categorie": "Infrastructure",
+  "type": "Environnement",
+  "installation": "pip3 install exegol && exegol install",
+  "documentation": "https://exegol.readthedocs.io/",
+  "prix": "Gratuit",
+  "plateforme": ["Linux", "Windows", "macOS"],
+  "commandes_courantes": [
+    "exegol start <container_name>",
+    "exegol install",
+    "exegol info",
+    "exegol exec <container> <command>",
+    "exegol stop <container_name>",
+    "exegol remove <container_name>"
+  ],
+  "alternatives": ["Kali Linux", "ParrotOS", "BlackArch"]
+}
+
 ]

@@ -3,28 +3,30 @@ import os
 from app import app, db
 from models import Command, Certification, CheatSheet, Tool, Vulnerability, Note
 
+
 def migrate_json_to_database():
-    """Migrate toutes les données JSON vers PostgreSQL"""
+    """Migrate toutes les données JSON vers PostgreSQL (SANS supprimer les données existantes)"""
     
     with app.app_context():
         print("\n" + "=" * 60)
         print("🚀 MIGRATION DES DONNÉES JSON VERS POSTGRESQL")
         print("=" * 60 + "\n")
         
-        # ============ SUPPRESSION DES DONNÉES EXISTANTES ============
-        print("🗑️  Suppression des données existantes...")
-        try:
-            db.session.query(Note).delete()
-            db.session.query(Vulnerability).delete()
-            db.session.query(Tool).delete()
-            db.session.query(CheatSheet).delete()
-            db.session.query(Certification).delete()
-            db.session.query(Command).delete()
-            db.session.commit()
-            print("✅ Tables vidées avec succès\n")
-        except Exception as e:
-            print(f"⚠️  Erreur lors du vidage: {e}\n")
-            db.session.rollback()
+        # ============ VÉRIFIER SI DÉJÀ IMPORTÉ ============
+        existing_commands = Command.query.count()
+        existing_tools = Tool.query.count()
+        existing_cve = Vulnerability.query.count()
+        
+        if existing_commands > 0 or existing_tools > 0 or existing_cve > 0:
+            print("✅ Données déjà présentes dans la base")
+            print(f"   - Commandes: {existing_commands}")
+            print(f"   - Outils: {existing_tools}")
+            print(f"   - CVE: {existing_cve}")
+            print(f"   - Notes: {Note.query.count()}")
+            print("\n⏭️  Import ignoré (données déjà chargées)\n")
+            return
+
+        print("📊 Base de données vide, import des données JSON...\n")
 
         # ============ IMPORT COMMANDS (un par un) ============
         print("📦 Import des COMMANDES...")
@@ -36,6 +38,11 @@ def migrate_json_to_database():
                     commands = json.load(f)
                     for cmd_data in commands:
                         try:
+                            # Vérifier si la commande existe déjà
+                            existing = Command.query.filter_by(nom=cmd_data.get('nom')).first()
+                            if existing:
+                                continue
+                            
                             cmd = Command(
                                 nom=cmd_data.get('nom'),
                                 description=cmd_data.get('description'),
@@ -54,13 +61,16 @@ def migrate_json_to_database():
                         except Exception as e:
                             db.session.rollback()
                             failed_commands += 1
-                            print(f"   ⚠️  Erreur pour '{cmd_data.get('nom')}': {str(e)[:80]}")
+                            # Masquer les erreurs de duplicates
+                            if 'duplicate' not in str(e).lower():
+                                print(f"   ⚠️  Erreur pour '{cmd_data.get('nom')}': {str(e)[:80]}")
                     
-                    print(f"   ✅ {imported_commands} commandes importées, {failed_commands} échouées")
+                    print(f"   ✅ {imported_commands} commandes importées, {failed_commands} ignorées")
             else:
                 print("   ⚠️  Fichier data/commands.json introuvable")
         except Exception as e:
             print(f"   ❌ Erreur générale: {e}")
+
 
         # ============ IMPORT CERTIFICATIONS ============
         print("\n📦 Import des CERTIFICATIONS...")
@@ -68,7 +78,13 @@ def migrate_json_to_database():
             if os.path.exists('data/certifications.json'):
                 with open('data/certifications.json', 'r', encoding='utf-8') as f:
                     certs = json.load(f)
+                    imported_certs = 0
                     for cert_data in certs:
+                        # Vérifier si existe déjà
+                        existing = Certification.query.filter_by(nom=cert_data.get('nom')).first()
+                        if existing:
+                            continue
+                            
                         cert = Certification(
                             nom=cert_data.get('nom'),
                             organisme=cert_data.get('organisme'),
@@ -83,13 +99,15 @@ def migrate_json_to_database():
                             lien=cert_data.get('lien')
                         )
                         db.session.add(cert)
+                        imported_certs += 1
                     db.session.commit()
-                    print(f"   ✅ {len(certs)} certifications importées")
+                    print(f"   ✅ {imported_certs} certifications importées")
             else:
                 print("   ⚠️  Fichier data/certifications.json introuvable")
         except Exception as e:
             print(f"   ❌ Erreur: {e}")
             db.session.rollback()
+
 
         # ============ IMPORT CHEATSHEETS ============
         print("\n📦 Import des CHEAT SHEETS...")
@@ -97,7 +115,12 @@ def migrate_json_to_database():
             if os.path.exists('data/cheatsheets.json'):
                 with open('data/cheatsheets.json', 'r', encoding='utf-8') as f:
                     sheets = json.load(f)
+                    imported_sheets = 0
                     for sheet_data in sheets:
+                        existing = CheatSheet.query.filter_by(titre=sheet_data.get('titre')).first()
+                        if existing:
+                            continue
+                            
                         sheet = CheatSheet(
                             titre=sheet_data.get('titre'),
                             description=sheet_data.get('description'),
@@ -108,13 +131,15 @@ def migrate_json_to_database():
                             ressources=sheet_data.get('ressources', '')
                         )
                         db.session.add(sheet)
+                        imported_sheets += 1
                     db.session.commit()
-                    print(f"   ✅ {len(sheets)} cheat sheets importées")
+                    print(f"   ✅ {imported_sheets} cheat sheets importées")
             else:
                 print("   ⚠️  Fichier data/cheatsheets.json introuvable")
         except Exception as e:
             print(f"   ❌ Erreur: {e}")
             db.session.rollback()
+
 
         # ============ IMPORT TOOLS ============
         print("\n📦 Import des OUTILS...")
@@ -122,7 +147,12 @@ def migrate_json_to_database():
             if os.path.exists('data/tools.json'):
                 with open('data/tools.json', 'r', encoding='utf-8') as f:
                     tools = json.load(f)
+                    imported_tools = 0
                     for tool_data in tools:
+                        existing = Tool.query.filter_by(nom=tool_data.get('nom')).first()
+                        if existing:
+                            continue
+                            
                         tool = Tool(
                             nom=tool_data.get('nom'),
                             description=tool_data.get('description'),
@@ -136,13 +166,15 @@ def migrate_json_to_database():
                             alternatives=json.dumps(tool_data.get('alternatives', [])) if isinstance(tool_data.get('alternatives'), list) else tool_data.get('alternatives')
                         )
                         db.session.add(tool)
+                        imported_tools += 1
                     db.session.commit()
-                    print(f"   ✅ {len(tools)} outils importés")
+                    print(f"   ✅ {imported_tools} outils importés")
             else:
                 print("   ⚠️  Fichier data/tools.json introuvable")
         except Exception as e:
             print(f"   ❌ Erreur: {e}")
             db.session.rollback()
+
 
         # ============ IMPORT VULNERABILITIES ============
         print("\n📦 Import des VULNÉRABILITÉS...")
@@ -150,7 +182,12 @@ def migrate_json_to_database():
             if os.path.exists('data/vulnerabilities.json'):
                 with open('data/vulnerabilities.json', 'r', encoding='utf-8') as f:
                     vulns = json.load(f)
+                    imported_vulns = 0
                     for vuln_data in vulns:
+                        existing = Vulnerability.query.filter_by(cve=vuln_data.get('cve')).first()
+                        if existing:
+                            continue
+                            
                         vuln = Vulnerability(
                             cve=vuln_data.get('cve'),
                             titre=vuln_data.get('titre'),
@@ -166,33 +203,20 @@ def migrate_json_to_database():
                             tools=json.dumps(vuln_data.get('tools', [])) if isinstance(vuln_data.get('tools'), list) else vuln_data.get('tools')
                         )
                         db.session.add(vuln)
+                        imported_vulns += 1
                     db.session.commit()
-                    print(f"   ✅ {len(vulns)} vulnérabilités importées")
+                    print(f"   ✅ {imported_vulns} vulnérabilités importées")
             else:
                 print("   ⚠️  Fichier data/vulnerabilities.json introuvable")
         except Exception as e:
             print(f"   ❌ Erreur: {e}")
             db.session.rollback()
 
-        # ============ IMPORT NOTES ============
-        print("\n📦 Import des NOTES...")
-        try:
-            if os.path.exists('data/notes.json'):
-                with open('data/notes.json', 'r', encoding='utf-8') as f:
-                    notes = json.load(f)
-                    for note_data in notes:
-                        note = Note(
-                            titre=note_data.get('titre'),
-                            contenu=note_data.get('contenu', '')
-                        )
-                        db.session.add(note)
-                    db.session.commit()
-                    print(f"   ✅ {len(notes)} notes importées")
-            else:
-                print("   ⚠️  Fichier data/notes.json introuvable")
-        except Exception as e:
-            print(f"   ❌ Erreur: {e}")
-            db.session.rollback()
+
+        # ============ NE PAS IMPORTER LES NOTES ============
+        # Les notes sont créées par l'utilisateur uniquement
+        print("\n📝 Notes : créées uniquement par l'utilisateur (non importées)")
+
 
         # ============ RÉSUMÉ ============
         print("\n" + "=" * 60)
@@ -208,6 +232,7 @@ def migrate_json_to_database():
         print(f"   • Vulnérabilités: {Vulnerability.query.count()}")
         print(f"   • Notes: {Note.query.count()}")
         print()
+
 
 if __name__ == '__main__':
     migrate_json_to_database()
