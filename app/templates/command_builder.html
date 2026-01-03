@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}Command Builder - CyberSec Manager{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 40px 20px;">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 class="text-gradient" style="font-size: 2.5rem; margin-bottom: 15px;">
+            🎯 Générateur de Commandes Intelligent
+        </h1>
+        <p style="font-size: 1.1rem; color: var(--text-muted);">
+            Analysez vos scans nmap et obtenez des commandes personnalisées
+        </p>
+    </div>
+
+    <!-- Input Section -->
+    <section class="glass-effect" style="padding: 40px; border-radius: 20px; margin-bottom: 40px;">
+        <h2 style="color: var(--primary); margin-bottom: 25px;">📋 Entrez votre scan nmap</h2>
+        
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; margin-bottom: 10px; font-weight: 600; color: var(--text-light);">
+                Adresse IP cible:
+            </label>
+            <input type="text" id="targetIp" placeholder="Ex: 192.168.1.10" 
+                   style="width: 100%; padding: 15px; background: rgba(0,0,0,0.3); border: 2px solid rgba(0,255,157,0.3); 
+                          border-radius: 12px; color: var(--text-light); font-size: 1rem;">
+        </div>
+
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; margin-bottom: 10px; font-weight: 600; color: var(--text-light);">
+                Résultat du scan nmap:
+            </label>
+            <textarea id="scanResult" rows="10" placeholder="Collez votre résultat de scan nmap ici...
+Exemple:
+PORT     STATE SERVICE
+21/tcp   open  ftp
+22/tcp   open  ssh
+80/tcp   open  http
+443/tcp  open  https"
+                      style="width: 100%; padding: 15px; background: rgba(0,0,0,0.3); border: 2px solid rgba(0,255,157,0.3); 
+                             border-radius: 12px; color: var(--text-light); font-family: 'Courier New', monospace; 
+                             font-size: 0.95rem; resize: vertical;"></textarea>
+        </div>
+
+        <button id="analyzeBtn" class="btn btn-primary ripple" style="padding: 15px 40px; font-size: 1.1rem;">
+            🔍 Analyser & Générer les commandes
+        </button>
+    </section>
+
+    <!-- Results Section -->
+    <div id="resultsSection" style="display: none;">
+        <!-- Detected Services -->
+        <section class="glass-effect" style="padding: 30px; border-radius: 20px; margin-bottom: 30px;">
+            <h2 style="color: var(--primary); margin-bottom: 20px;">🎯 Services détectés</h2>
+            <div id="detectedServices" style="display: flex; flex-wrap: wrap; gap: 15px;"></div>
+        </section>
+
+        <!-- Command Suggestions -->
+        <section>
+            <h2 style="color: var(--primary); margin-bottom: 25px;">💡 Commandes suggérées</h2>
+            <div id="commandSuggestions"></div>
+        </section>
+    </div>
+
+    <!-- Command Output Modal -->
+    <div id="commandModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                                     background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 10000; 
+                                     align-items: center; justify-content: center;">
+        <div class="glass-effect" style="max-width: 700px; width: 90%; padding: 40px; border-radius: 20px; 
+                                         max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h3 style="color: var(--primary); margin: 0;">🚀 Commande générée</h3>
+                <button id="closeModal" style="background: none; border: none; color: var(--text-light); 
+                                               font-size: 1.5rem; cursor: pointer;">✕</button>
+            </div>
+            
+            <div id="commandOutput" style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 12px; 
+                                           border-left: 4px solid var(--primary); margin-bottom: 20px;">
+                <code id="generatedCommand" style="color: var(--primary); font-family: 'Courier New', monospace; 
+                                                   font-size: 1rem; word-break: break-all;"></code>
+            </div>
+
+            <div style="display: flex; gap: 15px;">
+                <button id="copyGeneratedCmd" class="btn btn-primary" style="flex: 1;">
+                    📋 Copier la commande
+                </button>
+                <button id="closeModalBtn" class="btn btn-secondary" style="flex: 1;">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .service-badge {
+        background: linear-gradient(135deg, rgba(0, 255, 157, 0.15) 0%, rgba(0, 217, 255, 0.1) 100%);
+        color: var(--primary);
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 700;
+        border: 2px solid rgba(0, 255, 157, 0.3);
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        animation: fadeInScale 0.4s ease-out forwards;
+    }
+
+    .command-suggestion-card {
+        background: linear-gradient(125deg, rgba(35, 40, 73, 0.9) 85%, rgba(21, 48, 101, 0.9) 100%);
+        border: 2px solid rgba(44, 215, 177, 0.28);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 25px;
+        backdrop-filter: blur(12px);
+        transition: var(--transition-bounce);
+        animation: slideInUp 0.5s ease-out forwards;
+        opacity: 0;
+    }
+
+    .command-suggestion-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary);
+        box-shadow: 0 8px 30px rgba(0,255,157,0.2);
+    }
+
+    .command-item {
+        background: rgba(0,0,0,0.3);
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        border-left: 4px solid var(--accent);
+        transition: var(--transition);
+    }
+
+    .command-item:hover {
+        background: rgba(0,0,0,0.5);
+        transform: translateX(5px);
+    }
+
+    .param-input {
+        width: 100%;
+        padding: 12px;
+        background: rgba(0,0,0,0.4);
+        border: 2px solid rgba(0,255,157,0.2);
+        border-radius: 8px;
+        color: var(--text-light);
+        font-size: 0.95rem;
+        margin-top: 8px;
+        transition: var(--transition);
+    }
+
+    .param-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 15px rgba(0,255,157,0.3);
+    }
+
+    .generate-btn {
+        padding: 12px 30px;
+        background: linear-gradient(135deg, var(--accent) 0%, rgba(33, 150, 243, 0.8) 100%);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition-bounce);
+        font-size: 0.95rem;
+    }
+
+    .generate-btn:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 20px rgba(0,217,255,0.4);
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+document.getElementById('analyzeBtn').addEventListener('click', async function() {
+    const scanResult = document.getElementById('scanResult').value;
+    const targetIp = document.getElementById('targetIp').value;
+    
+    if (!scanResult.trim()) {
+        alert('⚠️ Veuillez entrer un résultat de scan nmap');
+        return;
+    }
+    
+    if (!targetIp.trim()) {
+        alert('⚠️ Veuillez entrer une adresse IP cible');
+        return;
+    }
+    
+    // Show loading
+    this.textContent = '⏳ Analyse en cours...';
+    this.disabled = true;
+    
+    try {
+        const response = await fetch('/api/analyze-scan', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                scan_result: scanResult,
+                target_ip: targetIp
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            displayResults(data);
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('resultsSection').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        } else {
+            alert('❌ Erreur: ' + (data.error || 'Analyse échouée'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Erreur lors de l\'analyse: ' + error.message);
+    } finally {
+        this.textContent = '🔍 Analyser & Générer les commandes';
+        this.disabled = false;
+    }
+});
+
+function displayResults(data) {
+    // Display detected services
+    const servicesDiv = document.getElementById('detectedServices');
+    servicesDiv.innerHTML = '';
+    
+    if (data.open_ports.length === 0) {
+        servicesDiv.innerHTML = '<p style="color: var(--text-muted);">Aucun port ouvert détecté</p>';
+    } else {
+        data.open_ports.forEach((port, index) => {
+            const service = data.services[port] || 'unknown';
+            const badge = document.createElement('div');
+            badge.className = 'service-badge';
+            badge.style.animationDelay = `${index * 0.1}s`;
+            badge.innerHTML = `<span>${port}</span><span style="color: var(--text-muted);">${service}</span>`;
+            servicesDiv.appendChild(badge);
+        });
+    }
+    
+    // Display command suggestions
+    const suggestionsDiv = document.getElementById('commandSuggestions');
+    suggestionsDiv.innerHTML = '';
+    
+    data.suggestions.forEach((suggestion, index) => {
+        const card = createSuggestionCard(suggestion, index);
+        suggestionsDiv.appendChild(card);
+    });
+}
+
+function createSuggestionCard(suggestion, index) {
+    const card = document.createElement('div');
+    card.className = 'command-suggestion-card';
+    card.style.animationDelay = `${index * 0.15}s`;
+    
+    let html = `
+        <h3 style="color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+            <span>🔧</span> ${suggestion.service}
+        </h3>
+    `;
+    
+    suggestion.commands.forEach((cmd, cmdIndex) => {
+        html += `
+            <div class="command-item">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                    <div>
+                        <h4 style="color: var(--accent); margin: 0 0 8px 0; font-size: 1.1rem;">${cmd.name}</h4>
+                        <p style="color: var(--text-muted); margin: 0; font-size: 0.9rem;">${cmd.description}</p>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                    <code style="color: #2196f3; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+                        ${cmd.template}
+                    </code>
+                </div>
+                
+                <div class="params-container" id="params-${index}-${cmdIndex}">
+                    ${cmd.params.map(param => `
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: block; color: var(--text-light); font-size: 0.9rem; margin-bottom: 5px; font-weight: 600;">
+                                ${param.label}:
+                            </label>
+                            <input type="${param.type}" 
+                                   class="param-input" 
+                                   data-param="${param.name}"
+                                   value="${param.default}"
+                                   placeholder="${param.label}">
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <button class="generate-btn" onclick="generateCommand(${index}, ${cmdIndex}, '${cmd.template}')">
+                    ⚡ Générer la commande
+                </button>
+            </div>
+        `;
+    });
+    
+    card.innerHTML = html;
+    return card;
+}
+
+async function generateCommand(suggestionIndex, cmdIndex, template) {
+    const paramsContainer = document.getElementById(`params-${suggestionIndex}-${cmdIndex}`);
+    const inputs = paramsContainer.querySelectorAll('.param-input');
+    
+    const params = {};
+    inputs.forEach(input => {
+        params[input.dataset.param] = input.value;
+    });
+    
+    try {
+        const response = await fetch('/api/build-command', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                template: template,
+                params: params
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showCommandModal(data.command);
+        } else {
+            alert('❌ Erreur: ' + (data.error || 'Génération échouée'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Erreur lors de la génération: ' + error.message);
+    }
+}
+
+function showCommandModal(command) {
+    const modal = document.getElementById('commandModal');
+    const commandElement = document.getElementById('generatedCommand');
+    
+    commandElement.textContent = command;
+    modal.style.display = 'flex';
+    
+    // Add animation
+    modal.style.animation = 'fadeIn 0.3s ease';
+}
+
+// Modal close handlers
+document.getElementById('closeModal').addEventListener('click', () => {
+    document.getElementById('commandModal').style.display = 'none';
+});
+
+document.getElementById('closeModalBtn').addEventListener('click', () => {
+    document.getElementById('commandModal').style.display = 'none';
+});
+
+document.getElementById('commandModal').addEventListener('click', (e) => {
+    if (e.target.id === 'commandModal') {
+        document.getElementById('commandModal').style.display = 'none';
+    }
+});
+
+// Copy command button
+document.getElementById('copyGeneratedCmd').addEventListener('click', function() {
+    const command = document.getElementById('generatedCommand').textContent;
+    
+    navigator.clipboard.writeText(command).then(() => {
+        const originalText = this.innerHTML;
+        this.innerHTML = '✅ Copié!';
+        this.style.background = 'linear-gradient(135deg, rgba(76, 175, 80, 0.8), rgba(56, 142, 60, 0.8))';
+        
+        setTimeout(() => {
+            this.innerHTML = originalText;
+            this.style.background = '';
+        }, 2000);
+    }).catch(err => {
+        alert('❌ Erreur lors de la copie: ' + err.message);
+    });
+});
+
+// Add fade in animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}
