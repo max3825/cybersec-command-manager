@@ -56,6 +56,10 @@
                     <span class="nav-icon">🔒</span>
                     <span>CVE</span>
                 </a>
+                <a href="{{ url_for('command_builder') }}" class="nav-link {% if request.endpoint == 'command_builder' %}active{% endif %}">
+                    <span class="nav-icon">🎯</span>
+                    <span>Command Builder</span>
+                </a>
                 <a href="{{ url_for('notes') }}" class="nav-link {% if request.endpoint == 'notes' %}active{% endif %}">
                     <span class="nav-icon">📝</span>
                     <span>Notes</span>

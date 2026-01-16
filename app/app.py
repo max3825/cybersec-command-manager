@@ -944,3 +944,305 @@ if __name__ == '__main__':
     print(f"{'='*50}\n")
     
     app.run(debug=debug, host=host, port=port)
+
+
+# ============ COMMAND BUILDER - NOUVELLE FONCTIONNALITÉ ============
+@app.route('/command-builder')
+def command_builder():
+    """Page du générateur de commandes intelligent"""
+    return render_template('command_builder.html')
+
+
+@app.route('/api/analyze-scan', methods=['POST'])
+def analyze_scan():
+    """Analyse un résultat de scan nmap et suggère des commandes"""
+    try:
+        data = request.get_json()
+        scan_result = data.get('scan_result', '')
+        target_ip = data.get('target_ip', '')
+        
+        # Parser les ports ouverts
+        open_ports = []
+        services = {}
+        
+        # Analyse basique du scan nmap
+        lines = scan_result.split('\n')
+        for line in lines:
+            # Détection des ports ouverts (format: 80/tcp open http)
+            if '/tcp' in line and 'open' in line:
+                parts = line.split()
+                if len(parts) >= 3:
+                    port_info = parts[0].split('/')[0]
+                    try:
+                        port = int(port_info)
+                        service = parts[2] if len(parts) > 2 else 'unknown'
+                        open_ports.append(port)
+                        services[port] = service
+                    except:
+                        pass
+        
+        # Suggestions de commandes basées sur les services détectés
+        suggestions = []
+        
+        # Port 21 - FTP
+        if 21 in open_ports:
+            suggestions.append({
+                'service': 'FTP (21)',
+                'commands': [
+                    {
+                        'name': 'ftp',
+                        'description': 'Connexion FTP interactive',
+                        'template': 'ftp {target}',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'}
+                        ]
+                    },
+                    {
+                        'name': 'nmap ftp-anon',
+                        'description': 'Vérifier connexion anonyme FTP',
+                        'template': 'nmap -p 21 --script=ftp-anon {target}',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'}
+                        ]
+                    }
+                ]
+            })
+        
+        # Port 22 - SSH
+        if 22 in open_ports:
+            suggestions.append({
+                'service': 'SSH (22)',
+                'commands': [
+                    {
+                        'name': 'ssh',
+                        'description': 'Connexion SSH',
+                        'template': 'ssh {user}@{target}',
+                        'params': [
+                            {'name': 'user', 'type': 'text', 'default': 'root', 'label': 'Utilisateur'},
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'}
+                        ]
+                    },
+                    {
+                        'name': 'hydra',
+                        'description': 'Bruteforce SSH',
+                        'template': 'hydra -L {userlist} -P {passlist} ssh://{target}',
+                        'params': [
+                            {'name': 'userlist', 'type': 'text', 'default': 'users.txt', 'label': 'Liste utilisateurs'},
+                            {'name': 'passlist', 'type': 'text', 'default': 'passwords.txt', 'label': 'Liste mots de passe'},
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'}
+                        ]
+                    }
+                ]
+            })
+        
+        # Port 80/8080 - HTTP
+        if 80 in open_ports or 8080 in open_ports:
+            port = 80 if 80 in open_ports else 8080
+            suggestions.append({
+                'service': f'HTTP ({port})',
+                'commands': [
+                    {
+                        'name': 'nikto',
+                        'description': 'Scanner de vulnérabilités web',
+                        'template': 'nikto -h http://{target}:{port}',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'},
+                            {'name': 'port', 'type': 'number', 'default': str(port), 'label': 'Port'}
+                        ]
+                    },
+                    {
+                        'name': 'gobuster',
+                        'description': 'Énumération de répertoires',
+                        'template': 'gobuster dir -u http://{target}:{port} -w {wordlist} -x {extensions}',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'},
+                            {'name': 'port', 'type': 'number', 'default': str(port), 'label': 'Port'},
+                            {'name': 'wordlist', 'type': 'text', 'default': '/usr/share/wordlists/dirb/common.txt', 'label': 'Wordlist'},
+                            {'name': 'extensions', 'type': 'text', 'default': 'php,html,txt', 'label': 'Extensions'}
+                        ]
+                    },
+                    {
+                        'name': 'sqlmap',
+                        'description': 'Test injection SQL',
+                        'template': 'sqlmap -u "http://{target}:{port}{path}" --dbs',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'},
+                            {'name': 'port', 'type': 'number', 'default': str(port), 'label': 'Port'},
+                            {'name': 'path', 'type': 'text', 'default': '/index.php?id=1', 'label': 'Chemin vulnérable'}
+                        ]
+                    }
+                ]
+            })
+        
+        # Port 443 - HTTPS
+        if 443 in open_ports:
+            suggestions.append({
+                'service': 'HTTPS (443)',
+                'commands': [
+                    {
+                        'name': 'sslscan',
+                        'description': 'Analyser la configuration SSL/TLS',
+                        'template': 'sslscan {target}:443',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'}
+                        ]
+                    },
+                    {
+                        'name': 'nikto',
+                        'description': 'Scanner web HTTPS',
+                        'template': 'nikto -h https://{target} -ssl',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'}
+                        ]
+                    }
+                ]
+            })
+        
+        # Port 445 - SMB
+        if 445 in open_ports or 139 in open_ports:
+            suggestions.append({
+                'service': 'SMB (445/139)',
+                'commands': [
+                    {
+                        'name': 'enum4linux',
+                        'description': 'Énumération complète SMB',
+                        'template': 'enum4linux -a {target}',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'}
+                        ]
+                    },
+                    {
+                        'name': 'smbmap',
+                        'description': 'Lister les partages SMB',
+                        'template': 'smbmap -H {target} -u {user} -p {pass}',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'},
+                            {'name': 'user', 'type': 'text', 'default': 'guest', 'label': 'Utilisateur'},
+                            {'name': 'pass', 'type': 'text', 'default': '', 'label': 'Mot de passe'}
+                        ]
+                    },
+                    {
+                        'name': 'smbclient',
+                        'description': 'Se connecter à un partage SMB',
+                        'template': 'smbclient //{target}/{share} -U {user}',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'},
+                            {'name': 'share', 'type': 'text', 'default': 'IPC$', 'label': 'Partage'},
+                            {'name': 'user', 'type': 'text', 'default': 'guest', 'label': 'Utilisateur'}
+                        ]
+                    }
+                ]
+            })
+        
+        # Port 3306 - MySQL
+        if 3306 in open_ports:
+            suggestions.append({
+                'service': 'MySQL (3306)',
+                'commands': [
+                    {
+                        'name': 'mysql',
+                        'description': 'Connexion MySQL',
+                        'template': 'mysql -h {target} -u {user} -p',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'},
+                            {'name': 'user', 'type': 'text', 'default': 'root', 'label': 'Utilisateur'}
+                        ]
+                    },
+                    {
+                        'name': 'nmap mysql-enum',
+                        'description': 'Énumération MySQL',
+                        'template': 'nmap -p 3306 --script=mysql-enum {target}',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'}
+                        ]
+                    }
+                ]
+            })
+        
+        # Port 3389 - RDP
+        if 3389 in open_ports:
+            suggestions.append({
+                'service': 'RDP (3389)',
+                'commands': [
+                    {
+                        'name': 'xfreerdp',
+                        'description': 'Connexion RDP',
+                        'template': 'xfreerdp /v:{target} /u:{user} /p:{pass}',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'},
+                            {'name': 'user', 'type': 'text', 'default': 'Administrator', 'label': 'Utilisateur'},
+                            {'name': 'pass', 'type': 'text', 'default': '', 'label': 'Mot de passe'}
+                        ]
+                    },
+                    {
+                        'name': 'nmap rdp-enum',
+                        'description': 'Énumération RDP',
+                        'template': 'nmap -p 3389 --script=rdp-enum-encryption {target}',
+                        'params': [
+                            {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'}
+                        ]
+                    }
+                ]
+            })
+        
+        # Commandes générales recommandées
+        general_commands = {
+            'service': 'Reconnaissance générale',
+            'commands': [
+                {
+                    'name': 'nmap complet',
+                    'description': 'Scan complet avec détection de versions',
+                    'template': 'nmap -sV -sC -A -p- {target} -oN {output}',
+                    'params': [
+                        {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'},
+                        {'name': 'output', 'type': 'text', 'default': 'scan_complet.txt', 'label': 'Fichier de sortie'}
+                    ]
+                },
+                {
+                    'name': 'nmap vulners',
+                    'description': 'Détection de vulnérabilités connues',
+                    'template': 'nmap -sV --script vulners {target}',
+                    'params': [
+                        {'name': 'target', 'type': 'text', 'default': target_ip, 'label': 'Adresse IP'}
+                    ]
+                }
+            ]
+        }
+        
+        suggestions.insert(0, general_commands)
+        
+        return jsonify({
+            'success': True,
+            'target': target_ip,
+            'open_ports': open_ports,
+            'services': services,
+            'suggestions': suggestions
+        })
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/build-command', methods=['POST'])
+def build_command():
+    """Construit une commande avec les paramètres fournis"""
+    try:
+        data = request.get_json()
+        template = data.get('template', '')
+        params = data.get('params', {})
+        
+        # Remplacer les placeholders par les valeurs
+        command = template
+        for key, value in params.items():
+            placeholder = '{' + key + '}'
+            command = command.replace(placeholder, value)
+        
+        return jsonify({
+            'success': True,
+            'command': command
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

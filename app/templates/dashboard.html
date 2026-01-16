@@ -67,6 +67,11 @@
     <div class="quick-access-section">
         <h2>⚡ Accès rapide</h2>
         <div class="quick-links">
+            <a href="{{ url_for('command_builder') }}" class="quick-link" style="grid-column: span 2; background: linear-gradient(135deg, rgba(0, 217, 255, 0.2) 0%, rgba(0, 255, 157, 0.2) 100%); border: 2px solid var(--accent);">
+                <span class="quick-icon" style="font-size: 3rem;">🎯</span>
+                <span style="font-size: 1.1rem; font-weight: 800;">Command Builder</span>
+                <span style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">Nouveau! Générez vos commandes</span>
+            </a>
             <a href="{{ url_for('index') }}" class="quick-link">
                 <span class="quick-icon">📋</span>
                 <span>Toutes les commandes</span>
